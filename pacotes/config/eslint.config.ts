@@ -117,6 +117,16 @@ export default defineConfig(
   {
     files: ['**/*.tsx'],
     extends: [jsxA11y.configs.recommended, eslintReact.configs['recommended-type-checked']],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "JSXAttribute[name.name='style']",
+          message:
+            'Estilo inline é proibido; use CSS Modules e tokens. O tema entra por aplicarTemaRestaurante (docs/adr/0007-design-system.md).',
+        },
+      ],
+    },
   },
   {
     files: ['scripts/**/*.ts'],

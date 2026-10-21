@@ -44,6 +44,14 @@ describe('lint de acessibilidade e de React', () => {
     expect(regras.some((regra) => regra.startsWith('@eslint-react/'))).toBe(true);
   });
 
+  it('recusa estilo inline', async () => {
+    expect(
+      await regrasVioladas(
+        "export function Faixa() {\n  return <p style={{ color: 'red' }}>Fechado</p>;\n}\n",
+      ),
+    ).toContain('no-restricted-syntax');
+  });
+
   it('aceita botao nativo', async () => {
     expect(
       await regrasVioladas(
