@@ -1,7 +1,9 @@
+import eslintReact from '@eslint-react/eslint-plugin';
 import js from '@eslint/js';
 import type { ESLint } from 'eslint';
 import moduloBoundaries from 'eslint-plugin-boundaries';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import jsxA11y from 'eslint-plugin-jsx-a11y-x';
 import tseslint from 'typescript-eslint';
 import { pluginCardapio } from './eslint/plugin.ts';
 
@@ -111,6 +113,10 @@ export default defineConfig(
       'cardapio/sem-catch-vazio': ['error', { funcoesDeReporte: ['reportarErro'] }],
       'no-console': 'error',
     },
+  },
+  {
+    files: ['**/*.tsx'],
+    extends: [jsxA11y.configs.recommended, eslintReact.configs['recommended-type-checked']],
   },
   {
     files: ['scripts/**/*.ts'],
