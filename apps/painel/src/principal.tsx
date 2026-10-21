@@ -1,4 +1,8 @@
-import { montarAplicacao } from '@cardapio/ui';
+import { configuracaoDoBuild, FronteiraDeErro, iniciarSentryWeb } from '@cardapio/observabilidade/web';
+import { montarAplicacao, TelaDeErro } from '@cardapio/ui';
 import { PaginaInicial } from './PaginaInicial.tsx';
 
-montarAplicacao(PaginaInicial);
+iniciarSentryWeb({ app: 'painel', ...configuracaoDoBuild() });
+montarAplicacao(PaginaInicial, (conteudo) => (
+  <FronteiraDeErro TelaDeErro={TelaDeErro}>{conteudo}</FronteiraDeErro>
+));

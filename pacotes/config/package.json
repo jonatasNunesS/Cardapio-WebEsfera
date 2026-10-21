@@ -8,12 +8,16 @@
     "./eslint": "./eslint.config.ts",
     "./prettier": "./prettier.config.ts",
     "./tsconfig.base.json": "./tsconfig.base.json",
-    "./tsconfig.react.json": "./tsconfig.react.json"
+    "./tsconfig.react.json": "./tsconfig.react.json",
+    "./vite": "./vite/configuracao.ts"
   },
   "scripts": {
     "tipos": "tsc --noEmit -p ."
   },
   "dependencies": {
+    "@sentry/vite-plugin": "11.8.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "vite": "8.3.4",
     "zod": "4.6.7"
   }
 }

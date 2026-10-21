@@ -1,9 +1,28 @@
 import { defineConfig } from 'vitest/config';
 
+const ignorados = ['**/node_modules/**', '**/dist/**'];
+
 export default defineConfig({
   test: {
-    include: ['{apps,pacotes,scripts}/**/*.test.{ts,tsx}'],
-    exclude: ['**/node_modules/**', '**/dist/**'],
-    environment: 'node',
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'node',
+          include: ['{apps,pacotes,scripts}/**/*.test.ts'],
+          exclude: ignorados,
+          environment: 'node',
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'navegador',
+          include: ['{apps,pacotes}/**/*.test.tsx'],
+          exclude: ignorados,
+          environment: 'jsdom',
+        },
+      },
+    ],
   },
 });
