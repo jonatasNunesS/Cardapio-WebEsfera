@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export const esquemaAmbienteApi = esquemaAmbienteBase.extend({
   PORTA_API: z.coerce.number().int().min(1).max(65535),
-  URL_BANCO: z.url(),
+  URL_BANCO_API: z.url(),
   URL_REDIS: z.url(),
 });
 

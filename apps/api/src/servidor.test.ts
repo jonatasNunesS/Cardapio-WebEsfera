@@ -1,5 +1,5 @@
 import { Writable } from 'node:stream';
-import { Resultado, criarErroDeNegocio } from '@cardapio/aplicacao';
+import { CODIGOS, ErroDependenciaExterna, Resultado, criarErroDeNegocio } from '@cardapio/aplicacao';
 import {
   aguardarEnvio,
   criarLogger,
@@ -28,8 +28,22 @@ const logger = criarLogger({
 
 const esquemaPedido = z.object({ mesa: z.number().int(), itens: z.array(z.string()).min(1) });
 
+const bancoFora = new ErroDependenciaExterna(
+  CODIGOS.BANCO_CONEXAO_FALHOU,
+  'O PostgreSQL não respondeu',
+  { modulo: 'banco', casoDeUso: 'verificarConexao' },
+  { provedor: 'postgresql', operacao: 'verificarConexao' },
+);
+
+let verificarProntidao = (): Promise<void> => Promise.resolve();
+
 function servidorDeTeste(ambiente: AmbienteApp = 'local') {
-  const servidor = construirServidor({ logger, ambiente, relatorDeErros: relatorDeErrosSentry });
+  const servidor = construirServidor({
+    logger,
+    ambiente,
+    relatorDeErros: relatorDeErrosSentry,
+    verificarProntidao: () => verificarProntidao(),
+  });
   servidor.post('/teste/pedidos', (requisicao, resposta) => {
     const corpo = esquemaPedido.parse(requisicao.body);
     const resultado =
@@ -60,6 +74,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  verificarProntidao = () => Promise.resolve();
   transporte.eventos.length = 0;
   linhasDoLog.length = 0;
 });
@@ -70,6 +85,37 @@ describe('API: saúde e rastreio', () => {
 
     expect(resposta.statusCode).toBe(200);
     expect(resposta.json()).toEqual({ situacao: 'ok' });
+  });
+
+  it('GET /saude não consulta o banco', async () => {
+    verificarProntidao = () => Promise.reject(bancoFora);
+    const resposta = await servidorDeTeste().inject({ method: 'GET', url: '/saude' });
+
+    expect(resposta.statusCode).toBe(200);
+  });
+
+  it('GET /saude/pronto responde 200 quando o banco responde', async () => {
+    const resposta = await servidorDeTeste().inject({ method: 'GET', url: '/saude/pronto' });
+
+    expect(resposta.statusCode).toBe(200);
+    expect(resposta.json()).toEqual({ situacao: 'pronto' });
+  });
+
+  it('GET /saude/pronto responde 503 em Problem Details quando o banco cai', async () => {
+    verificarProntidao = () => Promise.reject(bancoFora);
+    const resposta = await servidorDeTeste().inject({ method: 'GET', url: '/saude/pronto' });
+    await aguardarEnvio(1000);
+
+    expect(resposta.statusCode).toBe(503);
+    expect(resposta.headers['content-type']).toContain('application/problem+json');
+    expect(resposta.json()).toMatchObject({
+      status: 503,
+      codigo: 'HTTP_DEPENDENCIA_INDISPONIVEL',
+      id_rastreio: resposta.headers['x-id-rastreio'],
+    });
+    expect(resposta.body).not.toContain('PostgreSQL');
+    expect(transporte.eventos).toHaveLength(1);
+    expect(transporte.eventos[0]?.tags).toMatchObject({ codigo: 'BANCO_CONEXAO_FALHOU' });
   });
 
   it('devolve o x-id-rastreio recebido', async () => {

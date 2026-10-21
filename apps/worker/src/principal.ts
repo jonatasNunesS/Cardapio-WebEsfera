@@ -4,13 +4,12 @@ import { esquemaAmbienteWorker } from './ambiente.ts';
 import { comporWorker } from './composicao/index.ts';
 
 instalarTratadoresDeFalha();
-carregarAmbiente(esquemaAmbienteWorker);
-const worker = comporWorker();
+const worker = comporWorker(carregarAmbiente(esquemaAmbienteWorker));
 
 for (const sinal of ['SIGTERM', 'SIGINT'] as const) {
   process.once(sinal, () => {
     obterLoggerPadrao().info({ sinal }, 'worker encerrando');
-    worker.encerrar();
+    void worker.encerrar();
   });
 }
 
