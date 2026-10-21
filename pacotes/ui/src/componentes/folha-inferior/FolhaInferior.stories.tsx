@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { expect, waitFor } from 'storybook/test';
 import { Botao } from '../botao/Botao.tsx';
 import { CampoTexto } from '../campo/CampoTexto.tsx';
+import estilos from '../../storybook/historias.module.css';
 import { FolhaInferior } from './FolhaInferior.tsx';
 
 function Carrinho({ abertaDesdeOInicio = false }: { abertaDesdeOInicio?: boolean }) {
   const [aberta, setAberta] = useState(abertaDesdeOInicio);
   return (
-    <>
+    <div className={estilos.linha}>
       <Botao
         onClick={() => {
           setAberta(true);
@@ -16,7 +17,9 @@ function Carrinho({ abertaDesdeOInicio = false }: { abertaDesdeOInicio?: boolean
       >
         Ver pedido
       </Botao>
-      <button type="button">Chamar garçom</button>
+      <Botao variante="secundario" icone="chamarGarcom">
+        Chamar garçom
+      </Botao>
       <FolhaInferior
         aberta={aberta}
         aoFechar={() => {
@@ -28,7 +31,7 @@ function Carrinho({ abertaDesdeOInicio = false }: { abertaDesdeOInicio?: boolean
         <p>Costela na brasa, sem cebola.</p>
         <CampoTexto rotulo="Alguma observação?" placeholder="Ex.: sem cebola, ponto da carne" />
       </FolhaInferior>
-    </>
+    </div>
   );
 }
 

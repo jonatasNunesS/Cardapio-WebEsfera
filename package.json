@@ -20,7 +20,9 @@
     "duplicacao": "jscpd",
     "auditoria": "pnpm audit --audit-level high",
     "storybook": "pnpm --filter @cardapio/ui storybook",
-    "storybook:build": "pnpm --filter @cardapio/ui storybook:build"
+    "storybook:build": "pnpm --filter @cardapio/ui storybook:build",
+    "visual": "node scripts/testes-visuais.ts",
+    "visual:atualizar": "node scripts/testes-visuais.ts --atualizar"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.4",

@@ -9,3 +9,5 @@ coverage/
 storybook-static/
 test-results/
 playwright-report/
+pacotes/ui/visual/resultados/
+pacotes/ui/visual/relatorio/

@@ -12,7 +12,9 @@
   "scripts": {
     "tipos": "tsc --noEmit -p .",
     "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build -o storybook-static"
+    "storybook:build": "storybook build -o storybook-static",
+    "visual": "playwright test -c visual/playwright.config.ts",
+    "visual:atualizar": "playwright test -c visual/playwright.config.ts --update-snapshots"
   },
   "peerDependencies": {
     "react": "19.3.1",

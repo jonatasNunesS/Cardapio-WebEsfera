@@ -6,6 +6,14 @@ import './previa.css';
 
 export type TemaDaPrevia = 'cardapio' | 'painel' | 'tv';
 
+const TEMAS: readonly TemaDaPrevia[] = ['cardapio', 'painel', 'tv'];
+
+function temaInicial(): TemaDaPrevia {
+  const pedido = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
+    ?.TEMA_DA_PREVIA;
+  return TEMAS.find((tema) => tema === pedido) ?? 'cardapio';
+}
+
 const aplicarTema: Decorator = (Historia, contexto) => {
   const tema = contexto.globals.tema as TemaDaPrevia | undefined;
   if (tema === undefined || tema === 'cardapio') {
@@ -34,7 +42,7 @@ const previa: Preview = {
       },
     },
   },
-  initialGlobals: { tema: 'cardapio' },
+  initialGlobals: { tema: temaInicial() },
   parameters: {
     a11y: { test: 'error' },
     layout: 'padded',

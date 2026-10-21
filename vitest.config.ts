@@ -6,6 +6,8 @@ const ignorados = ['**/node_modules/**', '**/dist/**'];
 
 const caminhoDoChromium = process.env.CAMINHO_CHROMIUM;
 
+const TEMAS_DA_PREVIA = ['cardapio', 'painel', 'tv'] as const;
+
 export default defineConfig({
   test: {
     projects: [
@@ -42,7 +44,7 @@ export default defineConfig({
           setupFiles: ['pacotes/config/vitest/limpar-dom.ts'],
         },
       },
-      {
+      ...TEMAS_DA_PREVIA.map((tema) => ({
         extends: true,
         plugins: [
           storybookTest({
@@ -51,17 +53,18 @@ export default defineConfig({
           }),
         ],
         test: {
-          name: 'storybook',
+          name: `storybook-${tema}`,
+          env: { TEMA_DA_PREVIA: tema },
           browser: {
             enabled: true,
             headless: true,
             provider: playwright(
               caminhoDoChromium === undefined ? {} : { launchOptions: { executablePath: caminhoDoChromium } },
             ),
-            instances: [{ browser: 'chromium' }],
+            instances: [{ browser: 'chromium' as const }],
           },
         },
-      },
+      })),
     ],
   },
 });
