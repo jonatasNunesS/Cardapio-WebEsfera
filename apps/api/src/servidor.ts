@@ -2,7 +2,7 @@ import type { RelatorDeErros } from '@cardapio/aplicacao';
 import type { AmbienteApp } from '@cardapio/observabilidade/node';
 import Fastify, { type FastifyBaseLogger, type FastifyInstance } from 'fastify';
 import { ControladorDeLog } from './http/controlador-de-log.ts';
-import { gerarIdRastreio, registrarRastreio } from './http/rastreio.ts';
+import { idRastreioDaRequisicao, registrarRastreio } from './http/rastreio.ts';
 import { registrarTratadorDeErros } from './http/tratador-de-erros.ts';
 import { registrarRotaDeDepuracao } from './rotas/depuracao.ts';
 import { registrarRotaSaude } from './rotas/saude.ts';
@@ -16,7 +16,7 @@ export interface OpcoesServidor {
 export function construirServidor(opcoes: OpcoesServidor): FastifyInstance {
   const servidor = Fastify({
     loggerInstance: opcoes.logger,
-    genReqId: gerarIdRastreio,
+    genReqId: idRastreioDaRequisicao,
     requestIdHeader: false,
     logController: new ControladorDeLog(),
   });

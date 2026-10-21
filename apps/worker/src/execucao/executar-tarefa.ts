@@ -1,10 +1,15 @@
-import { executarComContexto, obterLoggerPadrao, reportarErro } from '@cardapio/observabilidade/node';
-import { randomUUID } from 'node:crypto';
+import {
+  ehIdRastreioValido,
+  executarComContexto,
+  gerarIdRastreio,
+  obterLoggerPadrao,
+  reportarErro,
+} from '@cardapio/observabilidade/node';
 
 export type DadosDaTarefa = Readonly<Record<string, unknown>>;
 
 function contextoDaTarefa(nome: string, dados: DadosDaTarefa) {
-  const idRastreio = typeof dados.idRastreio === 'string' ? dados.idRastreio : randomUUID();
+  const idRastreio = ehIdRastreioValido(dados.idRastreio) ? dados.idRastreio : gerarIdRastreio();
   const base = { idRastreio, app: 'worker', tarefa: nome };
   return typeof dados.restauranteId === 'string' ? { ...base, restauranteId: dados.restauranteId } : base;
 }

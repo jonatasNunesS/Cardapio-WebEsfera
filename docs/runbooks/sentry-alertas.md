@@ -13,6 +13,22 @@ Tags que o código envia em todo evento: `app`, `modulo`, `caso_de_uso`,
 Ambiente: configure cada alerta para `producao`. Repita para `homologacao`
 com destino mais barulhento, se quiser.
 
+## Como achar um erro pelo id de rastreio
+
+O usuário vê um id de rastreio (UUID v7, por exemplo
+`01a15eda-4bef-7721-9371-fcb3c22b525a`): no corpo da resposta de erro, no
+cabeçalho `x-id-rastreio` ou na tela "Algo deu errado". É o mesmo id em todos
+os lugares.
+
+1. No Sentry, em Issues ou Explore, buscar `id_rastreio:<id>` nos dois
+   projetos. O evento aparece com as tags e os contextos.
+2. Nos logs, filtrar pelo campo `id_rastreio` com o mesmo valor. Aparecem
+   todas as linhas da requisição ou da tarefa: entrada, erro e conclusão.
+3. Para ver os passos antes da falha, abrir o trace do evento no Sentry.
+
+O id do evento do Sentry (32 caracteres hexadecimais) não é mostrado ao
+usuário; não peça esse id ao restaurante.
+
 ## 1. Isolamento quebrado
 
 - Source: projetos `cardapio-backend` e `cardapio-frontend`.
@@ -81,7 +97,8 @@ com destino mais barulhento, se quiser.
 - Limitação: os alertas do Sentry contam eventos por issue, e o subfiltro de
   frequência exige um valor fixo de tag. Não há contagem agrupada por
   `restaurante_id` entre issues diferentes.
-- Proposta para o piloto (3 a 5 restaurantes): um Alert por restaurante.
+- Decisão do John (2026-10-21): um Alert por restaurante durante o piloto
+  (3 a 5 restaurantes).
   When: **An event or issue activity is captured**. If: **Number of events**
   more than 20 in one hour, com o subfiltro `restaurante_id is <id do
 restaurante>`. Then: e-mail.

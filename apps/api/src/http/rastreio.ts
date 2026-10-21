@@ -1,15 +1,17 @@
-import { abrirContexto, type ContextoDeExecucao } from '@cardapio/observabilidade/node';
+import {
+  abrirContexto,
+  ehIdRastreioValido,
+  gerarIdRastreio,
+  type ContextoDeExecucao,
+} from '@cardapio/observabilidade/node';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { IncomingMessage } from 'node:http';
-import { v7 as uuidv7 } from 'uuid';
 
 export const CABECALHO_RASTREIO = 'x-id-rastreio';
 
-const PADRAO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-export function gerarIdRastreio(requisicao: IncomingMessage): string {
+export function idRastreioDaRequisicao(requisicao: IncomingMessage): string {
   const recebido = requisicao.headers[CABECALHO_RASTREIO];
-  return typeof recebido === 'string' && PADRAO_UUID.test(recebido) ? recebido.toLowerCase() : uuidv7();
+  return ehIdRastreioValido(recebido) ? recebido.toLowerCase() : gerarIdRastreio();
 }
 
 export function contextoDaRequisicao(requisicao: FastifyRequest): ContextoDeExecucao {

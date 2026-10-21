@@ -5,6 +5,7 @@ export type { AmbienteObservabilidade } from './ambiente.ts';
 export { criarLogger, definirLoggerPadrao, obterLoggerPadrao } from './logger.ts';
 export type { OpcoesLogger } from './logger.ts';
 export type { Logger } from 'pino';
+export { ehIdRastreioValido, gerarIdRastreio } from './id-rastreio.ts';
 export { iniciarObservabilidadeDoProcesso } from './iniciar-processo.ts';
 export { instalarTratadoresDeFalha } from './processo.ts';
 export { relatorDeErrosSentry } from './relator-de-erros-sentry.ts';

@@ -24,7 +24,7 @@ function camposDoContexto(_objeto: object, _nivel: number, logger: Logger): Reco
   const jaVinculados = Object.keys(logger.bindings());
   return Object.fromEntries(
     Object.entries({
-      idRastreio: contexto.idRastreio,
+      id_rastreio: contexto.idRastreio,
       restauranteId: contexto.restauranteId,
       rota: contexto.rota,
       tarefa: contexto.tarefa,

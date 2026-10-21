@@ -6,7 +6,7 @@ function resumoDaRequisicao(requisicao: FastifyRequest) {
 
 export class ControladorDeLog extends LogController {
   constructor() {
-    super({ requestIdLogLabel: 'idRastreio' });
+    super({ requestIdLogLabel: 'id_rastreio' });
   }
 
   override incomingRequest(requisicao: FastifyRequest): void {

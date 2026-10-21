@@ -89,12 +89,27 @@ duração, sem IP e sem a URL crua.
   de `@sentry/server-utils`, que declara suporte ao Fastify 3.21 a 6.
 - Configuramos `fastifyIntegration({ shouldHandleError: () => false })`: o
   tratador global da API é o único ponto de captura. Assim o evento sai uma vez
-  só, com tags, contextos, fingerprint e título nossos, e o
-  `id_rastreio` da resposta é o id desse evento.
+  só, com tags, contextos, fingerprint e título nossos.
+- Spans com o Fastify 5: funcionam por inteiro. No `@sentry/node` 11.8.0, a
+  integração (`@sentry/server-utils`, `integrations/fastify/instrumentation.js`)
+  não remenda o módulo: ela escuta o canal de diagnóstico
+  `fastify.initialization`, que o Fastify 5.12.7 publica ao criar cada
+  instância (`fastify.js`). Com isso ela registra os ganchos `onRoute`,
+  `onRequest` e `onResponse` e cria um span por requisição e por gancho,
+  com `http.route`. A prova de ponta a ponta recebeu esses spans
+  (`sentry.origin=auto.http.fastify`, `sentry.op=handler`). Basta o Sentry
+  estar iniciado antes de o servidor ser criado, o que o `--import` garante.
 - `instrumentacao.ts` é carregado com `node --import` antes de tudo, como
   manda a documentação (`platform-includes/getting-started-node/javascript.mdx`).
-- O rastreio aceita `x-id-rastreio` só quando é um UUID; senão gera um UUID
-  v7. O cabeçalho volta na resposta e vira a tag `id_rastreio` do evento.
+- Um id só (decisão do John em 2026-10-21): o id de rastreio é o id da
+  requisição, um UUID v7. A API aceita o `x-id-rastreio` recebido só quando é
+  um UUID; senão gera um novo. Esse id volta no cabeçalho `x-id-rastreio` e no
+  campo `id_rastreio` de toda resposta de erro, vai como tag `id_rastreio` em
+  todo evento do Sentry e como campo `id_rastreio` em toda linha de log da
+  requisição ou da tarefa. O id do evento do Sentry nunca aparece para o
+  usuário. Sem contexto (falha do processo), `reportarErro` gera um UUID v7 e
+  usa o mesmo nas três saídas. No navegador, a `FronteiraDeErro` gera um UUID
+  v7, mostra esse id na tela de erro e o envia como tag `id_rastreio`.
 - `GET /depuracao/erro` só existe com `APP_ENV` local ou preview.
 
 ### Entradas do pacote de observabilidade
@@ -138,9 +153,12 @@ duração, sem IP e sem a URL crua.
 
 ## Consequências
 
-- `reportarErro` devolve o id do evento. A resposta 500 traz esse id em
-  `id_rastreio`, que é encontrado direto na busca do Sentry.
+- `reportarErro` devolve o id de rastreio do contexto. O suporte acha o evento
+  no Sentry com a busca `id_rastreio:<id>` e as linhas de log com o mesmo
+  campo (ver docs/runbooks/sentry-alertas.md).
 - Um erro em código React é capturado pela `ErrorBoundary` do Sentry. O
   usuário vê a `TelaDeErro` do pacote `ui` com o id.
 - O bundle do cardápio passou de 68,7 KB para 101,6 KB comprimidos por causa
   do SDK do navegador. Continua abaixo da meta de 170 KB (seção 9).
+  Anotado para o M09: carregar o SDK no cardápio depois da primeira
+  renderização, para tirar esses 33 KB do caminho do LCP.

@@ -91,7 +91,9 @@ describe('reportarErro com Sentry', () => {
 
     expect(transporte.eventos).toHaveLength(1);
     const [evento] = transporte.eventos;
-    expect(evento?.event_id).toBe(id);
+    expect(id).toBe(contexto.idRastreio);
+    expect(evento?.tags?.id_rastreio).toBe(contexto.idRastreio);
+    expect(evento?.event_id).not.toBe(id);
     expect(evento?.level).toBe('error');
     expect(evento?.tags).toMatchObject({
       app: 'worker',
@@ -116,6 +118,14 @@ describe('reportarErro com Sentry', () => {
     expect(`${principal?.type ?? ''}: ${principal?.value ?? ''}`).toBe(
       'ErroDependenciaExterna: PAGAMENTO_CONSULTA_FALHOU - Mercado Pago não respondeu',
     );
+  });
+
+  it('sem contexto, gera um UUID v7 e usa o mesmo id na tag e no retorno', async () => {
+    const id = reportarErro(new Error('sem contexto'));
+    await Sentry.flush(1000);
+
+    expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-/);
+    expect(transporte.eventos[0]?.tags?.id_rastreio).toBe(id);
   });
 
   it('usa nível fatal para violação de isolamento', async () => {

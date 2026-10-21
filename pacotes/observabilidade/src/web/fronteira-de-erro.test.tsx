@@ -34,7 +34,7 @@ afterAll(async () => {
 });
 
 describe('FronteiraDeErro', () => {
-  it('mostra a tela de erro com o id do evento e reporta uma vez', async () => {
+  it('mostra a tela de erro com o id de rastreio e reporta uma vez', async () => {
     render(
       <FronteiraDeErro TelaDeErro={TelaFalsa}>
         <ComponenteQueQuebra />
@@ -43,9 +43,12 @@ describe('FronteiraDeErro', () => {
     await Sentry.flush(1000);
 
     expect(transporte.eventos).toHaveLength(1);
-    const idDoEvento = transporte.eventos[0]?.event_id ?? '';
-    expect(idDoEvento).not.toBe('');
-    expect(screen.getByRole('alert').textContent).toBe(`Rastreio ${idDoEvento}`);
+    const idRastreio = transporte.eventos[0]?.tags?.id_rastreio ?? '';
+    expect(idRastreio).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-/);
+    expect(screen.getByRole('alert').textContent).toBe(`Rastreio ${idRastreio}`);
+    expect(screen.getByRole('alert').textContent).not.toContain(
+      transporte.eventos[0]?.event_id ?? 'sem-evento',
+    );
     expect(transporte.eventos[0]?.tags?.app).toBe('cardapio');
   });
 

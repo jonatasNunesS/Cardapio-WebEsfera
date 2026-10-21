@@ -1,13 +1,17 @@
-import { randomUUID } from 'node:crypto';
 import * as Sentry from '@sentry/node';
 import { contextoAtual, type ContextoDeExecucao } from '../contexto.ts';
 import { limparValor, mascararTexto } from '../limpeza.ts';
 import { descreverErro, tituloDoErro, type DescricaoDoErro } from './descrever-erro.ts';
+import { gerarIdRastreio } from './id-rastreio.ts';
 import { obterLoggerPadrao } from './logger.ts';
 
 type Extra = Readonly<Record<string, unknown>>;
 
-function montarTags(descricao: DescricaoDoErro, contexto: ContextoDeExecucao | undefined) {
+function montarTags(
+  descricao: DescricaoDoErro,
+  contexto: ContextoDeExecucao | undefined,
+  idRastreio: string,
+) {
   const tags = {
     app: contexto?.app,
     modulo: descricao.modulo,
@@ -16,17 +20,23 @@ function montarTags(descricao: DescricaoDoErro, contexto: ContextoDeExecucao | u
     rota: contexto?.rota,
     tarefa: contexto?.tarefa,
     codigo: descricao.codigo,
-    id_rastreio: contexto?.idRastreio,
+    id_rastreio: idRastreio,
   };
   return Object.fromEntries(
     Object.entries(tags).filter((par): par is [string, string] => par[1] !== undefined),
   );
 }
 
-function registrarNoLog(erro: unknown, descricao: DescricaoDoErro, idRastreio: string): void {
+function registrarNoLog(
+  erro: unknown,
+  descricao: DescricaoDoErro,
+  idRastreio: string,
+  comContexto: boolean,
+): void {
   const pilha = erro instanceof Error && erro.stack !== undefined ? mascararTexto(erro.stack) : undefined;
+  const rastreio = comContexto ? {} : { id_rastreio: idRastreio };
   obterLoggerPadrao().error(
-    { modulo: descricao.modulo, codigo: descricao.codigo, id_rastreio: idRastreio, pilha },
+    { modulo: descricao.modulo, codigo: descricao.codigo, ...rastreio, pilha },
     tituloDoErro(descricao),
   );
 }
@@ -36,8 +46,8 @@ function enviarAoSentry(
   descricao: DescricaoDoErro,
   tags: Record<string, string>,
   extra?: Extra,
-): string {
-  return Sentry.withScope((escopo) => {
+): void {
+  Sentry.withScope((escopo) => {
     escopo.setTags(tags);
     escopo.setLevel(descricao.nivel);
     escopo.setFingerprint([descricao.codigo, descricao.modulo]);
@@ -59,18 +69,18 @@ function enviarAoSentry(
       }
       return evento;
     });
-    return Sentry.captureException(erro);
+    Sentry.captureException(erro);
   });
 }
 
 export function reportarErro(erro: unknown, extra?: Extra): string {
   const contexto = contextoAtual();
+  const idRastreio = contexto?.idRastreio ?? gerarIdRastreio();
   const descricao = descreverErro(erro, contexto);
-  const tags = montarTags(descricao, contexto);
-  const idRastreio = Sentry.isInitialized()
-    ? enviarAoSentry(erro, descricao, tags, extra)
-    : (contexto?.idRastreio ?? randomUUID());
-  registrarNoLog(erro, descricao, idRastreio);
+  if (Sentry.isInitialized()) {
+    enviarAoSentry(erro, descricao, montarTags(descricao, contexto, idRastreio), extra);
+  }
+  registrarNoLog(erro, descricao, idRastreio, contexto !== undefined);
   return idRastreio;
 }
 

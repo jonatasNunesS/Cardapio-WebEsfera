@@ -98,9 +98,8 @@ describe('API: saúde e rastreio', () => {
     const log = linhasDoLog.join('');
 
     expect(log).toContain('requisição recebida');
-    expect(log).toContain('"idRastreio"');
     for (const linha of linhasDoLog) {
-      expect(linha.match(/"idRastreio"/g)?.length ?? 0).toBeLessThanOrEqual(1);
+      expect(linha.match(/"id_rastreio"/g)?.length ?? 0).toBe(1);
     }
     expect(log).not.toContain('Abc123Segredo');
     expect(log).not.toContain('remoteAddress');
@@ -154,14 +153,16 @@ describe('API: erros em Problem Details', () => {
     expect(transporte.eventos).toHaveLength(0);
   });
 
-  it('erro inesperado dá 500 com o id do evento, reporta uma vez e não expõe a pilha', async () => {
+  it('erro inesperado dá 500 com o id da requisição, reporta uma vez e não expõe a pilha nem o id do evento', async () => {
     const resposta = await servidorDeTeste().inject({ method: 'GET', url: '/teste/bug' });
     await aguardarEnvio(1000);
     const corpo = resposta.json<Record<string, unknown>>();
 
     expect(resposta.statusCode).toBe(500);
     expect(transporte.eventos).toHaveLength(1);
-    expect(corpo.id_rastreio).toBe(transporte.eventos[0]?.event_id);
+    expect(corpo.id_rastreio).toBe(resposta.headers['x-id-rastreio']);
+    expect(transporte.eventos[0]?.tags?.id_rastreio).toBe(corpo.id_rastreio);
+    expect(resposta.body).not.toContain(transporte.eventos[0]?.event_id ?? 'sem-evento');
     expect(Object.keys(corpo).sort()).toEqual(['codigo', 'detail', 'id_rastreio', 'status', 'title', 'type']);
     expect(resposta.body).not.toContain('x is undefined');
     expect(resposta.body).not.toContain('servidor.test.ts');
