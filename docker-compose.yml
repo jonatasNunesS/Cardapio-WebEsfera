@@ -34,6 +34,8 @@ services:
     build:
       context: .
       target: api
+      args:
+        COMMIT_SHA: ${COMMIT_SHA:-}
     env_file: .env
     init: true
     ports:
@@ -53,6 +55,8 @@ services:
     build:
       context: .
       target: worker
+      args:
+        COMMIT_SHA: ${COMMIT_SHA:-}
     env_file: .env
     init: true
     depends_on:
