@@ -1,0 +1,66 @@
+name: cardapio-webesfera
+
+services:
+  postgres:
+    image: postgres:18.6-alpine3.23
+    environment:
+      POSTGRES_USER: cardapio
+      POSTGRES_PASSWORD: cardapio_local
+      POSTGRES_DB: cardapio
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - dados-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U cardapio -d cardapio']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:8.8.3-alpine3.23
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - dados-redis:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      target: api
+    env_file: .env
+    init: true
+    ports:
+      - '127.0.0.1:${PORTA_API:-3000}:${PORTA_API:-3000}'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:$${PORTA_API}/saude || exit 1']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  worker:
+    build:
+      context: .
+      target: worker
+    env_file: .env
+    init: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  dados-postgres:
+  dados-redis:
