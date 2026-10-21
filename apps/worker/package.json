@@ -4,13 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "iniciar": "node src/principal.ts",
-    "build": "tsc -p tsconfig.build.json",
-    "tipos": "tsc --noEmit -p ."
+    "iniciar": "node --import ./src/instrumentacao.ts src/principal.ts",
+    "build": "tsc -p tsconfig.build.json && sentry-cli sourcemaps inject dist",
+    "tipos": "tsc --noEmit -p .",
+    "iniciar:dist": "node --import ./dist/instrumentacao.js dist/principal.js"
   },
   "dependencies": {
+    "@cardapio/aplicacao": "workspace:*",
     "@cardapio/config": "workspace:*",
     "@cardapio/infraestrutura": "workspace:*",
+    "@cardapio/observabilidade": "workspace:*",
     "zod": "4.6.7"
   }
 }
