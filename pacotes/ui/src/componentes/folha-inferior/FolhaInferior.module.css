@@ -1,0 +1,52 @@
+.folha {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 40rem;
+  max-height: min(90dvh, 52rem);
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--raio-3) var(--raio-3) 0 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  box-shadow: var(--sombra);
+}
+
+.folha[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.folha::backdrop {
+  background: var(--cor-sobreposicao);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3) var(--espaco-4);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+}
+
+.titulo {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-4);
+  line-height: var(--altura-linha-titulo);
+}
+
+.conteudo {
+  flex: 1;
+  padding: var(--espaco-4);
+  overflow-y: auto;
+}
+
+.rodape {
+  display: grid;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  border-top: var(--borda-fina) solid var(--cor-borda);
+  background: var(--cor-superficie);
+}

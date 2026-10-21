@@ -6,8 +6,8 @@ export type TamanhoIcone = 16 | 20 | 24;
 
 export interface PropriedadesIcone {
   readonly nome: NomeIcone;
-  readonly tamanho?: TamanhoIcone;
-  readonly rotulo?: string;
+  readonly tamanho?: TamanhoIcone | undefined;
+  readonly rotulo?: string | undefined;
   readonly className?: string | undefined;
 }
 

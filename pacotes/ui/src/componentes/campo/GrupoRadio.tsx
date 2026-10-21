@@ -4,7 +4,7 @@ import { descricaoDoCampo, estilosDoCampo, MensagensDoCampo } from './Campo.tsx'
 export interface OpcaoRadio {
   readonly valor: string;
   readonly rotulo: string;
-  readonly desativada?: boolean;
+  readonly desativada?: boolean | undefined;
 }
 
 export interface PropriedadesGrupoRadio {
@@ -15,7 +15,7 @@ export interface PropriedadesGrupoRadio {
   readonly aoMudar: (valor: string) => void;
   readonly dica?: string | undefined;
   readonly erro?: string | undefined;
-  readonly desativado?: boolean;
+  readonly desativado?: boolean | undefined;
 }
 
 export function Radio({

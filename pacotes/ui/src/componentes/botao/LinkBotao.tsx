@@ -9,9 +9,9 @@ export interface PropriedadesLinkBotao extends Omit<
 > {
   readonly href: string;
   readonly children: ReactNode;
-  readonly variante?: VarianteBotao;
-  readonly icone?: NomeIcone;
-  readonly larguraTotal?: boolean;
+  readonly variante?: VarianteBotao | undefined;
+  readonly icone?: NomeIcone | undefined;
+  readonly larguraTotal?: boolean | undefined;
 }
 
 export function LinkBotao({

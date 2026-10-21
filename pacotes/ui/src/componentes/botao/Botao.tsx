@@ -9,10 +9,10 @@ export interface PropriedadesBotao extends Omit<
   'className' | 'style'
 > {
   readonly children: ReactNode;
-  readonly variante?: VarianteBotao;
-  readonly carregando?: boolean;
-  readonly icone?: NomeIcone;
-  readonly larguraTotal?: boolean;
+  readonly variante?: VarianteBotao | undefined;
+  readonly carregando?: boolean | undefined;
+  readonly icone?: NomeIcone | undefined;
+  readonly larguraTotal?: boolean | undefined;
 }
 
 export function Botao({

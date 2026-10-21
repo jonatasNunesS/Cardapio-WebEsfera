@@ -1,0 +1,37 @@
+.seletor {
+  display: inline-flex;
+  align-items: center;
+  border: var(--borda-campo) solid var(--cor-borda-campo);
+  border-radius: var(--raio-2);
+  background: var(--cor-superficie);
+}
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--alvo-toque);
+  height: var(--alvo-toque);
+  border: 0;
+  border-radius: var(--raio-2);
+  background: transparent;
+  color: var(--cor-texto);
+  cursor: pointer;
+}
+
+.botao:focus-visible {
+  outline: var(--foco-espessura) solid var(--cor-foco);
+  outline-offset: var(--foco-distancia);
+}
+
+.botao[aria-disabled='true'] {
+  color: var(--cor-texto-secundario);
+  cursor: not-allowed;
+}
+
+.valor {
+  min-width: 2ch;
+  font-weight: var(--peso-medio);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}

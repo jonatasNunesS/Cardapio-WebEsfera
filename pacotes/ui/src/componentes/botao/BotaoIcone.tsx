@@ -10,7 +10,7 @@ export interface PropriedadesBotaoIcone extends Omit<
 > {
   readonly icone: NomeIcone;
   readonly rotulo: string;
-  readonly variante?: VarianteBotao;
+  readonly variante?: VarianteBotao | undefined;
 }
 
 export function BotaoIcone({
