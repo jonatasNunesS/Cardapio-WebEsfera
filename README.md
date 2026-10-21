@@ -14,14 +14,18 @@ decisões em [docs/adr](docs/adr).
 
 ```sh
 pnpm install --frozen-lockfile
+docker compose up --detach --wait postgres   # os testes de banco precisam dele
 pnpm verificar        # emoji, lint, formatação, tipos e testes
 pnpm build            # gera os 5 apps em apps/*/dist
 
 cp .env.exemplo .env
 docker compose up --build --wait
-curl http://127.0.0.1:3000/saude   # {"situacao":"ok"}
+curl http://127.0.0.1:3000/saude          # {"situacao":"ok"}
+curl http://127.0.0.1:3000/saude/pronto   # {"situacao":"pronto"}, com o banco migrado
 docker compose down --volumes
 ```
+
+Banco, migrações e usuários: [docs/runbooks/banco.md](docs/runbooks/banco.md).
 
 Os apps React rodam em desenvolvimento com `pnpm --filter @cardapio/cardapio dev`
 (o mesmo para `painel` e `admin`).
@@ -39,6 +43,7 @@ Os apps React rodam em desenvolvimento com `pnpm --filter @cardapio/cardapio dev
 | `pnpm ciclos`          | Dependências circulares (madge)                            |
 | `pnpm duplicacao`      | Código duplicado (jscpd, limite de 3%)                     |
 | `pnpm auditoria`       | Vulnerabilidades altas e críticas                          |
+| `pnpm banco:migrar`    | Aplica as migrações com `URL_BANCO_MIGRACAO`               |
 
 O `pnpm install` liga o hook de commit em `.githooks`, que roda o commitlint.
 

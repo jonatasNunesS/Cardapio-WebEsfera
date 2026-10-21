@@ -17,22 +17,25 @@ pasta e só permite o que está listado. Bibliotecas externas e módulos do Node
 também passam pelas políticas. A configuração está em
 `pacotes/config/eslint.config.ts`.
 
-| Elemento          | Pasta                                                   | Pode importar                                                                               |
-| ----------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `dominio`         | `pacotes/dominio`                                       | Nada: nem pacote do monorepo, nem biblioteca, nem `node:*`                                  |
-| `aplicacao`       | `pacotes/aplicacao`                                     | `dominio`                                                                                   |
-| `infraestrutura`  | `pacotes/infraestrutura`                                | `aplicacao`, `dominio`, `config` e bibliotecas                                              |
-| `contratos`       | `pacotes/contratos`                                     | Só a biblioteca `zod`                                                                       |
-| `observabilidade` | `pacotes/observabilidade`                               | `dominio`, `aplicacao` (desde o M01), `config` e bibliotecas                                |
-| `ui`              | `pacotes/ui`                                            | Nada do monorepo; bibliotecas                                                               |
-| `config`          | `pacotes/config`                                        | Nada do monorepo; bibliotecas                                                               |
-| `app-servidor`    | `apps/api`, `apps/worker`                               | `aplicacao`, `contratos`, `observabilidade`, `config`, a própria `composicao` e bibliotecas |
-| `composicao`      | `apps/api/src/composicao`, `apps/worker/src/composicao` | Tudo o que o `app-servidor` pode, mais `infraestrutura` e o próprio app                     |
-| `app-web`         | `apps/cardapio`, `apps/painel`, `apps/admin`            | `contratos`, `ui`, `config`, `@cardapio/observabilidade/web` (desde o M01) e bibliotecas    |
-| `ferramentas`     | `scripts`                                               | `config` e bibliotecas                                                                      |
+| Elemento          | Pasta                                                   | Pode importar                                                                                |
+| ----------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `dominio`         | `pacotes/dominio`                                       | Nada: nem pacote do monorepo, nem biblioteca, nem `node:*`                                   |
+| `aplicacao`       | `pacotes/aplicacao`                                     | `dominio`                                                                                    |
+| `infraestrutura`  | `pacotes/infraestrutura`                                | `banco`, `aplicacao`, `dominio`, `config` e bibliotecas, menos `pg` e `drizzle-orm`          |
+| `banco`           | `pacotes/infraestrutura/src/banco`                      | `aplicacao`, `dominio`, `config` e bibliotecas, inclusive `pg` e `drizzle-orm` (desde o M02) |
+| `contratos`       | `pacotes/contratos`                                     | Só a biblioteca `zod`                                                                        |
+| `observabilidade` | `pacotes/observabilidade`                               | `dominio`, `aplicacao` (desde o M01), `config` e bibliotecas                                 |
+| `ui`              | `pacotes/ui`                                            | Nada do monorepo; bibliotecas                                                                |
+| `config`          | `pacotes/config`                                        | Nada do monorepo; bibliotecas                                                                |
+| `app-servidor`    | `apps/api`, `apps/worker`                               | `aplicacao`, `contratos`, `observabilidade`, `config`, a própria `composicao` e bibliotecas  |
+| `composicao`      | `apps/api/src/composicao`, `apps/worker/src/composicao` | Tudo o que o `app-servidor` pode, mais `infraestrutura` e o próprio app                      |
+| `app-web`         | `apps/cardapio`, `apps/painel`, `apps/admin`            | `contratos`, `ui`, `config`, `@cardapio/observabilidade/web` (desde o M01) e bibliotecas     |
+| `ferramentas`     | `scripts`                                               | `config`, `infraestrutura` (desde o M02, para `pnpm banco:migrar`) e bibliotecas             |
 
 Arquivos de teste (`*.test.ts`, `*.test.tsx`) também podem importar `vitest`
-e `node:*`, inclusive no domínio.
+e `node:*`, inclusive no domínio. Os testes do elemento `banco` também podem
+importar a observabilidade, para provar que a violação de RLS chega ao Sentry
+como `fatal` (ADR 0006).
 
 As 9 regras do M00:
 
@@ -51,6 +54,9 @@ As 9 regras do M00:
    `config`, e do pacote de observabilidade só `@cardapio/observabilidade/web`
    (desde o M01, ADR 0005). Nunca `infraestrutura`, `aplicacao` ou `dominio`.
 9. Dependência circular entre arquivos quebra o CI (madge).
+10. Desde o M02: fora de `pacotes/infraestrutura/src/banco`, ninguém importa
+    `pg` ou `drizzle-orm`, nem a composição. Assim todo acesso ao banco passa
+    por `comRestaurante()`, `comSistema()` ou `semRestaurante()` (ADR 0006).
 
 ### Por que a exceção da composição
 
@@ -83,5 +89,6 @@ no M03.
   este ADR.
 - `pacotes/config/eslint/fronteiras.test.ts` prova a regra: `dominio`
   importando `infraestrutura` falha; a composição da API importando
-  `infraestrutura` passa; uma rota da API importando `infraestrutura` falha.
+  `infraestrutura` passa; uma rota da API importando `infraestrutura` falha;
+  `pg` e `drizzle-orm` só passam dentro de `pacotes/infraestrutura/src/banco`.
 - Liberar uma biblioteca no domínio exige mudar este ADR.
