@@ -23,12 +23,12 @@ também passam pelas políticas. A configuração está em
 | `aplicacao`       | `pacotes/aplicacao`                                     | `dominio`                                                                                   |
 | `infraestrutura`  | `pacotes/infraestrutura`                                | `aplicacao`, `dominio`, `config` e bibliotecas                                              |
 | `contratos`       | `pacotes/contratos`                                     | Só a biblioteca `zod`                                                                       |
-| `observabilidade` | `pacotes/observabilidade`                               | `dominio`, `config` e bibliotecas                                                           |
+| `observabilidade` | `pacotes/observabilidade`                               | `dominio`, `aplicacao` (desde o M01), `config` e bibliotecas                                |
 | `ui`              | `pacotes/ui`                                            | Nada do monorepo; bibliotecas                                                               |
 | `config`          | `pacotes/config`                                        | Nada do monorepo; bibliotecas                                                               |
 | `app-servidor`    | `apps/api`, `apps/worker`                               | `aplicacao`, `contratos`, `observabilidade`, `config`, a própria `composicao` e bibliotecas |
 | `composicao`      | `apps/api/src/composicao`, `apps/worker/src/composicao` | Tudo o que o `app-servidor` pode, mais `infraestrutura` e o próprio app                     |
-| `app-web`         | `apps/cardapio`, `apps/painel`, `apps/admin`            | `contratos`, `ui`, `config` e bibliotecas                                                   |
+| `app-web`         | `apps/cardapio`, `apps/painel`, `apps/admin`            | `contratos`, `ui`, `config`, `@cardapio/observabilidade/web` (desde o M01) e bibliotecas    |
 | `ferramentas`     | `scripts`                                               | `config` e bibliotecas                                                                      |
 
 Arquivos de teste (`*.test.ts`, `*.test.tsx`) também podem importar `vitest`
@@ -41,13 +41,15 @@ As 9 regras do M00:
 2. `aplicacao` só importa `dominio`.
 3. `infraestrutura` importa `aplicacao`, `dominio` e `config`.
 4. `contratos` só importa a biblioteca Zod.
-5. `observabilidade` importa `dominio` e `config`.
+5. `observabilidade` importa `dominio`, `aplicacao` e `config`. A `aplicacao`
+   entrou no M01: a observabilidade implementa a porta `RelatorDeErros` (ADR 0005).
 6. `ui` não importa nada do monorepo.
 7. `apps/api` e `apps/worker` importam `aplicacao`, `contratos`,
    `observabilidade` e `config`. Só os arquivos em `src/composicao/` importam
    `infraestrutura`.
 8. `apps/cardapio`, `apps/painel` e `apps/admin` importam `contratos`, `ui` e
-   `config`. Nunca `infraestrutura`, `aplicacao` ou `dominio`.
+   `config`, e do pacote de observabilidade só `@cardapio/observabilidade/web`
+   (desde o M01, ADR 0005). Nunca `infraestrutura`, `aplicacao` ou `dominio`.
 9. Dependência circular entre arquivos quebra o CI (madge).
 
 ### Por que a exceção da composição

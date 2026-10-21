@@ -1,7 +1,9 @@
 import { carregarAmbiente } from '@cardapio/config';
+import { instalarTratadoresDeFalha } from '@cardapio/observabilidade/node';
 import { esquemaAmbienteApi } from './ambiente.ts';
 import { comporApi } from './composicao/index.ts';
 
+instalarTratadoresDeFalha();
 const ambiente = carregarAmbiente(esquemaAmbienteApi);
 const servidor = comporApi(ambiente);
 

@@ -1,0 +1,16 @@
+export { abrirContexto, contextoAtual, executarComContexto } from '../contexto.ts';
+export type { ContextoDeExecucao } from '../contexto.ts';
+export { esquemaAmbienteObservabilidade } from './ambiente.ts';
+export type { AmbienteObservabilidade } from './ambiente.ts';
+export { criarLogger, definirLoggerPadrao, obterLoggerPadrao } from './logger.ts';
+export type { OpcoesLogger } from './logger.ts';
+export type { Logger } from 'pino';
+export { ehIdRastreioValido, gerarIdRastreio } from './id-rastreio.ts';
+export { iniciarObservabilidadeDoProcesso } from './iniciar-processo.ts';
+export { instalarTratadoresDeFalha } from './processo.ts';
+export { relatorDeErrosSentry } from './relator-de-erros-sentry.ts';
+export { registrarPasso, reportarErro } from './reportar-erro.ts';
+export { amostragemPadrao } from '../coleta.ts';
+export type { AmbienteApp } from '../coleta.ts';
+export { aguardarEnvio, iniciarSentryNode } from './sentry.ts';
+export type { OpcoesSentryNode } from './sentry.ts';

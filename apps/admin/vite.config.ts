@@ -1,7 +1,3 @@
-import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { criarConfiguracaoVite } from '@cardapio/config/vite';
 
-export default defineConfig({
-  plugins: [react()],
-  build: { sourcemap: true },
-});
+export default criarConfiguracaoVite('admin', new URL('./package.json', import.meta.url));

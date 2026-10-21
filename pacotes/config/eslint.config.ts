@@ -39,7 +39,7 @@ const politicasDeFronteira = [
     from: { element: { type: 'contratos' } },
     allow: { to: { module: { origin: 'external', source: 'zod' } } },
   },
-  permitir('observabilidade', ['dominio', 'config'], true),
+  permitir('observabilidade', ['dominio', 'aplicacao', 'config'], true),
   permitir(['ui', 'config'], [], true),
   permitir('app-servidor', ['aplicacao', 'contratos', 'observabilidade', 'config', 'composicao'], true),
   permitir(
@@ -48,7 +48,33 @@ const politicasDeFronteira = [
     true,
   ),
   permitir('app-web', ['contratos', 'ui', 'config'], true),
+  {
+    from: { element: { type: 'app-web' } },
+    allow: {
+      to: { element: { type: 'observabilidade' } },
+      dependency: { source: '@cardapio/observabilidade/web' },
+    },
+  },
   permitir('ferramentas', ['config'], true),
+  {
+    from: {
+      element: {
+        type: [
+          'dominio',
+          'aplicacao',
+          'infraestrutura',
+          'contratos',
+          'ui',
+          'app-servidor',
+          'composicao',
+          'app-web',
+          'ferramentas',
+        ],
+      },
+    },
+    disallow: { to: { module: { source: ['@sentry/*', 'pino'] } } },
+    message: 'Sentry e pino só entram pelo pacote observabilidade (docs/adr/0005-observabilidade.md).',
+  },
   {
     from: { file: { categories: 'teste' } },
     allow: { to: { module: { origin: ['external', 'core'], source: ['vitest', 'node:*'] } } },

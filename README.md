@@ -41,3 +41,10 @@ Os apps React rodam em desenvolvimento com `pnpm --filter @cardapio/cardapio dev
 | `pnpm auditoria`       | Vulnerabilidades altas e críticas                          |
 
 O `pnpm install` liga o hook de commit em `.githooks`, que roda o commitlint.
+
+## Observabilidade
+
+API e worker carregam o Sentry com `node --import` (`pnpm --filter @cardapio/api iniciar`).
+Sem `SENTRY_DSN_BACKEND`, os erros vão só para o log. Em local, `GET /depuracao/erro`
+provoca um erro de teste. Detalhes em [docs/adr/0005-observabilidade.md](docs/adr/0005-observabilidade.md)
+e alertas em [docs/runbooks/sentry-alertas.md](docs/runbooks/sentry-alertas.md).

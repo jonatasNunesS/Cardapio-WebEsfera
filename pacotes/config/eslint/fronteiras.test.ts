@@ -42,4 +42,48 @@ describe('fronteiras entre camadas', () => {
     );
     expect(violacoes).toHaveLength(1);
   });
+
+  it('aceita app React importando a entrada web da observabilidade', async () => {
+    const violacoes = await violacoesDeFronteira(
+      'apps/cardapio/src/fixture-fronteira.tsx',
+      "export { iniciarSentryWeb } from '@cardapio/observabilidade/web';\n",
+    );
+    expect(violacoes).toEqual([]);
+  });
+
+  it.each(['@cardapio/observabilidade/node', '@cardapio/observabilidade', '@cardapio/observabilidade/teste'])(
+    'recusa app React importando %s',
+    async (modulo) => {
+      const violacoes = await violacoesDeFronteira(
+        'apps/painel/src/fixture-fronteira.tsx',
+        `export * from '${modulo}';\n`,
+      );
+      expect(violacoes).toHaveLength(1);
+    },
+  );
+
+  it('aceita observabilidade importando aplicacao, como adaptador da porta RelatorDeErros', async () => {
+    const violacoes = await violacoesDeFronteira(
+      'pacotes/observabilidade/src/node/fixture-fronteira.ts',
+      "export type { RelatorDeErros } from '@cardapio/aplicacao';\n",
+    );
+    expect(violacoes).toEqual([]);
+  });
+
+  it('recusa aplicacao importando observabilidade', async () => {
+    const violacoes = await violacoesDeFronteira(
+      'pacotes/aplicacao/src/fixture-fronteira.ts',
+      "export * from '@cardapio/observabilidade/node';\n",
+    );
+    expect(violacoes).toHaveLength(1);
+  });
+
+  it.each([
+    ['apps/api/src/rotas/fixture-fronteira.ts', '@sentry/node'],
+    ['apps/worker/src/composicao/fixture-fronteira.ts', 'pino'],
+    ['apps/admin/src/fixture-fronteira.tsx', '@sentry/react'],
+  ])('recusa %s importando %s direto', async (arquivo, modulo) => {
+    const violacoes = await violacoesDeFronteira(arquivo, `export * from '${modulo}';\n`);
+    expect(violacoes).toHaveLength(1);
+  });
 });

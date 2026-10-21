@@ -6,6 +6,7 @@ saveExact: true
 
 allowBuilds:
   unrs-resolver: false
+  '@sentry/cli': false
 
 overrides:
   handlebars: 4.7.10
