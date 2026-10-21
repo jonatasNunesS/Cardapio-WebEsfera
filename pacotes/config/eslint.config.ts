@@ -118,6 +118,11 @@ export default defineConfig(
     files: ['**/*.tsx'],
     extends: [jsxA11y.configs.recommended, eslintReact.configs['recommended-type-checked']],
     rules: {
+      // Região de rolagem rotulada precisa ser focável para quem usa teclado: docs/adr/0007-design-system.md#lint-de-acessibilidade
+      'jsx-a11y-x/no-noninteractive-tabindex': [
+        'error',
+        { tags: [], roles: ['tabpanel', 'region'], allowExpressionValues: true },
+      ],
       'no-restricted-syntax': [
         'error',
         {

@@ -1,6 +1,7 @@
 .tela {
   display: grid;
   place-items: center;
+  box-sizing: border-box;
   min-height: 100dvh;
   padding: var(--espaco-5);
   background: var(--cor-fundo);
@@ -11,23 +12,28 @@
 .caixa {
   display: grid;
   gap: var(--espaco-4);
-  max-width: 28rem;
+  justify-items: center;
+  width: min(100%, 28rem);
   padding: var(--espaco-6);
-  border: 1px solid var(--cor-borda);
+  border: var(--borda-fina) solid var(--cor-borda);
   border-radius: var(--raio-3);
   background: var(--cor-superficie);
   text-align: center;
+}
+
+.icone {
+  color: var(--cor-perigo);
 }
 
 .titulo {
   margin: 0;
   font-family: var(--fonte-titulo);
   font-size: var(--tamanho-5);
+  line-height: var(--altura-linha-titulo);
 }
 
 .texto {
   margin: 0;
-  font-size: var(--tamanho-3);
 }
 
 .rastreio {
@@ -35,26 +41,4 @@
   color: var(--cor-texto-secundario);
   font-size: var(--tamanho-1);
   overflow-wrap: anywhere;
-}
-
-.botao {
-  min-height: var(--alvo-toque);
-  padding: var(--espaco-3) var(--espaco-5);
-  border: 0;
-  border-radius: var(--raio-total);
-  background: var(--cor-marca);
-  color: var(--cor-sobre-marca);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: filter var(--duracao);
-}
-
-.botao:hover {
-  filter: brightness(0.95);
-}
-
-.botao:focus-visible {
-  outline: 3px solid var(--cor-foco);
-  outline-offset: 2px;
 }

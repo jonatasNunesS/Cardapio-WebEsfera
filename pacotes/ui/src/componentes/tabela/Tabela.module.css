@@ -1,0 +1,60 @@
+.rolagem {
+  overflow-x: auto;
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-3);
+  background: var(--cor-superficie);
+}
+
+.rolagem:focus-visible {
+  outline: var(--foco-espessura) solid var(--cor-foco);
+  outline-offset: var(--foco-distancia);
+}
+
+.tabela {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+}
+
+.legenda {
+  padding: var(--espaco-3) var(--espaco-4);
+  font-weight: var(--peso-forte);
+  text-align: left;
+}
+
+.cabecalho {
+  padding: var(--espaco-3) var(--espaco-4);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-2);
+  font-weight: var(--peso-medio);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.celula {
+  padding: var(--espaco-3) var(--espaco-4);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+  font-weight: var(--peso-normal);
+  text-align: left;
+  vertical-align: middle;
+}
+
+th.celula {
+  font-weight: var(--peso-medio);
+}
+
+tr:last-child > .celula {
+  border-bottom: 0;
+}
+
+.numerica {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.mensagem {
+  padding: var(--espaco-5) var(--espaco-4);
+  color: var(--cor-texto-secundario);
+  text-align: center;
+}

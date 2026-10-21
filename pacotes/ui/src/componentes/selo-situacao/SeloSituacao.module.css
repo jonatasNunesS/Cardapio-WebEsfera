@@ -1,0 +1,10 @@
+.selo {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--espaco-1) var(--espaco-3);
+  border-radius: var(--raio-total);
+  font-size: var(--tamanho-2);
+  font-weight: var(--peso-forte);
+  line-height: var(--altura-linha-titulo);
+  white-space: nowrap;
+}

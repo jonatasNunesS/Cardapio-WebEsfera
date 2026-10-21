@@ -1,15 +1,15 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import axe from 'axe-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { TelaDeErro } from './TelaDeErro.tsx';
+import { TelaErro } from './TelaErro.tsx';
 
 const ID = '0190a1b2-0000-7000-8000-00000000abcd';
 
 afterEach(cleanup);
 
-describe('TelaDeErro', () => {
+describe('TelaErro', () => {
   it('mostra o título, o texto e o código de rastreio em um alerta', () => {
-    render(<TelaDeErro idRastreio={ID} aoTentarDeNovo={vi.fn()} />);
+    render(<TelaErro idRastreio={ID} aoTentarDeNovo={vi.fn()} />);
 
     const alerta = screen.getByRole('alert');
     expect(alerta).toHaveProperty('textContent', expect.stringContaining('Algo deu errado'));
@@ -20,7 +20,7 @@ describe('TelaDeErro', () => {
 
   it('chama a nova tentativa pelo botão', () => {
     const aoTentarDeNovo = vi.fn();
-    render(<TelaDeErro idRastreio={ID} aoTentarDeNovo={aoTentarDeNovo} />);
+    render(<TelaErro idRastreio={ID} aoTentarDeNovo={aoTentarDeNovo} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Tentar de novo' }));
 
@@ -28,7 +28,7 @@ describe('TelaDeErro', () => {
   });
 
   it('passa no axe', async () => {
-    const { container } = render(<TelaDeErro idRastreio={ID} aoTentarDeNovo={vi.fn()} />);
+    const { container } = render(<TelaErro idRastreio={ID} aoTentarDeNovo={vi.fn()} />);
 
     const resultado = await axe.run(container);
 

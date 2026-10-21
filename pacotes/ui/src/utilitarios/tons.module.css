@@ -1,0 +1,24 @@
+.informacao {
+  background: var(--cor-info-fundo);
+  color: var(--cor-info);
+}
+
+.sucesso {
+  background: var(--cor-sucesso-fundo);
+  color: var(--cor-sucesso);
+}
+
+.aviso {
+  background: var(--cor-aviso-fundo);
+  color: var(--cor-aviso);
+}
+
+.erro {
+  background: var(--cor-perigo-fundo);
+  color: var(--cor-perigo);
+}
+
+.neutro {
+  background: var(--cor-neutro-fundo);
+  color: var(--cor-texto-secundario);
+}

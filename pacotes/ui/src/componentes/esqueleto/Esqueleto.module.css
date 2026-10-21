@@ -1,0 +1,41 @@
+.esqueleto {
+  position: relative;
+}
+
+.blocos {
+  display: grid;
+  gap: var(--espaco-2);
+}
+
+.midia,
+.linha {
+  border-radius: var(--raio-1);
+  background: var(--cor-esqueleto);
+  animation: pulsar 1.4s ease-in-out infinite;
+}
+
+.midia {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--raio-2);
+}
+
+.linha {
+  height: 0.875rem;
+}
+
+.linha:last-child {
+  width: 60%;
+}
+
+@keyframes pulsar {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .midia,
+  .linha {
+    animation: none;
+  }
+}

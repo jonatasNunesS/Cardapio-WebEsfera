@@ -1,0 +1,45 @@
+.regiao {
+  position: fixed;
+  inset: auto var(--espaco-4) var(--espaco-4);
+  z-index: 10;
+  display: grid;
+  gap: var(--espaco-2);
+  justify-items: center;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  width: min(100%, 28rem);
+  padding: var(--espaco-1) var(--espaco-1) var(--espaco-1) var(--espaco-4);
+  border: var(--borda-fina) solid currentcolor;
+  border-radius: var(--raio-2);
+  box-shadow: var(--sombra);
+  pointer-events: auto;
+}
+
+.texto {
+  flex: 1;
+  margin: 0;
+  font-weight: var(--peso-medio);
+}
+
+.fechar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--alvo-toque);
+  height: var(--alvo-toque);
+  border: 0;
+  border-radius: var(--raio-1);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.fechar:focus-visible {
+  outline: var(--foco-espessura) solid var(--cor-foco);
+  outline-offset: calc(var(--foco-distancia) * -1);
+}
