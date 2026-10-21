@@ -1,0 +1,58 @@
+:root {
+  --cor-fundo: #f7f4f0;
+  --cor-superficie: #ffffff;
+  --cor-texto: #1f1a17;
+  --cor-texto-secundario: #5c524b;
+  --cor-borda: #e3dbd2;
+  --cor-borda-campo: #8c8079;
+  --cor-foco: #1849a9;
+  --cor-sucesso: #067647;
+  --cor-sucesso-fundo: #e2f1e7;
+  --cor-aviso: #b54708;
+  --cor-aviso-fundo: #fef0c7;
+  --cor-perigo: #b42318;
+  --cor-perigo-fundo: #fdecea;
+
+  --cor-marca: #b4441f;
+  --cor-sobre-marca: #ffffff;
+  --cor-marca-texto: #b4441f;
+
+  --fonte-titulo: 'Bricolage Grotesque', system-ui, sans-serif;
+  --fonte-texto: 'DM Sans', system-ui, sans-serif;
+  --tamanho-1: 0.75rem;
+  --tamanho-2: 0.875rem;
+  --tamanho-3: 1rem;
+  --tamanho-4: 1.25rem;
+  --tamanho-5: 1.5rem;
+  --tamanho-6: 2rem;
+
+  --espaco-1: 4px;
+  --espaco-2: 8px;
+  --espaco-3: 12px;
+  --espaco-4: 16px;
+  --espaco-5: 24px;
+  --espaco-6: 32px;
+  --espaco-7: 48px;
+  --raio-1: 8px;
+  --raio-2: 12px;
+  --raio-3: 14px;
+  --raio-total: 999px;
+  --alvo-toque: 44px;
+  --duracao: 200ms;
+}
+
+[data-tema='painel'] {
+  --cor-fundo: #f4f6f8;
+  --cor-texto: #303642;
+  --cor-texto-secundario: #5b6472;
+  --cor-marca: #00c2cb;
+  --cor-sobre-marca: #303642;
+  --fonte-titulo: 'Poppins', system-ui, sans-serif;
+  --fonte-texto: 'Open Sans', system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duracao: 0ms;
+  }
+}

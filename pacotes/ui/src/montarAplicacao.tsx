@@ -1,14 +1,16 @@
-import { StrictMode, type ComponentType } from 'react';
+import { StrictMode, type ComponentType, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
+import './tokens.css';
 
-export function montarAplicacao(Aplicacao: ComponentType, idRaiz = 'raiz'): void {
-  const raiz = document.getElementById(idRaiz);
+export type Envoltorio = (conteudo: ReactNode) => ReactNode;
+
+export function montarAplicacao(
+  Aplicacao: ComponentType,
+  envolver: Envoltorio = (conteudo) => conteudo,
+): void {
+  const raiz = document.getElementById('raiz');
   if (raiz === null) {
-    throw new Error(`Elemento #${idRaiz} ausente em index.html`);
+    throw new Error('Elemento #raiz ausente em index.html');
   }
-  createRoot(raiz).render(
-    <StrictMode>
-      <Aplicacao />
-    </StrictMode>,
-  );
+  createRoot(raiz).render(<StrictMode>{envolver(<Aplicacao />)}</StrictMode>);
 }
