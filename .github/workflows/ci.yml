@@ -22,6 +22,22 @@ jobs:
     name: Verificação
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18.6-alpine3.23
+        env:
+          POSTGRES_USER: cardapio
+          POSTGRES_PASSWORD: cardapio_local
+          POSTGRES_DB: cardapio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U cardapio -d cardapio"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      URL_BANCO_TESTE_ADMIN: postgres://cardapio:cardapio_local@127.0.0.1:5432/postgres
     steps:
       - name: Baixar o código
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -50,7 +66,7 @@ jobs:
       - name: Tipos
         run: pnpm tipos
 
-      - name: Testes
+      - name: Testes (com os de banco contra o PostgreSQL do serviço)
         run: pnpm testes
 
       - name: Build dos 5 apps
@@ -88,7 +104,7 @@ jobs:
         run: printf '%s\n' "$TITULO_PR" | pnpm exec commitlint --verbose
 
   compose:
-    name: Docker Compose e /saude
+    name: Docker Compose, migrações e /saude
     needs: verificacao
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -109,6 +125,18 @@ jobs:
           resposta="$(curl --silent --show-error --fail http://127.0.0.1:3000/saude)"
           echo "$resposta"
           test "$resposta" = '{"situacao":"ok"}'
+
+      - name: GET /saude/pronto (API conectada ao banco migrado)
+        run: |
+          resposta="$(curl --silent --show-error --fail http://127.0.0.1:3000/saude/pronto)"
+          echo "$resposta"
+          test "$resposta" = '{"situacao":"pronto"}'
+
+      - name: Migrações aplicadas e idempotentes
+        run: |
+          docker compose exec -T postgres psql -U cardapio -d cardapio -At \
+            -c 'SELECT count(*) FROM migracoes.aplicadas' | grep -qx "$(ls banco/migracoes/*.sql | wc -l)"
+          docker compose run --rm migracoes
 
       - name: Logs em caso de falha
         if: failure()

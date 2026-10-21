@@ -7,6 +7,7 @@ export interface ContextoDeExecucao {
   readonly tarefa?: string;
   readonly restauranteId?: string;
   readonly casoDeUso?: string;
+  readonly escopo?: 'sistema';
 }
 
 const armazenamento = new AsyncLocalStorage<ContextoDeExecucao>();

@@ -7,12 +7,17 @@ services:
       POSTGRES_USER: cardapio
       POSTGRES_PASSWORD: cardapio_local
       POSTGRES_DB: cardapio
+      SENHA_BANCO_MIGRACAO: ${SENHA_BANCO_MIGRACAO:-migracao_local}
+      SENHA_BANCO_API: ${SENHA_BANCO_API:-api_local}
+      SENHA_BANCO_WORKER: ${SENHA_BANCO_WORKER:-worker_local}
     ports:
       - '127.0.0.1:5432:5432'
     volumes:
       - dados-postgres:/var/lib/postgresql
+      - ./banco:/banco:ro
+      - ./banco/inicializacao:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U cardapio -d cardapio']
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U cardapio -d cardapio']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -30,6 +35,15 @@ services:
       timeout: 3s
       retries: 10
 
+  migracoes:
+    build:
+      context: .
+      target: migracoes
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   api:
     build:
       context: .
@@ -41,12 +55,12 @@ services:
     ports:
       - '127.0.0.1:${PORTA_API:-3000}:${PORTA_API:-3000}'
     depends_on:
-      postgres:
-        condition: service_healthy
+      migracoes:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:$${PORTA_API}/saude || exit 1']
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:$${PORTA_API}/saude/pronto || exit 1']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -60,8 +74,8 @@ services:
     env_file: .env
     init: true
     depends_on:
-      postgres:
-        condition: service_healthy
+      migracoes:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
 

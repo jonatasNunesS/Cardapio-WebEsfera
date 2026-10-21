@@ -7,6 +7,10 @@ COPY . .
 RUN pnpm install --frozen-lockfile \
   && pnpm --filter @cardapio/api --filter @cardapio/worker run build
 
+FROM base AS migracoes
+USER node
+CMD ["node", "scripts/banco-migrar.ts"]
+
 FROM base AS api
 USER node
 CMD ["node", "--import", "./apps/api/dist/instrumentacao.js", "apps/api/dist/principal.js"]

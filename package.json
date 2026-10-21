@@ -10,6 +10,7 @@
     "prepare": "git config core.hooksPath .githooks || true",
     "verificar": "pnpm verificar:emoji && pnpm lint && pnpm tipos && pnpm testes",
     "verificar:emoji": "node scripts/verificar-emoji.ts",
+    "banco:migrar": "node --env-file-if-exists=.env scripts/banco-migrar.ts",
     "lint": "eslint . --max-warnings 0 && prettier --check .",
     "formatar": "prettier --write .",
     "tipos": "tsc --noEmit -p . && pnpm -r --workspace-concurrency=1 run tipos",

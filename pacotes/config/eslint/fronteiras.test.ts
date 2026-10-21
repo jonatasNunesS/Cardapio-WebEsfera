@@ -86,4 +86,39 @@ describe('fronteiras entre camadas', () => {
     const violacoes = await violacoesDeFronteira(arquivo, `export * from '${modulo}';\n`);
     expect(violacoes).toHaveLength(1);
   });
+
+  it.each([
+    ['pacotes/infraestrutura/src/banco/fixture-fronteira.ts', 'pg'],
+    ['pacotes/infraestrutura/src/banco/mesas/fixture-fronteira.ts', 'drizzle-orm/pg-core'],
+  ])('aceita %s importando %s', async (arquivo, modulo) => {
+    const violacoes = await violacoesDeFronteira(arquivo, `export * from '${modulo}';\n`);
+    expect(violacoes).toEqual([]);
+  });
+
+  it.each([
+    ['pacotes/infraestrutura/src/redis/fixture-fronteira.ts', 'pg'],
+    ['pacotes/infraestrutura/src/fixture-fronteira.ts', 'drizzle-orm'],
+    ['apps/api/src/composicao/fixture-fronteira.ts', 'pg'],
+    ['apps/worker/src/composicao/fixture-fronteira.ts', 'drizzle-orm/node-postgres'],
+    ['scripts/fixture-fronteira.ts', 'pg'],
+  ])('recusa %s importando %s direto', async (arquivo, modulo) => {
+    const violacoes = await violacoesDeFronteira(arquivo, `export * from '${modulo}';\n`);
+    expect(violacoes).toHaveLength(1);
+  });
+
+  it('aceita teste do banco importando a observabilidade', async () => {
+    const violacoes = await violacoesDeFronteira(
+      'pacotes/infraestrutura/src/banco/testes/fixture-fronteira.test.ts',
+      "export * from '@cardapio/observabilidade/teste';\n",
+    );
+    expect(violacoes).toEqual([]);
+  });
+
+  it('recusa codigo do banco importando a observabilidade', async () => {
+    const violacoes = await violacoesDeFronteira(
+      'pacotes/infraestrutura/src/banco/fixture-fronteira.ts',
+      "export * from '@cardapio/observabilidade/node';\n",
+    );
+    expect(violacoes).toHaveLength(1);
+  });
 });

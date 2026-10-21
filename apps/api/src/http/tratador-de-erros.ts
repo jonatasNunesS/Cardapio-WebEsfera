@@ -1,4 +1,4 @@
-import { CODIGOS, type RelatorDeErros } from '@cardapio/aplicacao';
+import { CODIGOS, ErroDependenciaExterna, type RelatorDeErros } from '@cardapio/aplicacao';
 import { executarComContexto } from '@cardapio/observabilidade/node';
 import type { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { ZodError } from 'zod';
@@ -47,6 +47,15 @@ export function registrarTratadorDeErros(servidor: FastifyInstance, relator: Rel
       });
     }
     const idRastreio = executarComContexto(contextoDaRequisicao(requisicao), () => relator.reportar(erro));
+    if (erro instanceof ErroDependenciaExterna) {
+      return enviarProblema(resposta, {
+        status: 503,
+        codigo: CODIGOS.HTTP_DEPENDENCIA_INDISPONIVEL,
+        titulo: 'Serviço indisponível',
+        detalhe: 'Um serviço de que dependemos não respondeu. Tente de novo em instantes.',
+        idRastreio,
+      });
+    }
     return enviarProblema(resposta, {
       status: 500,
       codigo: CODIGOS.HTTP_REQUISICAO_FALHOU,

@@ -8,7 +8,12 @@ const PRINCIPAL = fileURLToPath(new URL('./principal.ts', import.meta.url));
 describe('worker', () => {
   it('sobe e encerra com código 0 ao receber SIGTERM', async () => {
     const processo = fork(PRINCIPAL, {
-      env: { NODE_ENV: 'test', APP_ENV: 'local', URL_REDIS: 'redis://localhost:6379' },
+      env: {
+        NODE_ENV: 'test',
+        APP_ENV: 'local',
+        URL_REDIS: 'redis://localhost:6379',
+        URL_BANCO_WORKER: 'postgres://cardapio_worker:x@127.0.0.1:1/cardapio',
+      },
       stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
     });
 

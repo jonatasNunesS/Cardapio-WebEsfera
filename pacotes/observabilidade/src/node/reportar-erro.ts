@@ -19,6 +19,7 @@ function montarTags(
     restaurante_id: descricao.restauranteId,
     rota: contexto?.rota,
     tarefa: contexto?.tarefa,
+    contexto: contexto?.escopo,
     codigo: descricao.codigo,
     id_rastreio: idRastreio,
   };

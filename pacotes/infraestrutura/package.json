@@ -8,5 +8,17 @@
   },
   "scripts": {
     "tipos": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@cardapio/aplicacao": "workspace:*",
+    "@cardapio/config": "workspace:*",
+    "@cardapio/dominio": "workspace:*",
+    "drizzle-orm": "0.45.4",
+    "pg": "8.23.1",
+    "uuid": "14.0.3"
+  },
+  "devDependencies": {
+    "@cardapio/observabilidade": "workspace:*",
+    "@types/pg": "8.23.1"
   }
 }

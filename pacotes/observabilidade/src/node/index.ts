@@ -8,6 +8,7 @@ export type { Logger } from 'pino';
 export { ehIdRastreioValido, gerarIdRastreio } from './id-rastreio.ts';
 export { iniciarObservabilidadeDoProcesso } from './iniciar-processo.ts';
 export { instalarTratadoresDeFalha } from './processo.ts';
+export { propagadorDeContexto } from './propagador-de-contexto.ts';
 export { relatorDeErrosSentry } from './relator-de-erros-sentry.ts';
 export { registrarPasso, reportarErro } from './reportar-erro.ts';
 export { amostragemPadrao } from '../coleta.ts';
