@@ -97,7 +97,7 @@ const politicasDeFronteira = [
 ];
 
 export default defineConfig(
-  globalIgnores(['**/node_modules/', '**/dist/', '**/coverage/', 'pnpm-lock.yaml']),
+  globalIgnores(['**/node_modules/', '**/dist/', '**/coverage/', '**/storybook-static/', 'pnpm-lock.yaml']),
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,

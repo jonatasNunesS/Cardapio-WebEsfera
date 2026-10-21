@@ -1,6 +1,10 @@
+import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 const ignorados = ['**/node_modules/**', '**/dist/**'];
+
+const caminhoDoChromium = process.env.CAMINHO_CHROMIUM;
 
 export default defineConfig({
   test: {
@@ -35,6 +39,26 @@ export default defineConfig({
           include: ['{apps,pacotes}/**/*.test.tsx'],
           exclude: ignorados,
           environment: 'jsdom',
+        },
+      },
+      {
+        extends: true,
+        plugins: [
+          storybookTest({
+            configDir: 'pacotes/ui/.storybook',
+            storybookScript: 'pnpm storybook --ci',
+          }),
+        ],
+        test: {
+          name: 'storybook',
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright(
+              caminhoDoChromium === undefined ? {} : { launchOptions: { executablePath: caminhoDoChromium } },
+            ),
+            instances: [{ browser: 'chromium' }],
+          },
         },
       },
     ],

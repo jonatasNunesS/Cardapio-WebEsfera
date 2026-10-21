@@ -2,3 +2,6 @@ pnpm-lock.yaml
 docs/plano.md
 dist
 coverage
+storybook-static
+test-results
+playwright-report
