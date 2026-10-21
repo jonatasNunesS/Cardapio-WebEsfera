@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERSAO_GITLEAKS: 8.30.1
+  SHA256_GITLEAKS: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+
+jobs:
+  verificacao:
+    name: Verificação
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Instalar Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Instalar dependências (lockfile congelado)
+        run: pnpm install --frozen-lockfile
+
+      - name: Verificar emoji
+        run: pnpm verificar:emoji
+
+      - name: Lint e formatação
+        run: pnpm lint
+
+      - name: Tipos
+        run: pnpm tipos
+
+      - name: Testes
+        run: pnpm testes
+
+      - name: Build dos 5 apps
+        run: pnpm build
+
+      - name: Dependências circulares (madge)
+        run: pnpm ciclos
+
+      - name: Duplicação (jscpd, limite de 3%)
+        run: pnpm duplicacao
+
+      - name: Segredos (gitleaks pelo binário)
+        run: |
+          arquivo="gitleaks_${VERSAO_GITLEAKS}_linux_x64.tar.gz"
+          curl -sSfL -o "$RUNNER_TEMP/$arquivo" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${VERSAO_GITLEAKS}/${arquivo}"
+          echo "${SHA256_GITLEAKS}  $RUNNER_TEMP/$arquivo" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/$arquivo" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" git --redact --no-banner --exit-code 1 .
+
+      - name: Auditoria de dependências (alta e crítica)
+        run: pnpm auditoria
+
+      - name: Commitlint dos commits do PR
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+
+      - name: Commitlint do título do PR
+        if: github.event_name == 'pull_request'
+        env:
+          TITULO_PR: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$TITULO_PR" | pnpm exec commitlint --verbose
+
+  compose:
+    name: Docker Compose e /saude
+    needs: verificacao
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Criar .env a partir do modelo
+        run: cp .env.exemplo .env
+
+      - name: Subir os serviços
+        run: docker compose up --detach --build --wait --wait-timeout 300
+
+      - name: GET /saude
+        run: |
+          resposta="$(curl --silent --show-error --fail http://127.0.0.1:3000/saude)"
+          echo "$resposta"
+          test "$resposta" = '{"situacao":"ok"}'
+
+      - name: Logs em caso de falha
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Derrubar os serviços
+        if: always()
+        run: docker compose down --volumes
