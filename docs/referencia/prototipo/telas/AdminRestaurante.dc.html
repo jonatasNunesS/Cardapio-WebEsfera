@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Admin: detalhe do restaurante</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#303642}a:hover{color:#1C2028}
+a:focus-visible,button:focus-visible,input:focus,select:focus,textarea:focus{outline:3px solid #1849A9;outline-offset:2px}
+th{font-size:13px;font-weight:700;color:#5B6472;text-align:left;padding:10px 12px;border-bottom:1px solid #DCE1E7;white-space:nowrap}
+td{font-size:14px;padding:12px;border-bottom:1px solid #EEF1F4;white-space:nowrap}
+input[type=text],select,textarea{font-family:inherit;font-size:15px;color:#303642;border:1px solid #7A8494;border-radius:10px;padding:10px 12px;background:#FFFFFF;box-sizing:border-box;width:100%}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F4F6F8;color:#303642;font-family:'Open Sans',system-ui,sans-serif;display:flex;flex-wrap:wrap">
+
+  <nav aria-label="Administração" style="flex:1 1 220px;max-width:100%;background:#1C2028;color:#FFFFFF;padding:24px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 8px 6px">
+      <span aria-hidden="true" style="width:32px;height:32px;border-radius:999px;background:#00C2CB"></span>
+      <span style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px">WebEsfera</span>
+    </div>
+    <span style="margin:0 8px 18px;align-self:flex-start;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1C2028;background:#FDB022;padding:3px 8px;border-radius:6px">Admin da plataforma</span>
+    <a href="AdminVisao.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Visão geral</a>
+    <a href="AdminRestaurantes.dc.html" aria-current="page" style="color:#303642;background:#00C2CB;text-decoration:none;padding:12px;border-radius:10px;font-size:15px;font-weight:700">Restaurantes</a>
+    <a href="AdminCobrancas.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Cobranças</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Planos</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Suporte e auditoria</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Saúde da plataforma</a>
+    <span style="margin-top:auto;padding:12px 8px 0;font-size:13px;color:#AEB6C2">Jonatas · login com 2 fatores</span>
+  </nav>
+
+  <div style="flex:999 1 560px;min-width:0;padding:28px 24px 48px;box-sizing:border-box">
+    <div style="max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
+
+      <a href="AdminRestaurantes.dc.html" style="font-size:14px;font-weight:600;text-decoration:none;align-self:flex-start;padding:6px 0">← Restaurantes</a>
+
+      <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:16px">
+        <div style="display:flex;gap:14px;align-items:center">
+          <span aria-hidden="true" style="width:56px;height:56px;border-radius:14px;background:#1F4E8C;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:20px">ZP</span>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <h1 style="margin:0;font-family:'Poppins',sans-serif;font-size:26px;font-weight:600">Bar do Zé Pescador</h1>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px;color:#5B6472">
+              <span role="status" style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;color:{{corSituacao}};background:{{fundoSituacao}}">{{situacao}}</span>
+              <span>Plano Pro · cliente desde março de 2026 · Contagem</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button type="button" onClick="{{abrirPagamento}}" style="height:44px;padding:0 16px;border-radius:10px;border:0;background:#00C2CB;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Registrar pagamento</button>
+          <button type="button" onClick="{{reenviar}}" style="height:44px;padding:0 16px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Reenviar cobrança</button>
+          <button type="button" onClick="{{abrirSuporte}}" style="height:44px;padding:0 16px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Acessar como suporte</button>
+        </div>
+      </header>
+
+      <sc-if value="{{emAtraso}}" hint-placeholder-val="{{ true }}">
+        <div role="alert" style="padding:14px 16px;border-radius:14px;background:#FDECEA;color:#7A271A;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+          <span style="font-size:14px;line-height:1.5"><strong>Mensalidade de outubro vencida há 8 dias.</strong> Regra: aviso no dia 1, pedidos pela mesa suspensos no dia 15. O cardápio nunca sai do ar.</span>
+          <button type="button" onClick="{{darCarencia}}" style="height:40px;padding:0 14px;border-radius:10px;border:1.5px solid #7A271A;background:transparent;color:#7A271A;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer">Dar mais 7 dias</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{formPagamento}}" hint-placeholder-val="{{ false }}">
+        <form aria-labelledby="t-pag" style="background:#FFFFFF;border:2px solid #00C2CB;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+          <h2 id="t-pag" style="margin:0;font-family:'Poppins',sans-serif;font-size:18px;font-weight:600">Registrar pagamento recebido fora do sistema</h2>
+          <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="valor" style="font-weight:600;font-size:14px">Valor</label>
+              <input id="valor" type="text" value="R$ 149,00" inputmode="decimal">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="forma" style="font-weight:600;font-size:14px">Forma</label>
+              <select id="forma"><option>Pix</option><option>Boleto</option><option>Transferência</option><option>Dinheiro</option></select>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="ref" style="font-weight:600;font-size:14px">Referência</label>
+              <select id="ref"><option>Outubro de 2026</option><option>Novembro de 2026</option></select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button type="button" onClick="{{fecharPagamento}}" style="height:44px;padding:0 16px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer">Cancelar</button>
+            <button type="button" onClick="{{confirmarPagamento}}" style="height:44px;padding:0 18px;border-radius:10px;border:0;background:#303642;color:#FFFFFF;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer">Confirmar pagamento</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{formSuporte}}" hint-placeholder-val="{{ false }}">
+        <form aria-labelledby="t-sup" style="background:#FFFFFF;border:2px solid #FDB022;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <h2 id="t-sup" style="margin:0;font-family:'Poppins',sans-serif;font-size:18px;font-weight:600">Acesso de suporte ao painel do restaurante</h2>
+          <p style="margin:0;font-size:14px;color:#5B6472;line-height:1.5">Você verá o painel como o dono vê, por 30 minutos. O acesso, o motivo e cada alteração ficam no registro de auditoria, e o dono recebe um aviso.</p>
+          <label for="motivo" style="font-weight:600;font-size:14px">Motivo (obrigatório)</label>
+          <textarea id="motivo" rows="2" value="{{motivo}}" onChange="{{digitarMotivo}}" placeholder="Ex.: dono pediu ajuda para trocar o vídeo do prato"></textarea>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button type="button" onClick="{{fecharSuporte}}" style="height:44px;padding:0 16px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer">Cancelar</button>
+            <button type="button" onClick="{{entrarSuporte}}" disabled="{{semMotivo}}" style="height:44px;padding:0 18px;border-radius:10px;border:0;background:{{fundoEntrar}};color:{{textoEntrar}};font-family:inherit;font-weight:700;font-size:14px;cursor:pointer">Entrar como suporte</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start">
+        <section aria-labelledby="t-dados" style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <h2 id="t-dados" style="margin:0;font-family:'Poppins',sans-serif;font-size:17px;font-weight:600">Dados do cliente</h2>
+          <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px"><span style="color:#5B6472">Responsável</span><span>José Almeida</span></div>
+          <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px"><span style="color:#5B6472">CNPJ</span><span>**.***.***/0001-**</span></div>
+          <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px"><span style="color:#5B6472">WhatsApp</span><span>(31) *****-4410</span></div>
+          <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px"><span style="color:#5B6472">E-mail</span><span>jo***@gmail.com</span></div>
+          <button type="button" style="align-self:flex-start;height:40px;padding:0 12px;border-radius:10px;border:0;background:#EEF1F4;color:#303642;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer">Mostrar dados completos (fica registrado)</button>
+        </section>
+
+        <section aria-labelledby="t-uso" style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px">
+          <h2 id="t-uso" style="margin:0;font-family:'Poppins',sans-serif;font-size:17px;font-weight:600">Plano e uso</h2>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:14px">
+            <div style="display:flex;justify-content:space-between"><span>Mesas ativas</span><strong>22 de 30</strong></div>
+            <div aria-hidden="true" style="height:8px;border-radius:999px;background:#EEF1F4"><div style="width:73%;height:8px;border-radius:999px;background:#00A3AB"></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span>Pratos publicados</span><strong>48 · 31 com vídeo</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span>Sessões de mesa (30 dias)</span><strong>2.140</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span>Pedidos pela mesa (30 dias)</span><strong>610</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span>Link de avaliação do Google</span><strong style="color:#067647">Configurado</strong></div>
+          <button type="button" style="align-self:flex-start;height:40px;padding:0 12px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer">Trocar plano</button>
+        </section>
+      </div>
+
+      <section aria-labelledby="t-mesas" style="background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px">
+          <h2 id="t-mesas" style="margin:0;font-family:'Poppins',sans-serif;font-size:17px;font-weight:600">Mesas e links</h2>
+          <span style="font-size:13px;color:#5B6472">Endereço: [seu-dominio]/bar-do-ze-pescador · só a WebEsfera troca</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;min-width:720px">
+            <thead><tr><th scope="col">Mesa</th><th scope="col">Link</th><th scope="col">Situação</th><th scope="col">Código gerado em</th><th scope="col"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Ação</span></th></tr></thead>
+            <tbody>
+              <sc-for list="{{mesas}}" as="m" hint-placeholder-count="4">
+                <tr>
+                  <td><strong>Mesa {{m.numero}}</strong><br><span style="font-size:13px;color:#5B6472">{{m.area}}</span></td>
+                  <td><code style="font-size:12.5px;white-space:normal;overflow-wrap:anywhere">{{m.link}}</code></td>
+                  <td><span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;color:{{m.corTexto}};background:{{m.corFundo}}">{{m.situacao}}</span></td>
+                  <td>{{m.geradoEm}}</td>
+                  <td><button type="button" onClick="{{m.copiar}}" aria-label="{{m.rotulo}}" style="height:36px;padding:0 12px;border-radius:8px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer">{{m.textoCopiar}}</button></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <span style="font-size:13px;color:#5B6472">Mostrando 4 de 22 mesas. Só leitura: mesas e códigos são criados e trocados pelo dono no painel dele.</span>
+      </section>
+
+      <section aria-labelledby="t-cob" style="background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px">
+        <h2 id="t-cob" style="margin:0 0 4px;font-family:'Poppins',sans-serif;font-size:17px;font-weight:600">Histórico de cobranças</h2>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;min-width:620px">
+            <thead><tr><th scope="col">Referência</th><th scope="col">Vencimento</th><th scope="col">Valor</th><th scope="col">Situação</th><th scope="col">Forma</th></tr></thead>
+            <tbody>
+              <tr><td>Outubro de 2026</td><td>12/10</td><td>R$ 149,00</td><td><span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;color:{{corSituacao}};background:{{fundoSituacao}}">{{situacaoOutubro}}</span></td><td>{{formaOutubro}}</td></tr>
+              <tr><td>Setembro de 2026</td><td>12/09</td><td>R$ 149,00</td><td><span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;color:#054F31;background:#E2F1E7">Paga em 14/09</span></td><td>Pix</td></tr>
+              <tr><td>Agosto de 2026</td><td>12/08</td><td>R$ 149,00</td><td><span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;color:#054F31;background:#E2F1E7">Paga em 12/08</span></td><td>Pix</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="t-aud" style="background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:4px">
+        <h2 id="t-aud" style="margin:0 0 6px;font-family:'Poppins',sans-serif;font-size:17px;font-weight:600">Registro de auditoria</h2>
+        <ul aria-live="polite" style="list-style:none;margin:0;padding:0">
+          <sc-for list="{{auditoria}}" as="a" hint-placeholder-count="3">
+            <li style="display:flex;gap:12px;padding:10px 0;border-top:1px solid #EEF1F4;font-size:14px">
+              <span style="color:#5B6472;min-width:110px">{{a.quando}}</span>
+              <span><strong>{{a.quem}}</strong> {{a.oque}}</span>
+            </li>
+          </sc-for>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      situacao: 'atraso',
+      painel: null,
+      copiada: null,
+      motivo: '',
+      auditoria: [
+        { quando: '15/10 09:12', quem: 'Sistema', oque: 'enviou lembrete de cobrança por e-mail e WhatsApp' },
+        { quando: '12/10 08:00', quem: 'Sistema', oque: 'gerou a cobrança de outubro (Pix)' },
+        { quando: '03/10 21:40', quem: 'José (dono)', oque: 'alterou o preço de 3 pratos' },
+      ],
+    };
+  }
+  registrar(oque) {
+    const item = { quando: 'Agora', quem: 'Jonatas (admin)', oque };
+    this.setState({ auditoria: [item, ...this.state.auditoria] });
+  }
+  renderVals() {
+    const s = this.state;
+    const sit = {
+      atraso: ['Em atraso há 8 dias', '#7A271A', '#FDECEA', 'Vencida', '-'],
+      carencia: ['Carência até 27/10', '#7A2E0E', '#FEF0C7', 'Vencida · carência', '-'],
+      ativo: ['Ativo', '#054F31', '#E2F1E7', 'Paga hoje', 'Pix (manual)'],
+    }[s.situacao];
+    const temMotivo = s.motivo.trim().length >= 10;
+    const mesas = [
+      { numero: 1, area: 'Salão', codigo: 'Hq7mTz2KpRw9Nc4XbLs8Ve', ativa: true, geradoEm: '14/03/2026' },
+      { numero: 2, area: 'Salão', codigo: 'Wd3sYk8PqMx2Rf6TnZc9Ga', ativa: true, geradoEm: '14/03/2026' },
+      { numero: 9, area: 'Varanda', codigo: 'Lp5vBn2XtQe8Kw4HyRm7Sd', ativa: true, geradoEm: '02/09/2026' },
+      { numero: 14, area: 'Varanda', codigo: 'Zr8cMf3WkTa6Pq2NxVb5Jh', ativa: false, geradoEm: '14/03/2026' },
+    ].map((m) => {
+      const link = '[seu-dominio]/bar-do-ze-pescador/mesa/' + m.numero + '?c=' + m.codigo;
+      return {
+        ...m,
+        link,
+        situacao: m.ativa ? 'Ativa' : 'Desativada',
+        corTexto: m.ativa ? '#054F31' : '#3A4150',
+        corFundo: m.ativa ? '#E2F1E7' : '#EEF1F4',
+        textoCopiar: s.copiada === m.numero ? 'Copiado' : 'Copiar',
+        rotulo: 'Copiar link da mesa ' + m.numero,
+        copiar: () => {
+          try {
+            if (navigator.clipboard) navigator.clipboard.writeText('https://' + link.replace('[seu-dominio]', 'seu-dominio.com.br'));
+          } catch (e) {
+            this.registrar('não conseguiu copiar o link da mesa ' + m.numero);
+          }
+          this.setState({ copiada: m.numero });
+        },
+      };
+    });
+    return {
+      situacao: sit[0], corSituacao: sit[1], fundoSituacao: sit[2],
+      situacaoOutubro: sit[3], formaOutubro: sit[4],
+      emAtraso: s.situacao !== 'ativo',
+      formPagamento: s.painel === 'pagamento',
+      formSuporte: s.painel === 'suporte',
+      motivo: s.motivo,
+      semMotivo: !temMotivo,
+      fundoEntrar: temMotivo ? '#303642' : '#C9CED6',
+      textoEntrar: temMotivo ? '#FFFFFF' : '#3A4150',
+      auditoria: s.auditoria,
+      mesas,
+      abrirPagamento: () => this.setState({ painel: 'pagamento' }),
+      fecharPagamento: () => this.setState({ painel: null }),
+      confirmarPagamento: () => {
+        this.setState({ situacao: 'ativo', painel: null });
+        this.registrar('registrou pagamento manual de R$ 149,00 (Pix) referente a outubro');
+      },
+      reenviar: () => this.registrar('reenviou a cobrança de outubro por WhatsApp'),
+      darCarencia: () => {
+        this.setState({ situacao: 'carencia' });
+        this.registrar('deu 7 dias de carência até 27/10');
+      },
+      abrirSuporte: () => this.setState({ painel: 'suporte' }),
+      fecharSuporte: () => this.setState({ painel: null, motivo: '' }),
+      digitarMotivo: (e) => this.setState({ motivo: e.target.value }),
+      entrarSuporte: () => {
+        if (!temMotivo) return;
+        this.registrar('entrou como suporte por 30 min. Motivo: ' + s.motivo.trim());
+        this.setState({ painel: null, motivo: '' });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

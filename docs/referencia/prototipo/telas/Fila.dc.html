@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Fila do garçom</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#303642}a:hover{color:#1C2028}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#F4F6F8;color:#303642;font-family:'Open Sans',system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden">
+
+  <header style="padding:18px 20px 14px;background:#303642;color:#FFFFFF;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <h1 style="margin:0;font-family:'Poppins',sans-serif;font-size:20px;font-weight:600">Fila ao vivo</h1>
+        <span style="font-size:13px;color:#D3D8DF">Brasa &amp; Trigo · Turno do jantar</span>
+      </div>
+      <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#7BE3B0">
+        <span aria-hidden="true" style="width:8px;height:8px;border-radius:999px;background:#47CD89"></span>
+        Ao vivo
+      </span>
+    </div>
+    <div role="tablist" style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:8px">
+      <sc-for list="{{abas}}" as="aba" hint-placeholder-count="2">
+        <sc-if value="{{aba.ativa}}" hint-placeholder-val="{{ false }}">
+          <button type="button" role="tab" aria-selected="true" onClick="{{aba.escolher}}" style="height:44px;border-radius:10px;border:0;background:#00C2CB;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">{{aba.nome}}</button>
+        </sc-if>
+        <sc-if value="{{aba.inativa}}" hint-placeholder-val="{{ true }}">
+          <button type="button" role="tab" aria-selected="false" onClick="{{aba.escolher}}" style="height:44px;border-radius:10px;border:1px solid #6B7380;background:transparent;color:#FFFFFF;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">{{aba.nome}}</button>
+        </sc-if>
+      </sc-for>
+    </div>
+  </header>
+
+  <main style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+    <sc-for list="{{lista}}" as="c" hint-placeholder-count="3">
+      <article style="background:#FFFFFF;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;border:1px solid #DCE1E7">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <span style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;line-height:1">Mesa {{c.mesa}}</span>
+            <span style="font-size:15px;font-weight:600">{{c.tipo}}</span>
+            <span style="font-size:13px;color:#5B6472">{{c.detalhe}}</span>
+          </div>
+          <sc-if value="{{c.atrasado}}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12px;font-weight:700;color:#B42318;background:#FDECEA;padding:4px 8px;border-radius:999px">Atrasado · {{c.tempo}}</span>
+          </sc-if>
+          <sc-if value="{{c.noPrazo}}" hint-placeholder-val="{{ true }}">
+            <span style="font-size:12px;font-weight:700;color:#303642;background:#E6F9FA;padding:4px 8px;border-radius:999px">{{c.tempo}}</span>
+          </sc-if>
+        </div>
+        <sc-if value="{{c.livre}}" hint-placeholder-val="{{ true }}">
+          <button type="button" onClick="{{c.assumir}}" style="height:48px;border-radius:12px;border:0;background:#00C2CB;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;cursor:pointer">Assumir</button>
+        </sc-if>
+        <sc-if value="{{c.meu}}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:8px">
+            <span style="flex:1;height:48px;border-radius:12px;background:#E2F1E7;color:#067647;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">Você assumiu</span>
+            <button type="button" onClick="{{c.concluir}}" style="flex:1;height:48px;border-radius:12px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Concluir</button>
+          </div>
+        </sc-if>
+      </article>
+    </sc-for>
+    <sc-if value="{{vazio}}" hint-placeholder-val="{{ false }}">
+      <p style="margin:40px 0;text-align:center;color:#5B6472;font-size:15px">Nenhum chamado agora.</p>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      aba: 'chamados',
+      chamados: [
+        { id: 'c1', mesa: 7, tipo: 'Pedir a conta', detalhe: '4 pessoas · R$ 286,00', tempo: 'há 6 min', atrasado: true, estado: 'livre' },
+        { id: 'c2', mesa: 12, tipo: 'Chamar garçom', detalhe: 'Sessão aberta há 40 min', tempo: 'agora', atrasado: false, estado: 'livre' },
+        { id: 'c3', mesa: 3, tipo: 'Chamar garçom', detalhe: 'Sessão aberta há 1 h 10 min', tempo: 'há 1 min', atrasado: false, estado: 'livre' },
+      ],
+      pedidos: [
+        { id: 'p1', mesa: 12, tipo: 'Pedido #42', detalhe: 'Costela na brasa, Pão de fermentação natural', tempo: 'agora', atrasado: false, estado: 'livre' },
+        { id: 'p2', mesa: 5, tipo: 'Pedido #41', detalhe: '3 itens · em preparo', tempo: 'há 12 min', atrasado: false, estado: 'livre' },
+      ],
+    };
+  }
+  mudar(id, estado) {
+    const aba = this.state.aba;
+    const lista = this.state[aba]
+      .map((c) => (c.id === id ? { ...c, estado } : c))
+      .filter((c) => c.estado !== 'feito');
+    this.setState({ [aba]: lista });
+  }
+  renderVals() {
+    const aba = this.state.aba;
+    const abas = [
+      { id: 'chamados', nome: 'Chamados (' + this.state.chamados.length + ')' },
+      { id: 'pedidos', nome: 'Pedidos (' + this.state.pedidos.length + ')' },
+    ].map((a) => ({ ...a, ativa: a.id === aba, inativa: a.id !== aba, escolher: () => this.setState({ aba: a.id }) }));
+    const lista = this.state[aba].map((c) => ({
+      ...c,
+      noPrazo: !c.atrasado,
+      livre: c.estado === 'livre',
+      meu: c.estado === 'meu',
+      assumir: () => this.mudar(c.id, 'meu'),
+      concluir: () => this.mudar(c.id, 'feito'),
+    }));
+    return { abas, lista, vazio: lista.length === 0 };
+  }
+}
+</script>
+</body>
+</html>

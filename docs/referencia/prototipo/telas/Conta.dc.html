@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Resumo da conta</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.92}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#F7F4F0;color:#1F1A17;font-family:'DM Sans',system-ui,sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden">
+
+  <sc-if value="{{aberta}}" hint-placeholder-val="{{ true }}">
+    <header style="padding:16px 16px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #E3DBD2">
+      <a href="Chamado.dc.html" aria-label="Voltar" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:999px">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1A17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+      </a>
+      <div style="display:flex;flex-direction:column">
+        <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:700">Conta da Mesa 12</h1>
+        <span style="font-size:13px;color:#5C524B">Brasa &amp; Trigo · aberta às 19h42</span>
+      </div>
+    </header>
+
+    <div role="status" style="margin:14px 20px 0;padding:12px 14px;border-radius:12px;background:#E2F1E7;color:#054F31;font-size:14px;font-weight:600">Conta pedida. Rafael está trazendo a maquininha.</div>
+
+    <main style="flex:1;overflow-y:auto;padding:8px 20px 200px;display:flex;flex-direction:column">
+      <ul style="list-style:none;margin:0;padding:0">
+        <li style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #E3DBD2;font-size:15px"><span>1 × Costela na brasa</span><span>R$ 89,00</span></li>
+        <li style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #E3DBD2;font-size:15px"><span>1 × Pão de fermentação natural</span><span>R$ 24,00</span></li>
+      </ul>
+
+      <div style="display:flex;flex-direction:column;gap:10px;padding:16px 0;border-bottom:1px solid #E3DBD2;font-size:15px">
+        <div style="display:flex;justify-content:space-between"><span>Subtotal</span><span>{{subtotal}}</span></div>
+        <label style="display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px">
+          <span style="display:flex;align-items:center;gap:10px">
+            <input type="checkbox" checked="{{comServico}}" onChange="{{alternarServico}}" style="width:22px;height:22px">
+            Taxa de serviço (10%, opcional)
+          </span>
+          <span>{{servico}}</span>
+        </label>
+        <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700"><span>Total</span><span>{{total}}</span></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;padding:16px 0">
+        <span id="rot-dividir" style="font-weight:600;font-size:15px">Dividir a conta</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div role="group" aria-labelledby="rot-dividir" style="display:flex;align-items:center;border:1.5px solid #8C8079;border-radius:12px;height:48px">
+            <button type="button" onClick="{{menos}}" aria-label="Menos pessoas" style="width:48px;height:48px;border:0;background:transparent;font-size:20px;cursor:pointer;color:#1F1A17">−</button>
+            <span aria-live="polite" style="min-width:72px;text-align:center;font-weight:700">{{rotuloPessoas}}</span>
+            <button type="button" onClick="{{mais}}" aria-label="Mais pessoas" style="width:48px;height:48px;border:0;background:transparent;font-size:20px;cursor:pointer;color:#1F1A17">+</button>
+          </div>
+          <span style="font-size:15px;text-align:right"><strong style="font-size:18px">{{porPessoa}}</strong><br><span style="color:#5C524B;font-size:13px">por pessoa</span></span>
+        </div>
+      </div>
+    </main>
+
+    <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 16px 20px;background:#F7F4F0;border-top:1px solid #E3DBD2;display:flex;flex-direction:column;gap:10px">
+      <span style="font-size:14px;color:#5C524B;text-align:center">Pagamento com o garçom: Pix, cartão ou dinheiro.</span>
+      <a href="Chamado.dc.html" style="height:48px;border-radius:12px;border:1.5px solid #1F1A17;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">Chamar garçom</a>
+      <a href="Main.dc.html" style="height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;color:{{destaque}}">Pedir mais alguma coisa</a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{encerrada}}" hint-placeholder-val="{{ false }}">
+    <main style="flex:1;padding:96px 28px 32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px">
+      <div aria-hidden="true" style="width:80px;height:80px;border-radius:22px;background:{{destaque}};color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:28px">BT</div>
+      <h1 style="margin:12px 0 0;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:700;line-height:1.15">Obrigado pela visita!</h1>
+      <p style="margin:0;font-size:16px;line-height:1.5;color:#3A322D">A conta da Mesa 12 foi encerrada. Esperamos ver você de novo.</p>
+      <div style="margin-top:auto;width:100%;display:flex;flex-direction:column;gap:10px">
+        <span style="font-size:15px;color:#3A322D">Conte como foi. Sua avaliação ajuda outras pessoas a nos encontrar.</span>
+        <a href="#" target="_blank" rel="noopener" style="height:56px;border-radius:14px;background:{{destaque}};color:#FFFFFF;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:16px">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"></path></svg>
+          Avaliar no Google
+        </a>
+        <a href="#" target="_blank" rel="noopener" style="height:48px;border-radius:12px;border:1.5px solid #1F1A17;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">Seguir no Instagram</a>
+        <span style="font-size:13px;color:#5C524B;line-height:1.5">Para pedir de novo, escaneie o QR Code da mesa.</span>
+      </div>
+    </main>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"destaque":{"editor":"color","default":"#B4441F","options":["#B4441F","#2F6B3A","#1F4E8C","#6B2D5C"]},"etapa":{"editor":"enum","options":["aberta","encerrada"],"default":"aberta"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { comServico: true, pessoas: 2 };
+  }
+  renderVals() {
+    const reais = (c) => 'R$ ' + (c / 100).toFixed(2).replace('.', ',');
+    const subtotal = 11300;
+    const servico = this.state.comServico ? Math.round(subtotal * 0.1) : 0;
+    const total = subtotal + servico;
+    const p = this.state.pessoas;
+    const etapa = this.props.etapa ?? 'aberta';
+    return {
+      destaque: this.props.destaque ?? '#B4441F',
+      aberta: etapa === 'aberta',
+      encerrada: etapa === 'encerrada',
+      subtotal: reais(subtotal),
+      servico: this.state.comServico ? reais(servico) : 'R$ 0,00',
+      total: reais(total),
+      comServico: this.state.comServico,
+      rotuloPessoas: p === 1 ? '1 pessoa' : p + ' pessoas',
+      porPessoa: reais(Math.ceil(total / p)),
+      alternarServico: () => this.setState({ comServico: !this.state.comServico }),
+      menos: () => this.setState({ pessoas: Math.max(1, p - 1) }),
+      mais: () => this.setState({ pessoas: Math.min(20, p + 1) }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -7,3 +7,5 @@ test-results
 playwright-report
 pacotes/ui/visual/resultados
 pacotes/ui/visual/relatorio
+docs/referencia
+docs/prompts

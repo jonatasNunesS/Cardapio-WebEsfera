@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mesas e QR Codes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Open+Sans:wght@400;600;700&amp;family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=DM+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#303642}a:hover{color:#1C2028}
+input,select{font-family:inherit}
+input[type=text],input[type=number],select{font-size:15px;color:#303642;border:1px solid #7A8494;border-radius:10px;padding:10px 12px;background:#FFFFFF;box-sizing:border-box;width:100%}
+input:focus,select:focus,button:focus-visible,a:focus-visible{outline:3px solid #1849A9;outline-offset:2px}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F4F6F8;color:#303642;font-family:'Open Sans',system-ui,sans-serif;display:flex;flex-wrap:wrap">
+
+  <nav aria-label="Painel" style="flex:1 1 220px;max-width:100%;background:#303642;color:#FFFFFF;padding:24px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 8px 20px">
+      <span aria-hidden="true" style="width:32px;height:32px;border-radius:999px;background:#00C2CB"></span>
+      <span style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px">WebEsfera</span>
+    </div>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Início</a>
+    <a href="Fila.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Fila ao vivo</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Cardápio e vídeos</a>
+    <a href="Mesas.dc.html" aria-current="page" style="color:#303642;background:#00C2CB;text-decoration:none;padding:12px;border-radius:10px;font-size:15px;font-weight:700">Mesas e QR Codes</a>
+    <a href="Personalizacao.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Personalização</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Plano e cobrança</a>
+  </nav>
+
+  <div style="flex:999 1 560px;min-width:0;padding:32px 24px 48px;box-sizing:border-box">
+    <div style="max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
+
+      <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <h1 style="margin:0;font-family:'Poppins',sans-serif;font-size:28px;font-weight:600">Mesas e QR Codes</h1>
+          <p style="margin:0;font-size:15px;color:#5B6472">Cada mesa tem um link e um QR Code próprios. Baixe o PNG, imprima e cole na mesa.</p>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button type="button" onClick="{{baixarTodos}}" style="height:44px;padding:0 16px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Baixar todos os QR (ZIP)</button>
+          <button type="button" onClick="{{abrirNova}}" style="height:44px;padding:0 18px;border-radius:10px;border:0;background:#00C2CB;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Nova mesa</button>
+        </div>
+      </header>
+
+      <sc-if value="{{temAviso}}" hint-placeholder-val="{{ false }}">
+        <div role="status" style="padding:12px 16px;border-radius:12px;background:#E2F1E7;color:#054F31;font-size:14px;font-weight:600">{{aviso}}</div>
+      </sc-if>
+
+      <sc-if value="{{formNova}}" hint-placeholder-val="{{ false }}">
+        <form aria-labelledby="t-nova" style="background:#FFFFFF;border:2px solid #00C2CB;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+          <h2 id="t-nova" style="margin:0;font-family:'Poppins',sans-serif;font-size:18px;font-weight:600">Nova mesa</h2>
+          <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="numero" style="font-weight:600;font-size:14px">Número</label>
+              <input id="numero" type="number" min="1" max="999" value="{{novoNumero}}" onChange="{{digitarNumero}}" aria-describedby="erro-numero">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="nome-mesa" style="font-weight:600;font-size:14px">Nome (opcional)</label>
+              <input id="nome-mesa" type="text" value="{{novoNome}}" onChange="{{digitarNome}}" placeholder="Ex.: Mesa da janela" maxlength="30">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="area" style="font-weight:600;font-size:14px">Área</label>
+              <select id="area" value="{{novaArea}}" onChange="{{escolherArea}}"><option>Salão</option><option>Varanda</option><option>Balcão</option></select>
+            </div>
+          </div>
+          <span id="erro-numero" role="alert" style="font-size:14px;color:#B42318;min-height:20px">{{erroNumero}}</span>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button type="button" onClick="{{fecharNova}}" style="height:44px;padding:0 16px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer">Cancelar</button>
+            <button type="button" onClick="{{criarMesa}}" style="height:44px;padding:0 18px;border-radius:10px;border:0;background:#303642;color:#FFFFFF;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer">Criar mesa e gerar QR</button>
+          </div>
+        </form>
+      </sc-if>
+
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+
+        <section aria-label="Lista de mesas" style="flex:999 1 460px;min-width:0;background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:8px 20px">
+          <sc-for list="{{mesas}}" as="m" hint-placeholder-count="6">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid #EEF1F4">
+              <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                  <strong style="font-family:'Poppins',sans-serif;font-size:17px;font-weight:600">Mesa {{m.numero}}</strong>
+                  <span style="font-size:13px;color:#5B6472">{{m.descricao}}</span>
+                  <sc-if value="{{m.inativa}}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:12px;font-weight:700;color:#3A4150;background:#EEF1F4;padding:3px 8px;border-radius:999px">Desativada</span>
+                  </sc-if>
+                </div>
+                <code style="font-size:12.5px;color:#3A4150;background:#F4F6F8;padding:6px 8px;border-radius:8px;overflow-wrap:anywhere">{{m.link}}</code>
+              </div>
+              <div style="display:flex;gap:8px;flex:none">
+                <button type="button" onClick="{{m.copiar}}" aria-label="{{m.rotuloCopiar}}" style="height:40px;padding:0 12px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer">{{m.textoCopiar}}</button>
+                <sc-if value="{{m.selecionada}}" hint-placeholder-val="{{ false }}">
+                  <button type="button" aria-pressed="true" onClick="{{m.selecionar}}" style="height:40px;padding:0 12px;border-radius:10px;border:0;background:#303642;color:#FFFFFF;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer">QR aberto</button>
+                </sc-if>
+                <sc-if value="{{m.naoSelecionada}}" hint-placeholder-val="{{ true }}">
+                  <button type="button" aria-pressed="false" onClick="{{m.selecionar}}" style="height:40px;padding:0 12px;border-radius:10px;border:0;background:#00C2CB;color:#303642;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer">Ver QR</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <p style="margin:0;padding:14px 0;font-size:13px;color:#5B6472">{{resumo}}</p>
+        </section>
+
+        <aside aria-labelledby="t-qr" style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:12px">
+          <h2 id="t-qr" style="margin:0;font-family:'Poppins',sans-serif;font-size:17px;font-weight:600">Cartão para imprimir · Mesa {{sel.numero}}</h2>
+
+          <div style="background:#FFFFFF;border:1px solid #DCE1E7;border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;font-family:'DM Sans',sans-serif;color:#1F1A17">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span aria-hidden="true" style="width:40px;height:40px;border-radius:12px;background:#B4441F;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px">BT</span>
+              <strong style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px">Brasa &amp; Trigo</strong>
+            </div>
+            <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:44px;font-weight:700;line-height:1">Mesa {{sel.numero}}</span>
+            <svg role="img" aria-label="{{rotuloQr}}" viewBox="0 0 29 29" width="220" height="220" shape-rendering="crispEdges" style="background:#FFFFFF;opacity:{{opacidadeQr}}">
+              <path d="{{caminhoQr}}" fill="#1F1A17"></path>
+            </svg>
+            <span style="font-size:15px;line-height:1.4;max-width:260px">Aponte a câmera para ver o cardápio, pedir e chamar o garçom</span>
+            <span style="font-size:12px;color:#5C524B">Desenho ilustrativo; o QR real sai do link desta mesa.</span>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <button type="button" onClick="{{baixarPng}}" disabled="{{sel.inativa}}" style="flex:1 1 140px;height:44px;border-radius:10px;border:0;background:#00C2CB;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Baixar PNG</button>
+            <button type="button" onClick="{{alternarAtiva}}" style="flex:1 1 140px;height:44px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">{{textoAtivar}}</button>
+          </div>
+
+          <sc-if value="{{semConfirmacao}}" hint-placeholder-val="{{ true }}">
+            <button type="button" onClick="{{pedirNovoCodigo}}" style="height:44px;border-radius:10px;border:1.5px solid #B42318;background:#FFFFFF;color:#B42318;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Gerar novo código</button>
+          </sc-if>
+          <sc-if value="{{confirmando}}" hint-placeholder-val="{{ false }}">
+            <div role="alertdialog" aria-labelledby="t-conf" style="padding:14px 16px;border-radius:12px;background:#FDECEA;color:#7A271A;display:flex;flex-direction:column;gap:10px">
+              <strong id="t-conf" style="font-size:15px">O QR impresso da Mesa {{sel.numero}} vai parar de funcionar.</strong>
+              <span style="font-size:14px;line-height:1.5">Use quando o QR foi fotografado e alguém está pedindo de fora. Depois, imprima o cartão de novo.</span>
+              <div style="display:flex;gap:8px">
+                <button type="button" onClick="{{cancelarNovoCodigo}}" style="height:40px;padding:0 14px;border-radius:10px;border:1.5px solid #7A271A;background:transparent;color:#7A271A;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer">Cancelar</button>
+                <button type="button" onClick="{{confirmarNovoCodigo}}" style="height:40px;padding:0 14px;border-radius:10px;border:0;background:#B42318;color:#FFFFFF;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer">Gerar novo código</button>
+              </div>
+            </div>
+          </sc-if>
+          <span style="font-size:13px;color:#5B6472">Código gerado em {{sel.geradoEm}}. Renumerar a mesa não invalida o QR impresso.</span>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.semente = 7;
+    const base = [
+      [1, '', 'Salão'], [2, '', 'Salão'], [3, '', 'Salão'], [7, '', 'Salão'],
+      [12, 'Mesa da janela', 'Salão'], [20, '', 'Varanda'],
+    ];
+    this.state = {
+      mesas: base.map(([numero, nome, area]) => ({ numero, nome, area, codigo: this.gerarCodigo(), ativa: true, geradoEm: '02/10/2026' })),
+      selecionada: 12,
+      copiada: null,
+      formNova: false,
+      novoNumero: '',
+      novoNome: '',
+      novaArea: 'Salão',
+      erroNumero: '',
+      confirmando: false,
+      aviso: '',
+    };
+  }
+  gerarCodigo() {
+    const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+    let s = this.semente;
+    let codigo = '';
+    for (let i = 0; i < 22; i++) {
+      s = (s * 1103515245 + 12345) % 2147483648;
+      codigo += abc.charAt(s % abc.length);
+    }
+    this.semente = s;
+    return codigo;
+  }
+  caminhoQr(texto) {
+    const n = 29;
+    let h = 0;
+    for (let i = 0; i < texto.length; i++) h = (h * 31 + texto.charCodeAt(i)) % 2147483647;
+    const finder = (x, y) => {
+      const quad = (cx, cy) => {
+        const dx = x - cx, dy = y - cy;
+        if (dx < 0 || dy < 0 || dx > 6 || dy > 6) return null;
+        const borda = dx === 0 || dy === 0 || dx === 6 || dy === 6;
+        const miolo = dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4;
+        return borda || miolo;
+      };
+      const r = [quad(0, 0), quad(n - 7, 0), quad(0, n - 7)].find((v) => v !== null);
+      return r === undefined ? null : r;
+    };
+    const perto = (x, y) => (x <= 7 && y <= 7) || (x >= n - 8 && y <= 7) || (x <= 7 && y >= n - 8);
+    let d = '';
+    for (let y = 0; y < n; y++) {
+      for (let x = 0; x < n; x++) {
+        const f = finder(x, y);
+        let escuro;
+        if (f !== null) escuro = f;
+        else if (perto(x, y)) escuro = false;
+        else {
+          h = (h * 1103515245 + 12345) % 2147483648;
+          escuro = (h >> 7) % 2 === 1;
+        }
+        if (escuro) d += 'M' + x + ' ' + y + 'h1v1h-1z';
+      }
+    }
+    return d;
+  }
+  atualizarMesa(numero, parcial) {
+    this.setState({ mesas: this.state.mesas.map((m) => (m.numero === numero ? { ...m, ...parcial } : m)) });
+  }
+  renderVals() {
+    const s = this.state;
+    const link = (m) => '[seu-dominio]/brasa-e-trigo/mesa/' + m.numero + '?c=' + m.codigo;
+    const ordenadas = [...s.mesas].sort((a, b) => a.numero - b.numero);
+    const sel = s.mesas.find((m) => m.numero === s.selecionada) || ordenadas[0];
+    const mesas = ordenadas.map((m) => ({
+      ...m,
+      link: link(m),
+      descricao: [m.nome, m.area].filter(Boolean).join(' · '),
+      inativa: !m.ativa,
+      selecionada: m.numero === sel.numero,
+      naoSelecionada: m.numero !== sel.numero,
+      textoCopiar: s.copiada === m.numero ? 'Copiado' : 'Copiar link',
+      rotuloCopiar: 'Copiar link da mesa ' + m.numero,
+      copiar: () => {
+        try {
+          if (navigator.clipboard) navigator.clipboard.writeText('https://' + link(m).replace('[seu-dominio]', 'seu-dominio.com.br'));
+        } catch (e) {
+          this.setState({ aviso: 'Não deu para copiar automaticamente. Selecione o link e copie.' });
+        }
+        this.setState({ copiada: m.numero });
+      },
+      selecionar: () => this.setState({ selecionada: m.numero, confirmando: false }),
+    }));
+    const ativas = s.mesas.filter((m) => m.ativa).length;
+    return {
+      mesas,
+      sel: { ...sel, inativa: !sel.ativa },
+      resumo: ativas + ' mesas ativas de ' + s.mesas.length + ' · o plano Pro permite até 30',
+      caminhoQr: this.caminhoQr(link(sel)),
+      rotuloQr: 'QR Code da mesa ' + sel.numero,
+      opacidadeQr: sel.ativa ? 1 : 0.25,
+      textoAtivar: sel.ativa ? 'Desativar mesa' : 'Ativar mesa',
+      temAviso: !!s.aviso,
+      aviso: s.aviso,
+      formNova: s.formNova,
+      novoNumero: s.novoNumero,
+      novoNome: s.novoNome,
+      novaArea: s.novaArea,
+      erroNumero: s.erroNumero,
+      confirmando: s.confirmando,
+      semConfirmacao: !s.confirmando,
+      abrirNova: () => this.setState({ formNova: true, erroNumero: '', aviso: '' }),
+      fecharNova: () => this.setState({ formNova: false, novoNumero: '', novoNome: '', erroNumero: '' }),
+      digitarNumero: (e) => this.setState({ novoNumero: e.target.value, erroNumero: '' }),
+      digitarNome: (e) => this.setState({ novoNome: e.target.value }),
+      escolherArea: (e) => this.setState({ novaArea: e.target.value }),
+      criarMesa: () => {
+        const numero = Number(s.novoNumero);
+        if (!Number.isInteger(numero) || numero < 1 || numero > 999) {
+          this.setState({ erroNumero: 'Informe um número de 1 a 999.' });
+          return;
+        }
+        if (s.mesas.some((m) => m.numero === numero)) {
+          this.setState({ erroNumero: 'Já existe a Mesa ' + numero + ' neste restaurante.' });
+          return;
+        }
+        const nova = { numero, nome: s.novoNome.trim(), area: s.novaArea, codigo: this.gerarCodigo(), ativa: true, geradoEm: 'hoje' };
+        this.setState({ mesas: [...s.mesas, nova], selecionada: numero, formNova: false, novoNumero: '', novoNome: '', aviso: 'Mesa ' + numero + ' criada. O link e o QR já estão prontos.' });
+      },
+      baixarPng: () => this.setState({ aviso: 'Baixado: brasa-e-trigo-mesa-' + sel.numero + '.png (cartão para impressão)' }),
+      baixarTodos: () => this.setState({ aviso: 'Baixado: brasa-e-trigo-qr-mesas.zip com ' + ativas + ' cartões em PNG' }),
+      alternarAtiva: () => {
+        this.atualizarMesa(sel.numero, { ativa: !sel.ativa });
+        this.setState({ aviso: sel.ativa ? 'Mesa ' + sel.numero + ' desativada. O QR dela mostra "não está ativo".' : 'Mesa ' + sel.numero + ' ativada.' });
+      },
+      pedirNovoCodigo: () => this.setState({ confirmando: true }),
+      cancelarNovoCodigo: () => this.setState({ confirmando: false }),
+      confirmarNovoCodigo: () => {
+        this.atualizarMesa(sel.numero, { codigo: this.gerarCodigo(), geradoEm: 'hoje' });
+        this.setState({ confirmando: false, aviso: 'Código novo da Mesa ' + sel.numero + ' gerado. O QR antigo parou de funcionar; imprima o cartão de novo.' });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>
