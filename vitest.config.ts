@@ -10,8 +10,21 @@ export default defineConfig({
         test: {
           name: 'node',
           include: ['{apps,pacotes,scripts}/**/*.test.ts'],
+          exclude: [...ignorados, '**/*.banco.test.ts'],
+          environment: 'node',
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'banco',
+          include: ['pacotes/**/*.banco.test.ts'],
           exclude: ignorados,
           environment: 'node',
+          globalSetup: ['pacotes/infraestrutura/src/banco/testes/preparar-banco-de-teste.ts'],
+          fileParallelism: false,
+          testTimeout: 20_000,
+          hookTimeout: 60_000,
         },
       },
       {
