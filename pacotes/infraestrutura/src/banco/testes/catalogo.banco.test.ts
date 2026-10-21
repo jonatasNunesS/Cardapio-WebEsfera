@@ -96,6 +96,32 @@ describe('catálogo do banco', () => {
     expect(donos).toEqual([{ dono: 'cardapio_dono' }]);
   });
 
+  it.each(['cardapio_api', 'cardapio_worker'])(
+    '3b. %s não é membro, direto ou indireto, de cardapio_dono, cardapio_migracao nem funcoes_privilegiadas',
+    async (usuario) => {
+      const linhas = await consultarComoAdmin<{ papel: string }>(
+        `WITH RECURSIVE herdados (papel) AS (
+           SELECT m.roleid FROM pg_auth_members m JOIN pg_roles r ON r.oid = m.member WHERE r.rolname = $1
+           UNION
+           SELECT m.roleid FROM pg_auth_members m JOIN herdados h ON m.member = h.papel
+         )
+         SELECT r.rolname::text AS papel FROM herdados h JOIN pg_roles r ON r.oid = h.papel ORDER BY 1`,
+        [usuario],
+      );
+      const papeis = linhas.map((linha) => linha.papel);
+      const esperados = usuario === 'cardapio_api' ? ['app_runtime'] : ['app_runtime', 'app_sistema'];
+
+      expect(papeis).toEqual(esperados);
+      for (const proibido of ['cardapio_dono', 'cardapio_migracao', 'funcoes_privilegiadas']) {
+        const [membro] = await consultarComoAdmin<{ membro: boolean }>(
+          "SELECT pg_has_role($1, $2, 'MEMBER') AS membro",
+          [usuario, proibido],
+        );
+        expect(membro?.membro, `${usuario} em ${proibido}`).toBe(false);
+      }
+    },
+  );
+
   it('4. app_sistema só tem permissão nas tabelas de sistema', async () => {
     const permissoes = await consultarComoAdmin<{ tabela: string }>(
       `SELECT table_name AS tabela FROM information_schema.role_table_grants WHERE grantee = 'app_sistema'
