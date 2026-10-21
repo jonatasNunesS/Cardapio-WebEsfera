@@ -43,6 +43,7 @@ const TEXTO: readonly Par[] = [
   ['--cor-texto-secundario', '--cor-superficie-suave'],
   ['--cor-texto-secundario', '--cor-neutro-fundo'],
   ['--cor-texto-inverso', '--cor-texto'],
+  ['--cor-texto-inverso', '--cor-perigo'],
   ['--cor-sobre-marca', '--cor-marca'],
   ['--cor-marca-texto', '--cor-fundo'],
   ['--cor-marca-texto', '--cor-superficie'],

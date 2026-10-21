@@ -8,7 +8,7 @@ export interface PropriedadesIcone {
   readonly nome: NomeIcone;
   readonly tamanho?: TamanhoIcone;
   readonly rotulo?: string;
-  readonly className?: string;
+  readonly className?: string | undefined;
 }
 
 export function Icone({ nome, tamanho = 20, rotulo, className }: PropriedadesIcone) {

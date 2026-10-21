@@ -39,6 +39,7 @@ export default defineConfig({
           include: ['{apps,pacotes}/**/*.test.tsx'],
           exclude: ignorados,
           environment: 'jsdom',
+          setupFiles: ['pacotes/config/vitest/limpar-dom.ts'],
         },
       },
       {
