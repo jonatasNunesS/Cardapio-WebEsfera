@@ -10,9 +10,10 @@ seção 5 do plano). O M02 é o portão: nenhuma regra de negócio começa antes
 o CI provar, contra um PostgreSQL real, que um restaurante não lê, não altera
 e não grava dados de outro.
 
-Os 5 arquivos de `docs/referencia/multitenancy` citados no prompt do M02 não
-chegaram ao repositório. A lógica foi escrita a partir do prompt e da
-documentação oficial abaixo.
+Os arquivos de `docs/referencia/multitenancy` citados no prompt do M02 não
+chegaram ao repositório e deixaram de ser necessários (decisão do John em
+2026-10-21). A lógica foi escrita a partir do prompt e da documentação
+oficial abaixo.
 
 | Componente         | Versão                                      |
 | ------------------ | ------------------------------------------- |
@@ -46,30 +47,65 @@ deste ambiente):
 
 ### Ferramenta de migrações: migrador próprio
 
-Requisitos do prompt: SQL puro escrito à mão, numeração sequencial, uma
-transação por migração, tabela de controle com checksum e linha de comando
-no CI.
+**Não troque o migrador sem reler esta seção.** Ele parece reinventar a roda,
+mas as três ferramentas avaliadas falham num requisito que protege o
+isolamento: impedir que uma migração já aplicada seja editada em silêncio.
+Uma política de RLS alterada no arquivo, depois de aplicada, deixaria o
+repositório e o banco dizendo coisas diferentes, e nenhum teste veria.
 
-| Requisito                  | Drizzle Kit (`migrate`)                   | dbmate         | node-pg-migrate     | Migrador próprio |
-| -------------------------- | ----------------------------------------- | -------------- | ------------------- | ---------------- |
-| SQL puro                   | sim                                       | sim            | sim (também JS)     | sim              |
-| Numeração sequencial       | não: ordena pelo timestamp do journal     | não: timestamp | timestamp ou número | sim, verificada  |
-| Uma transação por migração | não: todas as pendentes numa transação só | sim            | sim                 | sim              |
-| Checksum verificado        | grava o hash e nunca o confere            | não            | não                 | sim              |
-| Migração sem transação     | não                                       | sim            | sim                 | sim              |
+Requisitos (prompt do M02): SQL puro escrito à mão, numeração sequencial, uma
+transação por migração, tabela de controle com checksum, trava contra duas
+instâncias e linha de comando no CI.
 
-O comportamento do Drizzle Kit foi conferido no código instalado
-(`drizzle-orm/pg-core/dialect.js`, método `migrate`): uma única
-`session.transaction` para todas as migrações e comparação só por
-`created_at`. Nenhuma alternativa atende o checksum, que é o requisito que
-impede editar migração aplicada. O migrador e o leitor têm cerca de 250 linhas, em
-`pacotes/infraestrutura/src/banco/migracoes`:
+| Requisito                  | Drizzle Kit (`migrate`)                   | dbmate                               | node-pg-migrate            | Migrador próprio |
+| -------------------------- | ----------------------------------------- | ------------------------------------ | -------------------------- | ---------------- |
+| SQL puro                   | sim                                       | sim                                  | sim (também JS)            | sim              |
+| Numeração sequencial       | não: ordena pelo timestamp do journal     | não: timestamp, aceita fora de ordem | timestamp; confere a ordem | sim, verificada  |
+| Uma transação por migração | não: todas as pendentes numa transação só | sim                                  | sim (ou uma só, com opção) | sim              |
+| Checksum verificado        | grava o hash e nunca o confere            | não: grava só a versão               | não: grava só nome e data  | sim              |
+| Migração sem transação     | não                                       | sim (`transaction:false`)            | sim                        | sim              |
+| Trava entre instâncias     | não                                       | sim, com `--migration-lock`          | sim (`pg_advisory_lock`)   | sim              |
+
+O que foi visto em cada uma, em 2026-10-21:
+
+- **Drizzle Kit** (drizzle-orm 0.45.4, código instalado em
+  `drizzle-orm/pg-core/dialect.js`, método `migrate`): uma única
+  `session.transaction` envolve todas as migrações pendentes, então uma falha
+  na quinta desfaz as quatro anteriores e `CREATE INDEX CONCURRENTLY` é
+  impossível. A tabela `__drizzle_migrations (id, hash, created_at)` guarda o
+  hash, mas a decisão de aplicar compara só `created_at` com o
+  `folderMillis` do journal: arquivo editado depois de aplicado passa sem
+  aviso. Não há trava.
+- **dbmate** (README do ramo `main` em https://github.com/amacneil/dbmate): a tabela
+  `schema_migrations` tem só `version`. O README diz que "dbmate only stores
+  the version number, not the contents" e que aplica migração com versão
+  menor que as já aplicadas sem reclamar. Tem `transaction:false` por arquivo
+  e `--migration-lock`. Seria a melhor alternativa se o checksum não fosse
+  requisito.
+- **node-pg-migrate** (`src/runner.ts` do ramo `main`, versão 10.0.0-alpha.6, em
+  https://github.com/salsita/node-pg-migrate): a tabela `pgmigrations` tem
+  `id`, `name` e `run_on`; não guarda conteúdo nem hash. Confere a ordem
+  (`checkOrder`) e usa `pg_advisory_lock`. É feito para migrações em
+  JavaScript; SQL puro é o caso secundário.
+
+Reavalie quando uma delas passar a recusar migração aplicada com conteúdo
+alterado. Até lá, o custo do migrador próprio é pequeno: cerca de 250 linhas
+com o leitor, em `pacotes/infraestrutura/src/banco/migracoes`, cobertas pelos
+testes 16 e 16b.
+
+Como funciona:
 
 - Arquivos `banco/migracoes/NNNN_nome.sql`, de `0001` sem buracos.
 - Tabela `migracoes.aplicadas (numero, nome, checksum sha256, aplicada_em)`.
-- Trava `pg_advisory_lock` para dois deploys simultâneos.
-- Antes de aplicar, confere o checksum de toda migração já aplicada; se mudou,
-  para com `BANCO_MIGRACAO_ALTERADA`.
+- Trava `pg_advisory_lock` de sessão, tomada antes de qualquer comando, até
+  antes de criar a tabela de controle. Uma segunda instância espera; quando
+  entra, não encontra nada pendente e sai sem erro (teste 16b). Sem a trava,
+  as duas colidem já no `CREATE SCHEMA`, o que foi conferido tirando a trava
+  e rodando o teste. Se a conexão cair, o PostgreSQL solta a trava sozinho.
+  A trava é de sessão, não `pg_advisory_xact_lock`, porque precisa durar
+  entre as várias transações de uma execução.
+- Antes de aplicar, confere o checksum de toda migração já aplicada; se mudou
+  ou sumiu, para com `BANCO_MIGRACAO_ALTERADA`.
 - Cada migração roda na sua transação, como `cardapio_dono` (`SET ROLE`). Se
   falhar, faz rollback e para com `BANCO_MIGRACAO_INVALIDA`, com o nome do
   arquivo.
@@ -226,6 +262,12 @@ app_sistema` e a tag `contexto=sistema`.
   lint do driver.
 - O teste 7 olha os `GRANT` de cada tabela: onde `app_runtime` não tem o
   comando, espera a recusa do banco, que também vira `ErroIsolamentoInquilino`.
+- O teste 3b percorre `pg_auth_members` de forma recursiva e confere com
+  `pg_has_role(..., 'MEMBER')`: `cardapio_api` só herda `app_runtime`,
+  `cardapio_worker` só `app_runtime` e `app_sistema`, e nenhum dos dois é
+  membro, direto ou indireto, de `cardapio_dono`, `cardapio_migracao` ou
+  `funcoes_privilegiadas`. Conferido dando `cardapio_dono` a `app_runtime`:
+  o teste falha e acusa também o `funcoes_privilegiadas`, herdado através do dono.
 
 ## Regra para os módulos futuros
 
@@ -246,6 +288,5 @@ CHECK`, e `GRANT` só dos comandos necessários.
 - Esquecer `comRestaurante()` não vaza dado: sem contexto, nada aparece.
 - Toda rotina do worker que atravessa restaurantes fica limitada pelo banco às
   tabelas de sistema, não por disciplina.
-- Manter o migrador é nosso. Ele é pequeno e tem testes; se o Drizzle Kit
-  passar a verificar checksum e a usar uma transação por migração, vale
-  reavaliar.
+- Manter o migrador é nosso. Ele é pequeno e tem testes; o critério para
+  trocá-lo está na seção da ferramenta de migrações.
