@@ -4,9 +4,29 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./node": "./src/node/index.ts",
+    "./web": "./src/web/index.ts",
+    "./teste": "./src/teste/index.ts"
   },
   "scripts": {
     "tipos": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@cardapio/aplicacao": "workspace:*",
+    "@cardapio/config": "workspace:*",
+    "@cardapio/dominio": "workspace:*",
+    "@sentry/node": "11.8.0",
+    "@sentry/react": "11.8.0",
+    "pino": "10.4.0",
+    "zod": "4.6.7"
+  },
+  "peerDependencies": {
+    "react": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   }
 }
