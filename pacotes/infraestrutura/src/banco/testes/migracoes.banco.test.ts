@@ -4,7 +4,20 @@ import path from 'node:path';
 import { CODIGOS } from '@cardapio/aplicacao';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { migrarPorUrl } from '../migracoes/migrador.ts';
+import pg from 'pg';
 import { apagarBanco, criarBancoVazio, PASTA_MIGRACOES, urlAdminDeTeste } from './preparar-banco-de-teste.ts';
+
+async function consultarComoAdminEm(urlDoBanco: string, texto: string): Promise<{ total: number }[]> {
+  const url = new URL(urlAdminDeTeste());
+  url.pathname = new URL(urlDoBanco).pathname;
+  const cliente = new pg.Client({ connectionString: url.toString() });
+  await cliente.connect();
+  try {
+    return (await cliente.query<{ total: number }>(texto)).rows;
+  } finally {
+    await cliente.end();
+  }
+}
 
 const nome = `cardapio_migracoes_${String(Date.now())}`;
 let urlMigracao = '';
@@ -65,5 +78,45 @@ describe('16. migrações', () => {
       codigo: CODIGOS.BANCO_MIGRACAO_ALTERADA,
       contexto: { dados: { numero: 3 } },
     });
+  });
+});
+
+describe('16b. migrações concorrentes', () => {
+  const nomeConcorrente = `cardapio_migracoes_concorrentes_${String(Date.now())}`;
+  let urlConcorrente = '';
+  let pastaLenta = '';
+
+  beforeAll(async () => {
+    const url = new URL(await criarBancoVazio(urlAdminDeTeste(), nomeConcorrente));
+    url.username = 'cardapio_migracao';
+    url.password = process.env.SENHA_BANCO_MIGRACAO ?? 'migracao_local';
+    urlConcorrente = url.toString();
+    pastaLenta = mkdtempSync(path.join(tmpdir(), 'migracoes-lentas-'));
+    cpSync(PASTA_MIGRACOES, pastaLenta, { recursive: true });
+    writeFileSync(
+      path.join(pastaLenta, '0006_lenta.sql'),
+      "SET LOCAL lock_timeout = '5s';\nSET LOCAL statement_timeout = '60s';\nSELECT pg_sleep(0.5);\n",
+    );
+  });
+
+  afterAll(async () => {
+    rmSync(pastaLenta, { recursive: true, force: true });
+    await apagarBanco(urlAdminDeTeste(), nomeConcorrente);
+  });
+
+  it('duas execuções ao mesmo tempo: uma aplica tudo, a outra espera e não aplica nada', async () => {
+    const resultados = await Promise.all([
+      migrarPorUrl(urlConcorrente, pastaLenta),
+      migrarPorUrl(urlConcorrente, pastaLenta),
+    ]);
+    const [aplicou, esperou] = [...resultados].sort((a, b) => b.aplicadas.length - a.aplicadas.length);
+
+    expect(aplicou?.aplicadas).toHaveLength(6);
+    expect(esperou).toEqual({ aplicadas: [], jaAplicadas: 6 });
+    const [controle] = await consultarComoAdminEm(
+      urlConcorrente,
+      'SELECT count(*)::int AS total FROM migracoes.aplicadas',
+    );
+    expect(controle?.total).toBe(6);
   });
 });

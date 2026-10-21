@@ -89,9 +89,9 @@ async function aplicarSemTransacao(cliente: ClientBase, migracao: Migracao): Pro
 
 export async function migrar(cliente: ClientBase, pasta: string): Promise<RelatorioDeMigracao> {
   const migracoes = lerMigracoes(pasta);
-  await prepararControle(cliente);
   await cliente.query('SELECT pg_advisory_lock($1)', [CHAVE_DA_TRAVA]);
   try {
+    await prepararControle(cliente);
     const { rows } = await cliente.query<LinhaAplicada>(
       'SELECT numero, nome, checksum FROM migracoes.aplicadas ORDER BY numero',
     );
