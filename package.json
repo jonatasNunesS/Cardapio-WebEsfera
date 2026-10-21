@@ -1,0 +1,39 @@
+{
+  "name": "cardapio-webesfera",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=24.22.0 <25"
+  },
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
+    "verificar": "pnpm verificar:emoji && pnpm lint && pnpm tipos && pnpm testes",
+    "verificar:emoji": "node scripts/verificar-emoji.ts",
+    "lint": "eslint . --max-warnings 0 && prettier --check .",
+    "formatar": "prettier --write .",
+    "tipos": "tsc --noEmit -p . && pnpm -r --workspace-concurrency=1 run tipos",
+    "testes": "vitest run",
+    "build": "pnpm -r run build",
+    "ciclos": "madge --circular --extensions ts,tsx --exclude \"(node_modules|dist)/\" apps pacotes scripts",
+    "duplicacao": "jscpd",
+    "auditoria": "pnpm audit --audit-level high"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "@commitlint/types": "21.2.3",
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "@typescript-eslint/utils": "8.72.0",
+    "eslint": "10.13.0",
+    "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-boundaries": "7.2.0",
+    "jscpd": "5.4.1",
+    "madge": "8.0.0",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.0",
+    "vitest": "5.0.5"
+  }
+}
