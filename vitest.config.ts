@@ -12,6 +12,7 @@ export default defineConfig({
           include: ['{apps,pacotes,scripts}/**/*.test.ts'],
           exclude: [...ignorados, '**/*.banco.test.ts'],
           environment: 'node',
+          css: { include: [/tokens\.css/] },
         },
       },
       {

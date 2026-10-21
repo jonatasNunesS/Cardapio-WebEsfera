@@ -1,31 +1,40 @@
 :root {
   --cor-fundo: #f7f4f0;
-  --cor-superficie: #ffffff;
+  --cor-superficie: #fff;
+  --cor-superficie-suave: #efe9e2;
+  --cor-esqueleto: #e6ded5;
   --cor-texto: #1f1a17;
   --cor-texto-secundario: #5c524b;
+  --cor-texto-inverso: #fff;
   --cor-borda: #e3dbd2;
   --cor-borda-campo: #8c8079;
   --cor-foco: #1849a9;
+  --cor-info: #1f4e8c;
+  --cor-info-fundo: #e8eefb;
   --cor-sucesso: #067647;
   --cor-sucesso-fundo: #e2f1e7;
   --cor-aviso: #b54708;
   --cor-aviso-fundo: #fef0c7;
   --cor-perigo: #b42318;
   --cor-perigo-fundo: #fdecea;
-
+  --cor-neutro-fundo: #efe9e2;
+  --cor-sobreposicao: rgb(31 26 23 / 55%);
   --cor-marca: #b4441f;
-  --cor-sobre-marca: #ffffff;
+  --cor-sobre-marca: #fff;
   --cor-marca-texto: #b4441f;
-
-  --fonte-titulo: 'Bricolage Grotesque', system-ui, sans-serif;
-  --fonte-texto: 'DM Sans', system-ui, sans-serif;
+  --fonte-titulo: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  --fonte-texto: 'DM Sans Variable', system-ui, sans-serif;
+  --peso-normal: 400;
+  --peso-medio: 600;
+  --peso-forte: 700;
   --tamanho-1: 0.75rem;
   --tamanho-2: 0.875rem;
   --tamanho-3: 1rem;
   --tamanho-4: 1.25rem;
   --tamanho-5: 1.5rem;
   --tamanho-6: 2rem;
-
+  --altura-linha-texto: 1.5;
+  --altura-linha-titulo: 1.15;
   --espaco-1: 4px;
   --espaco-2: 8px;
   --espaco-3: 12px;
@@ -37,18 +46,67 @@
   --raio-2: 12px;
   --raio-3: 14px;
   --raio-total: 999px;
+  --borda-fina: 1px;
+  --borda-campo: 1.5px;
+  --foco-espessura: 3px;
+  --foco-distancia: 2px;
   --alvo-toque: 44px;
+  --sombra: 0 8px 24px rgb(31 26 23 / 12%);
   --duracao: 200ms;
 }
 
 [data-tema='painel'] {
   --cor-fundo: #f4f6f8;
+  --cor-superficie: #fff;
+  --cor-superficie-suave: #eef1f4;
+  --cor-esqueleto: #e4e8ed;
   --cor-texto: #303642;
   --cor-texto-secundario: #5b6472;
+  --cor-borda: #dce1e7;
+  --cor-borda-campo: #7a8494;
+  --cor-neutro-fundo: #eef1f4;
+  --cor-sobreposicao: rgb(28 32 40 / 55%);
   --cor-marca: #00c2cb;
   --cor-sobre-marca: #303642;
+  --cor-marca-texto: #303642;
   --fonte-titulo: 'Poppins', system-ui, sans-serif;
-  --fonte-texto: 'Open Sans', system-ui, sans-serif;
+  --fonte-texto: 'Open Sans Variable', system-ui, sans-serif;
+  --sombra: 0 8px 24px rgb(28 32 40 / 12%);
+}
+
+[data-tema='tv'] {
+  --cor-fundo: #0b0f14;
+  --cor-superficie: #161c24;
+  --cor-superficie-suave: #1f2731;
+  --cor-esqueleto: #1f2731;
+  --cor-texto: #f2f4f7;
+  --cor-texto-secundario: #98a2b3;
+  --cor-texto-inverso: #0b0f14;
+  --cor-borda: #2a323d;
+  --cor-borda-campo: #667085;
+  --cor-foco: #84adff;
+  --cor-info: #84adff;
+  --cor-info-fundo: #16233a;
+  --cor-sucesso: #47cd89;
+  --cor-sucesso-fundo: #0f2a1d;
+  --cor-aviso: #fdb022;
+  --cor-aviso-fundo: #2e2410;
+  --cor-perigo: #f97066;
+  --cor-perigo-fundo: #331715;
+  --cor-neutro-fundo: #1f2731;
+  --cor-sobreposicao: rgb(0 0 0 / 70%);
+  --cor-marca: #00c2cb;
+  --cor-sobre-marca: #0b0f14;
+  --cor-marca-texto: #00c2cb;
+  --fonte-titulo: 'Poppins', system-ui, sans-serif;
+  --fonte-texto: 'Open Sans Variable', system-ui, sans-serif;
+  --tamanho-1: 1.5rem;
+  --tamanho-2: 1.5rem;
+  --tamanho-3: 1.75rem;
+  --tamanho-4: 2rem;
+  --tamanho-5: 2.5rem;
+  --tamanho-6: 3rem;
+  --sombra: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
