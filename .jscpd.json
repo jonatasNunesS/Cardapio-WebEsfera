@@ -1,0 +1,7 @@
+{
+  "threshold": 3,
+  "reporters": ["console"],
+  "ignore": ["**/node_modules/**", "**/dist/**", "**/coverage/**", "pnpm-lock.yaml", "docs/plano.md"],
+  "gitignore": true,
+  "format": ["typescript", "tsx", "javascript", "css"]
+}
