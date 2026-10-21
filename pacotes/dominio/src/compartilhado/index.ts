@@ -1,1 +1,9 @@
-export {};
+export { CODIGOS, validarCodigos } from './codigos.ts';
+export type { Codigo } from './codigos.ts';
+export { ErroAplicacao } from './erro-aplicacao.ts';
+export type { ContextoDoErro } from './erro-aplicacao.ts';
+export { criarErroDeNegocio, ehErroDeNegocio } from './erro-de-negocio.ts';
+export type { ErroDeNegocio } from './erro-de-negocio.ts';
+export { ErroInvarianteDominio } from './erro-invariante-dominio.ts';
+export { Resultado } from './resultado.ts';
+export type { Falha, Ok } from './resultado.ts';
