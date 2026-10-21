@@ -16,6 +16,7 @@ const elementos = [
   { type: 'app-web', pattern: 'apps/{cardapio,painel,admin}/**', partialMatch: false },
   { type: 'dominio', pattern: 'pacotes/dominio/**', partialMatch: false },
   { type: 'aplicacao', pattern: 'pacotes/aplicacao/**', partialMatch: false },
+  { type: 'banco', pattern: 'pacotes/infraestrutura/src/banco/**', partialMatch: false },
   { type: 'infraestrutura', pattern: 'pacotes/infraestrutura/**', partialMatch: false },
   { type: 'contratos', pattern: 'pacotes/contratos/**', partialMatch: false },
   { type: 'ui', pattern: 'pacotes/ui/**', partialMatch: false },
@@ -34,7 +35,8 @@ function permitir(origem: string | readonly string[], destinos: readonly string[
 
 const politicasDeFronteira = [
   permitir('aplicacao', ['dominio'], false),
-  permitir('infraestrutura', ['aplicacao', 'dominio', 'config'], true),
+  permitir('infraestrutura', ['banco', 'aplicacao', 'dominio', 'config'], true),
+  permitir('banco', ['aplicacao', 'dominio', 'config'], true),
   {
     from: { element: { type: 'contratos' } },
     allow: { to: { module: { origin: 'external', source: 'zod' } } },
@@ -55,7 +57,7 @@ const politicasDeFronteira = [
       dependency: { source: '@cardapio/observabilidade/web' },
     },
   },
-  permitir('ferramentas', ['config'], true),
+  permitir('ferramentas', ['config', 'infraestrutura'], true),
   {
     from: {
       element: {
@@ -63,6 +65,7 @@ const politicasDeFronteira = [
           'dominio',
           'aplicacao',
           'infraestrutura',
+          'banco',
           'contratos',
           'ui',
           'app-servidor',
@@ -74,6 +77,16 @@ const politicasDeFronteira = [
     },
     disallow: { to: { module: { source: ['@sentry/*', 'pino'] } } },
     message: 'Sentry e pino só entram pelo pacote observabilidade (docs/adr/0005-observabilidade.md).',
+  },
+  {
+    from: { element: { type: '!banco' } },
+    disallow: { to: { module: { source: ['pg', 'pg-*', 'drizzle-orm', 'drizzle-orm/*'] } } },
+    message:
+      'O driver do Postgres e o Drizzle só entram por pacotes/infraestrutura/src/banco (docs/adr/0006-banco-e-isolamento.md).',
+  },
+  {
+    from: { element: { type: 'banco' }, file: { categories: 'teste' } },
+    allow: { to: { element: { type: 'observabilidade' } } },
   },
   {
     from: { file: { categories: 'teste' } },
