@@ -130,6 +130,12 @@ export default defineConfig(
           message:
             'Estilo inline é proibido; use CSS Modules e tokens. O tema entra por aplicarTemaRestaurante (docs/adr/0007-design-system.md).',
         },
+        {
+          selector:
+            "JSXOpeningElement:has(JSXAttribute[name.name='role'][value.value='region']):has(JSXAttribute[name.name='tabIndex']):not(:has(JSXAttribute[name.name=/^aria-label(ledby)?$/]))",
+          message:
+            'Região rolável focável precisa de aria-label ou aria-labelledby (docs/adr/0007-design-system.md#lint-de-acessibilidade).',
+        },
       ],
     },
   },

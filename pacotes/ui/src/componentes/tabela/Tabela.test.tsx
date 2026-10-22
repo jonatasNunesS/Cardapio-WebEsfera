@@ -47,6 +47,20 @@ describe('Tabela', () => {
     expect(within(regiao).getByRole('table', { name: 'Restaurantes' })).toBeDefined();
   });
 
+  it('toda região rolável focável tem rótulo, e o rótulo é a legenda', () => {
+    const { container } = tabela();
+    const regioes = [...container.querySelectorAll<HTMLElement>('[tabindex]')];
+    expect(regioes).toHaveLength(1);
+    for (const regiao of regioes) {
+      expect(regiao.getAttribute('role')).toBe('region');
+      const ids = regiao.getAttribute('aria-labelledby')?.split(' ') ?? [];
+      const rotulo =
+        regiao.getAttribute('aria-label') ??
+        ids.map((id) => document.getElementById(id)?.textContent ?? '').join(' ');
+      expect(rotulo.trim()).toBe('Restaurantes');
+    }
+  });
+
   it('vazia mostra a mensagem', () => {
     tabela({ linhas: [], mensagemVazia: 'Nenhum restaurante encontrado.' });
     expect(screen.getByText('Nenhum restaurante encontrado.')).toBeDefined();

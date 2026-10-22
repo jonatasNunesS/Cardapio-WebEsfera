@@ -52,6 +52,33 @@ describe('lint de acessibilidade e de React', () => {
     ).toContain('no-restricted-syntax');
   });
 
+  it('recusa região rolável focável sem rótulo', async () => {
+    expect(
+      await regrasVioladas(
+        'export function Rolagem() {\n  return (\n    <div role="region" tabIndex={0}>\n      <table />\n    </div>\n  );\n}\n',
+      ),
+    ).toContain('no-restricted-syntax');
+  });
+
+  it.each(['aria-label="Restaurantes"', 'aria-labelledby="legenda"'])(
+    'aceita região rolável focável com %s',
+    async (rotulo) => {
+      expect(
+        await regrasVioladas(
+          `export function Rolagem() {\n  return (\n    <div role="region" ${rotulo} tabIndex={0}>\n      <table />\n    </div>\n  );\n}\n`,
+        ),
+      ).toEqual([]);
+    },
+  );
+
+  it('recusa tabIndex em elemento não interativo sem role="region"', async () => {
+    expect(
+      await regrasVioladas(
+        'export function Caixa() {\n  return <div aria-label="Caixa" tabIndex={0} />;\n}\n',
+      ),
+    ).toContain('jsx-a11y-x/no-noninteractive-tabindex');
+  });
+
   it('aceita botao nativo', async () => {
     expect(
       await regrasVioladas(
