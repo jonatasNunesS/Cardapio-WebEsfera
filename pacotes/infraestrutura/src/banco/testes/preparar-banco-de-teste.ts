@@ -18,6 +18,7 @@ export interface BancoDeTeste {
 declare module 'vitest' {
   export interface ProvidedContext {
     bancoDeTeste: BancoDeTeste;
+    urlRedisDeTeste: string;
   }
 }
 
@@ -103,5 +104,6 @@ export default async function preparar(projeto: TestProject): Promise<() => Prom
     urlWorker: urlCom(urlAdmin, 'cardapio_worker', SENHAS.cardapio_worker, nome),
     urlMigracao,
   });
+  projeto.provide('urlRedisDeTeste', process.env.URL_REDIS_TESTE ?? 'redis://127.0.0.1:6379/15');
   return () => apagarBanco(urlAdmin, nome);
 }

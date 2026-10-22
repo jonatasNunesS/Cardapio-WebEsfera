@@ -154,6 +154,12 @@ o catálogo.
 | `caixa_saida`  | `SELECT`, `UPDATE (publicado_em, tentativas)` | O publicador do outbox lê os pendentes de todos e marca. |
 | `sessoes_mesa` | `SELECT`, `UPDATE (fechada_em)`               | A rotina de expiração fecha as sessões vencidas.         |
 
+Desde o M05, a rotina de expiração só usa o `SELECT` do `app_sistema` para
+listar os ids vencidos. O fechamento e o evento `SessaoMesaExpirada` na outbox
+acontecem por restaurante, com `comRestaurante()`, na mesma transação (decisão
+do John no M05, ADR 0009). O `UPDATE (fechada_em)` continua concedido e sem
+uso; retirar fica para quando outra rotina confirmar que não precisa dele.
+
 Próximas, já combinadas: `eventos_pagamento`, `assinaturas` e `cobrancas`
 (M10). Nunca `pedidos`, `itens_pedido`, `chamados` ou cardápio. Para agir num
 restaurante específico, o worker usa `comRestaurante()`.

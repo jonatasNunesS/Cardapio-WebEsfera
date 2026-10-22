@@ -1,6 +1,6 @@
 # Runbook: alertas do Sentry
 
-Os 6 alertas da seção 8 do plano, mais os 2 de autenticação do M04, para configurar manualmente no Sentry. O
+Os 6 alertas da seção 8 do plano, mais os 2 de autenticação do M04 e o de fila parada do M05, para configurar manualmente no Sentry. O
 caminho segue a documentação atual de Monitors e Alerts
 (`docs/product/monitors-and-alerts/alerts/create-alerts.mdx` no repositório
 getsentry/sentry-docs, consultado em 2026-10-21): **Monitors > Alerts >
@@ -58,14 +58,16 @@ usuário; não peça esse id ao restaurante.
 
 ## 3. Pagamento não processado
 
-- Depende da fila `pagamentos` (M05 e M10). O M05 precisa marcar a última
-  tentativa com a tag `falha_definitiva` igual a `sim`.
+- Depende da fila `pagamentos` (M10). Desde o M05, a última tentativa de todo
+  job vai ao Sentry com a tag `falha_definitiva` igual a `sim`, e a tag
+  `tarefa` é `{fila}.{job}`.
 - Source: `cardapio-backend`.
 - When: **An event or issue activity is captured**.
 - If (all): **Tagged event** `tarefa` starts with `pagamentos.`; **Tagged
   event** `falha_definitiva` equals `sim`.
 - Then: notificação imediata.
-- O que fazer: abrir o job na fila de falhas (Bull Board, M15), conferir o
+- O que fazer: abrir o job na fila de falhas (Bull Board no admin, desde o
+  M05, `docs/runbooks/filas.md`), conferir o
   pagamento direto no Mercado Pago e reprocessar. A conciliação diária cobre se
   ninguém agir.
 
@@ -151,6 +153,15 @@ Sentry um aviso quando um bloqueio progressivo começa (ADR 0008).
 - O que fazer: alguém tem a senha de um admin e está tentando o código.
   Trocar a senha desse admin na hora (`docs/runbooks/admin.md`) e revisar de
   onde veio o acesso.
+
+## 9. Fila parada (M05)
+
+- Monitores do Sentry Crons criados pelo worker: `rotinas-expirar-sessoes-mesa`
+  (a cada 5 min, margem de 10 min) e `caixa-saida-publicador` (a cada 1 min,
+  margem de 5 min).
+- Source: **Alert on specific monitors**, os dois monitores.
+- Then: notificação imediata.
+- O que fazer: seguir "Alerta de fila parada" em `docs/runbooks/filas.md`.
 
 ## Antes de configurar
 

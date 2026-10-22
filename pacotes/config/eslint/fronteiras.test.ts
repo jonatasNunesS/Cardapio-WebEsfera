@@ -2,7 +2,7 @@ import { ESLint } from 'eslint';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import tseslint from 'typescript-eslint';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 const RAIZ = fileURLToPath(new URL('../../../', import.meta.url));
 
@@ -18,7 +18,13 @@ async function violacoesDeFronteira(caminhoRelativo: string, codigo: string): Pr
     .map((mensagem) => mensagem.message);
 }
 
+const LIMITE_PARA_CARREGAR_A_CONFIGURACAO_MS = 30_000;
+
 describe('fronteiras entre camadas', () => {
+  beforeAll(async () => {
+    await eslint.calculateConfigForFile(path.join(RAIZ, 'pacotes/dominio/src/index.ts'));
+  }, LIMITE_PARA_CARREGAR_A_CONFIGURACAO_MS);
+
   it('recusa dominio importando infraestrutura', async () => {
     const violacoes = await violacoesDeFronteira(
       'pacotes/dominio/src/fixture-fronteira.ts',

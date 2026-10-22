@@ -5,6 +5,7 @@ import { CABECALHO_CSRF } from '@cardapio/contratos';
 import type { FastifyInstance } from 'fastify';
 import { COOKIES, OPCOES_DE_COOKIE } from '../http/cookies.ts';
 import { registrarRotasDoAdmin } from '../rotas/admin.ts';
+import { registrarPainelDeFilas, type OpcoesDoPainelDeFilas } from '../rotas/filas.ts';
 import { registrarRotasDoPainel } from '../rotas/painel.ts';
 import type { DependenciasDeIdentidade, HostsDosApps } from './dependencias.ts';
 
@@ -12,6 +13,7 @@ export interface OpcoesDeIdentidade {
   readonly dependencias: DependenciasDeIdentidade;
   readonly hosts: HostsDosApps;
   readonly armazenamentoDeLimites?: RateLimitPluginOptions['redis'];
+  readonly painelDeFilas?: Pick<OpcoesDoPainelDeFilas, 'adaptadores' | 'aoFalhar'>;
 }
 
 export function registrarIdentidade(servidor: FastifyInstance, opcoes: OpcoesDeIdentidade): void {
@@ -34,5 +36,12 @@ export function registrarIdentidade(servidor: FastifyInstance, opcoes: OpcoesDeI
     });
     registrarRotasDoPainel(escopo, opcoes.dependencias, opcoes.hosts.painel);
     registrarRotasDoAdmin(escopo, opcoes.dependencias, opcoes.hosts.admin);
+    if (opcoes.painelDeFilas !== undefined) {
+      registrarPainelDeFilas(escopo, {
+        ...opcoes.painelDeFilas,
+        dependencias: opcoes.dependencias,
+        host: opcoes.hosts.admin,
+      });
+    }
   });
 }

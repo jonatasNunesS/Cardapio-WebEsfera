@@ -17,20 +17,20 @@ pasta e só permite o que está listado. Bibliotecas externas e módulos do Node
 também passam pelas políticas. A configuração está em
 `pacotes/config/eslint.config.ts`.
 
-| Elemento          | Pasta                                                   | Pode importar                                                                                |
-| ----------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `dominio`         | `pacotes/dominio`                                       | Nada: nem pacote do monorepo, nem biblioteca, nem `node:*`                                   |
-| `aplicacao`       | `pacotes/aplicacao`                                     | `dominio`                                                                                    |
-| `infraestrutura`  | `pacotes/infraestrutura`                                | `banco`, `aplicacao`, `dominio`, `config` e bibliotecas, menos `pg` e `drizzle-orm`          |
-| `banco`           | `pacotes/infraestrutura/src/banco`                      | `aplicacao`, `dominio`, `config` e bibliotecas, inclusive `pg` e `drizzle-orm` (desde o M02) |
-| `contratos`       | `pacotes/contratos`                                     | Só a biblioteca `zod`                                                                        |
-| `observabilidade` | `pacotes/observabilidade`                               | `dominio`, `aplicacao` (desde o M01), `config` e bibliotecas                                 |
-| `ui`              | `pacotes/ui`                                            | Nada do monorepo; bibliotecas                                                                |
-| `config`          | `pacotes/config`                                        | Nada do monorepo; bibliotecas                                                                |
-| `app-servidor`    | `apps/api`, `apps/worker`                               | `aplicacao`, `contratos`, `observabilidade`, `config`, a própria `composicao` e bibliotecas  |
-| `composicao`      | `apps/api/src/composicao`, `apps/worker/src/composicao` | Tudo o que o `app-servidor` pode, mais `infraestrutura` e o próprio app                      |
-| `app-web`         | `apps/cardapio`, `apps/painel`, `apps/admin`            | `contratos`, `ui`, `config`, `@cardapio/observabilidade/web` (desde o M01) e bibliotecas     |
-| `ferramentas`     | `scripts`                                               | `config`, `infraestrutura` (desde o M02, para `pnpm banco:migrar`) e bibliotecas             |
+| Elemento          | Pasta                                                   | Pode importar                                                                                                  |
+| ----------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `dominio`         | `pacotes/dominio`                                       | Nada: nem pacote do monorepo, nem biblioteca, nem `node:*`                                                     |
+| `aplicacao`       | `pacotes/aplicacao`                                     | `dominio`                                                                                                      |
+| `infraestrutura`  | `pacotes/infraestrutura`                                | `banco`, `aplicacao`, `dominio`, `config`, `contratos` (desde o M05) e bibliotecas, menos `pg` e `drizzle-orm` |
+| `banco`           | `pacotes/infraestrutura/src/banco`                      | `aplicacao`, `dominio`, `config` e bibliotecas, inclusive `pg` e `drizzle-orm` (desde o M02)                   |
+| `contratos`       | `pacotes/contratos`                                     | Só a biblioteca `zod`                                                                                          |
+| `observabilidade` | `pacotes/observabilidade`                               | `dominio`, `aplicacao` (desde o M01), `config` e bibliotecas                                                   |
+| `ui`              | `pacotes/ui`                                            | Nada do monorepo; bibliotecas                                                                                  |
+| `config`          | `pacotes/config`                                        | Nada do monorepo; bibliotecas                                                                                  |
+| `app-servidor`    | `apps/api`, `apps/worker`                               | `aplicacao`, `contratos`, `observabilidade`, `config`, a própria `composicao` e bibliotecas                    |
+| `composicao`      | `apps/api/src/composicao`, `apps/worker/src/composicao` | Tudo o que o `app-servidor` pode, mais `infraestrutura` e o próprio app                                        |
+| `app-web`         | `apps/cardapio`, `apps/painel`, `apps/admin`            | `contratos`, `ui`, `config`, `@cardapio/observabilidade/web` (desde o M01) e bibliotecas                       |
+| `ferramentas`     | `scripts`                                               | `config`, `infraestrutura` (desde o M02, para `pnpm banco:migrar`) e bibliotecas                               |
 
 Arquivos de teste (`*.test.ts`, `*.test.tsx`) também podem importar `vitest`
 e `node:*`, inclusive no domínio. Os testes do elemento `banco` também podem
@@ -61,7 +61,9 @@ As 9 regras do M00:
 1. `dominio` não importa nenhum pacote do monorepo nem biblioteca externa,
    salvo utilitários puros aprovados neste ADR (nenhum até agora).
 2. `aplicacao` só importa `dominio`.
-3. `infraestrutura` importa `aplicacao`, `dominio` e `config`.
+3. `infraestrutura` importa `aplicacao`, `dominio`, `config` e, desde o M05,
+   `contratos`: o adaptador de filas valida o payload de cada job e a mensagem
+   de tempo real com os esquemas Zod de `contratos` (ADR 0009).
 4. `contratos` só importa a biblioteca Zod.
 5. `observabilidade` importa `dominio`, `aplicacao` e `config`. A `aplicacao`
    entrou no M01: a observabilidade implementa a porta `RelatorDeErros` (ADR 0005).

@@ -13,3 +13,5 @@ export { criarRepositorioDePersonalizacao } from './restaurantes/repositorio-de-
 export { criarRepositorioDeRestaurantes } from './restaurantes/repositorio-de-restaurantes.ts';
 export { criarAdministradorPorUrl } from './admin/criar-administrador.ts';
 export type { NovoAdministrador, PapelDeAdministrador } from './admin/criar-administrador.ts';
+export { criarCaixaDeSaida, TENTATIVAS_MAXIMAS_DA_CAIXA_DE_SAIDA } from './filas/caixa-de-saida.ts';
+export { criarSessoesMesaVencidas } from './filas/sessoes-mesa-vencidas.ts';
