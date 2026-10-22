@@ -10,6 +10,8 @@
     "iniciar:dist": "node --import ./dist/instrumentacao.js dist/principal.js"
   },
   "dependencies": {
+    "@bull-board/api": "9.10.2",
+    "@bull-board/fastify": "9.10.2",
     "@cardapio/aplicacao": "workspace:*",
     "@cardapio/config": "workspace:*",
     "@cardapio/contratos": "workspace:*",
