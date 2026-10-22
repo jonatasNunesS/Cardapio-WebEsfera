@@ -12,7 +12,8 @@ export const TABELAS_DE_SISTEMA: readonly TabelaDeSistema[] = [
   },
   {
     tabela: 'sessoes_mesa',
-    permissoes: ['SELECT', 'UPDATE (fechada_em)'],
-    motivo: 'A rotina de expiração fecha as sessões vencidas de todos os restaurantes.',
+    permissoes: ['SELECT'],
+    motivo:
+      'A rotina de expiração lista as sessões vencidas de todos os restaurantes; o fechamento é feito por restaurante, com comRestaurante().',
   },
 ];

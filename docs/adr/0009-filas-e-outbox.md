@@ -172,8 +172,10 @@ problema (a meta do plano é alertar em até 15 min).
 Como o John decidiu: `comSistema()` só lista os ids vencidos (lotes de 500,
 até 20 lotes por execução); para cada restaurante, `comRestaurante()` fecha as
 sessões e grava `SessaoMesaExpirada` na outbox na mesma transação. O
-`app_sistema` não ganhou permissão nova. O `UPDATE` só pega sessão ainda aberta
-e vencida, então rodar de novo não muda nada.
+`app_sistema` não ganhou permissão nova; o `UPDATE (fechada_em)` que ele
+tinha desde o M02 ficou sem uso e foi revogado depois do M05 (migração 0008,
+ADR 0006). O `UPDATE` só pega sessão ainda aberta e vencida, então rodar de
+novo não muda nada.
 
 ## Consequências
 

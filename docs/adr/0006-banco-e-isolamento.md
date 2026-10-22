@@ -146,19 +146,26 @@ funcoes_privilegiadas`. Quem tem `cardapio_migracao` já pode tudo nas
 
 ### Tabelas de sistema do `app_sistema`
 
-A lista fechada fica em `banco/tabelas-de-sistema.ts` e o teste 4 compara com
-o catálogo.
+A lista fechada fica em `banco/tabelas-de-sistema.ts`. O teste 4 confere que
+o `app_sistema` só tem permissão nessas tabelas, e o teste 4b (desde o M05)
+confere que as permissões são exatamente as da lista, nem uma a mais.
 
-| Tabela         | Permissões                                    | Motivo                                                   |
-| -------------- | --------------------------------------------- | -------------------------------------------------------- |
-| `caixa_saida`  | `SELECT`, `UPDATE (publicado_em, tentativas)` | O publicador do outbox lê os pendentes de todos e marca. |
-| `sessoes_mesa` | `SELECT`, `UPDATE (fechada_em)`               | A rotina de expiração fecha as sessões vencidas.         |
+**Regra: o `app_sistema` só recebe a permissão que usa.** Permissão concedida
+"para depois" ou que perdeu o uso é revogada por migração, e a lista e o teste
+4b mudam junto. Quem precisar de uma permissão nova justifica no ADR do módulo.
 
-Desde o M05, a rotina de expiração só usa o `SELECT` do `app_sistema` para
-listar os ids vencidos. O fechamento e o evento `SessaoMesaExpirada` na outbox
-acontecem por restaurante, com `comRestaurante()`, na mesma transação (decisão
-do John no M05, ADR 0009). O `UPDATE (fechada_em)` continua concedido e sem
-uso; retirar fica para quando outra rotina confirmar que não precisa dele.
+| Tabela         | Permissões                                    | Motivo                                                                                   |
+| -------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `caixa_saida`  | `SELECT`, `UPDATE (publicado_em, tentativas)` | O publicador do outbox lê os pendentes de todos e marca.                                 |
+| `sessoes_mesa` | `SELECT`                                      | A rotina de expiração lista as vencidas de todos; o fechamento é por `comRestaurante()`. |
+
+Histórico: o M02 concedeu `UPDATE (fechada_em)` em `sessoes_mesa` para a
+rotina de expiração. No M05 o fechamento e o evento `SessaoMesaExpirada` na
+outbox passaram a acontecer por restaurante, com `comRestaurante()`, na mesma
+transação (decisão do John, ADR 0009), e a permissão ficou sem uso. A migração
+`0008_revogar_update_de_sistema_em_sessoes_mesa.sql` a revogou. A política
+`sessoes_mesa_sistema` continua `FOR ALL`: o teste 1b exige `USING` e
+`WITH CHECK` em toda política, e quem limita o que o papel faz é a permissão.
 
 Próximas, já combinadas: `eventos_pagamento`, `assinaturas` e `cobrancas`
 (M10). Nunca `pedidos`, `itens_pedido`, `chamados` ou cardápio. Para agir num
