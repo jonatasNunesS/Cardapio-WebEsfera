@@ -9,6 +9,15 @@ function ehErroDoCliente(erro: FastifyError): boolean {
   return typeof erro.statusCode === 'number' && erro.statusCode >= 400 && erro.statusCode < 500;
 }
 
+function ehErroDeCsrf(erro: unknown): boolean {
+  return (
+    erro instanceof Error &&
+    'code' in erro &&
+    typeof erro.code === 'string' &&
+    erro.code.startsWith('FST_CSRF')
+  );
+}
+
 function responderEntradaInvalida(requisicao: FastifyRequest, resposta: FastifyReply, erro: ZodError) {
   return enviarProblema(resposta, {
     status: 400,
@@ -36,6 +45,24 @@ export function registrarTratadorDeErros(servidor: FastifyInstance, relator: Rel
   servidor.setErrorHandler((erro: FastifyError, requisicao, resposta) => {
     if (erro instanceof ZodError) {
       return responderEntradaInvalida(requisicao, resposta, erro);
+    }
+    if (ehErroDeCsrf(erro)) {
+      return enviarProblema(resposta, {
+        status: 403,
+        codigo: CODIGOS.HTTP_CSRF_INVALIDO,
+        titulo: 'Requisição sem proteção',
+        detalhe: 'Recarregue a página e tente de novo.',
+        idRastreio: requisicao.id,
+      });
+    }
+    if (erro.statusCode === 429) {
+      return enviarProblema(resposta, {
+        status: 429,
+        codigo: CODIGOS.HTTP_LIMITE_EXCEDIDO,
+        titulo: 'Muitas requisições',
+        detalhe: 'Muitas tentativas seguidas. Espere um pouco e tente de novo.',
+        idRastreio: requisicao.id,
+      });
     }
     if (ehErroDoCliente(erro)) {
       return enviarProblema(resposta, {

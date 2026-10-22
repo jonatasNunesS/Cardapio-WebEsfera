@@ -269,6 +269,63 @@ app_sistema` e a tag `contexto=sistema`.
   `funcoes_privilegiadas`. Conferido dando `cardapio_dono` a `app_runtime`:
   o teste falha e acusa também o `funcoes_privilegiadas`, herdado através do dono.
 
+## Identidade (M04)
+
+Migrações `0006_identidade` e `0007_personalizacao_e_horarios`.
+
+### Tabelas que só as funções privilegiadas alcançam
+
+`usuarios`, `administradores`, `codigos_recuperacao_admin`, `sessoes`,
+`tokens_redefinicao_senha` e `tentativas_login` não têm `restaurante_id`. O
+`app_runtime` e o `app_sistema` não têm permissão nenhuma nelas (teste 7 do
+catálogo, um por tabela); só o `funcoes_privilegiadas` tem, e só os comandos
+que as funções usam. Ler `usuarios`, `sessoes`, `administradores` ou
+`tentativas_login` direto com o usuário da API ou do worker falha com
+`ErroIsolamentoInquilino`, com ou sem restaurante no contexto (teste 10 do
+isolamento).
+
+`vinculos`, `personalizacoes` e `horarios` têm `restaurante_id` e seguem o
+padrão: PK composta, RLS forçado, política para `app_runtime` e fábrica.
+Passaram nos testes 1 a 8 sem mudança no módulo.
+
+Ninguém da aplicação cria administrador. `pnpm admin:criar` usa a credencial
+das migrações, como `pnpm banco:migrar` (ADR 0008).
+
+### As 19 funções novas
+
+Uma função por operação, todas na lista de `banco/funcoes-privilegiadas.ts`,
+com `search_path` fixo, dono `funcoes_privilegiadas` e execução só para
+`app_runtime` (teste 5). Cada uma devolve o mínimo: id, hash ou um booleano.
+
+| Função                                | Por que precisa passar por cima do RLS                                                                                     |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `app.criar_usuario`                   | `usuarios` não é de restaurante. Devolve o id, ou nulo se o e-mail existe.                                                 |
+| `app.buscar_credenciais`              | Login antes de existir restaurante no contexto. Devolve id e hash da senha.                                                |
+| `app.listar_vinculos`                 | Descobrir em que restaurantes o usuário entra, antes de existir restaurante no contexto. Devolve `restaurante_id` e papel. |
+| `app.criar_sessao`                    | `sessoes` não é de restaurante. Confere o vínculo com o restaurante (painel) ou se o admin está ativo.                     |
+| `app.buscar_sessao`                   | Validar o cookie em toda requisição. Devolve titular, restaurante, papel (do vínculo) e datas de uma sessão não revogada.  |
+| `app.renovar_sessao`                  | Marcar o último uso.                                                                                                       |
+| `app.revogar_sessao`                  | Sair.                                                                                                                      |
+| `app.definir_restaurante_da_sessao`   | Apontar a sessão para o restaurante recém-criado; só com vínculo.                                                          |
+| `app.criar_token_redefinicao`         | Grava o resumo do token e invalida os anteriores. Devolve só se o e-mail existe; a API responde igual nos dois casos.      |
+| `app.redefinir_senha`                 | Consome o token, troca a senha e revoga as sessões, numa transação.                                                        |
+| `app.buscar_admin`                    | Login do admin. Devolve id, hash e se falta trocar a senha ou cadastrar o segundo fator.                                   |
+| `app.buscar_segundo_fator_admin`      | Conferir o código. Devolve o segredo cifrado e o último passo usado.                                                       |
+| `app.iniciar_cadastro_segundo_fator`  | Guarda o segredo novo, cifrado, como pendente. Só com troca de senha pendente.                                             |
+| `app.concluir_cadastro_segundo_fator` | Ativa o segredo, troca a senha, grava os resumos dos códigos de recuperação e revoga as sessões, numa transação.           |
+| `app.usar_passo_totp`                 | Anti-reuso: só aceita passo maior que o último, numa atualização atômica.                                                  |
+| `app.usar_codigo_recuperacao`         | Consome um código de recuperação uma vez só.                                                                               |
+| `app.registrar_falha_login`           | Bloqueio progressivo por alvo (resumo do e-mail ou do IP). Devolve o total.                                                |
+| `app.consultar_tentativas_login`      | Ler as falhas do e-mail e do IP antes de conferir a senha.                                                                 |
+| `app.limpar_tentativas_login`         | Zerar as falhas do e-mail depois de um login certo.                                                                        |
+
+Criar restaurante não precisou de função: a aplicação gera o id, abre
+`comRestaurante(id)` e grava o restaurante, o slug no histórico, o vínculo
+do dono e a personalização padrão, com `app_runtime`. O slug ocupado por
+outro restaurante (em `restaurantes` ou em `historico_slugs`) é detectado pela
+violação de unicidade dentro de um ponto de salvamento, e o próximo candidato
+é tentado.
+
 ## Regra para os módulos futuros
 
 Toda tabela nova com `restaurante_id`:

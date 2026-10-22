@@ -150,6 +150,61 @@ jobs:
             pacotes/ui/visual/resultados
           retention-days: 14
 
+  e2e:
+    name: Fluxos ponta a ponta (Playwright e axe no Chromium)
+    needs: verificacao
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      URL_BANCO_MIGRACAO: postgres://cardapio_migracao:migracao_local@127.0.0.1:5432/cardapio
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Instalar Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Instalar dependências (lockfile congelado)
+        run: pnpm install --frozen-lockfile
+
+      - name: PostgreSQL e Redis (compose, com papéis e usuários)
+        run: |
+          cp .env.exemplo .env
+          docker compose up --detach --wait postgres redis
+
+      - name: Migrações
+        run: pnpm banco:migrar
+
+      - name: Chromium do Playwright
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Criar conta, restaurante, cor da marca e admin com TOTP
+        env:
+          CI: '1'
+        run: pnpm e2e
+
+      - name: Relatório em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: e2e
+          path: |
+            scripts/e2e/relatorio
+            scripts/e2e/resultados
+          retention-days: 14
+
+      - name: Derrubar os serviços
+        if: always()
+        run: docker compose down --volumes
+
   compose:
     name: Docker Compose, migrações e /saude
     needs: verificacao

@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { v7 as uuidv7 } from 'uuid';
 import type { Transacao } from '../../banco.ts';
 import {
@@ -5,9 +6,12 @@ import {
   caixaSaida,
   historicoNumerosMesa,
   historicoSlugs,
+  horarios,
   mesas,
+  personalizacoes,
   restaurantes,
   sessoesMesa,
+  vinculos,
 } from '../../esquema/index.ts';
 import { gerarCodigoDeMesa } from '../../mesas/codigo-de-mesa.ts';
 import { sufixoUnico } from '../apoio.ts';
@@ -19,6 +23,15 @@ export interface Fabrica {
 }
 
 let proximoNumero = 1;
+const HASH_DE_FABRICA = '$argon2id$v=19$m=19456,t=2,p=1$ZmFicmljYQ$ZmFicmljYQ';
+
+export async function criarUsuarioDeFabrica(transacao: Transacao): Promise<string> {
+  const email = `fabrica-${sufixoUnico()}@exemplo.com.br`;
+  const resultado = await transacao.execute<{ id: string }>(
+    sql`SELECT app.criar_usuario('Fábrica', ${email}, ${HASH_DE_FABRICA}) AS id`,
+  );
+  return resultado.rows[0]?.id ?? '';
+}
 
 async function criarMesa(transacao: Transacao, restauranteId: string): Promise<string> {
   const id = uuidv7();
@@ -87,6 +100,35 @@ export const FABRICAS: readonly Fabrica[] = [
       await transacao
         .insert(auditoria)
         .values({ restauranteId, autorTipo: 'sistema', acao: 'criar', entidade: 'mesa' });
+    },
+  },
+  {
+    tabela: 'vinculos',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      const usuarioId = await criarUsuarioDeFabrica(transacao);
+      await transacao.insert(vinculos).values({ restauranteId, usuarioId, papel: 'dono' });
+    },
+  },
+  {
+    tabela: 'personalizacoes',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      await transacao.insert(personalizacoes).values({
+        restauranteId,
+        corMarca: '#B4441F',
+        corSobreMarca: '#FFFFFF',
+        corMarcaTexto: '#B4441F',
+      });
+    },
+  },
+  {
+    tabela: 'horarios',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      await transacao
+        .insert(horarios)
+        .values({ restauranteId, diaSemana: proximoNumero % 7, abre: '18:00', fecha: '23:00' });
     },
   },
 ];

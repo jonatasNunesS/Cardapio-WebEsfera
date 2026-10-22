@@ -25,7 +25,7 @@ export function enviarProblema(resposta: FastifyReply, problema: Problema): Fast
     });
 }
 
-export type MapaDeStatusDeNegocio = Readonly<Record<string, 409 | 422>>;
+export type MapaDeStatusDeNegocio = Readonly<Record<string, 401 | 403 | 409 | 422 | 429>>;
 
 export function enviarFalhaDeNegocio(
   requisicao: FastifyRequest,
@@ -33,6 +33,11 @@ export function enviarFalhaDeNegocio(
   erro: ErroDeNegocio,
   mapa: MapaDeStatusDeNegocio,
 ): FastifyReply {
+  const tenteDeNovoEm = erro.detalhes?.tenteDeNovoEm;
+  if (typeof tenteDeNovoEm === 'string') {
+    const segundos = Math.ceil((Date.parse(tenteDeNovoEm) - Date.now()) / 1000);
+    resposta.header('retry-after', String(Math.max(segundos, 1)));
+  }
   return enviarProblema(resposta, {
     status: mapa[erro.codigo] ?? 422,
     codigo: erro.codigo,

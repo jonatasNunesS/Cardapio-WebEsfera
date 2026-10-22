@@ -1,4 +1,4 @@
-import { cpSync, mkdtempSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, readdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { CODIGOS } from '@cardapio/aplicacao';
@@ -18,6 +18,12 @@ async function consultarComoAdminEm(urlDoBanco: string, texto: string): Promise<
     await cliente.end();
   }
 }
+
+const VERSIONADAS = readdirSync(PASTA_MIGRACOES)
+  .filter((arquivo) => arquivo.endsWith('.sql'))
+  .sort()
+  .map((arquivo) => arquivo.replace(/\.sql$/, ''));
+const PROXIMA = String(VERSIONADAS.length + 1).padStart(4, '0');
 
 const nome = `cardapio_migracoes_${String(Date.now())}`;
 let urlMigracao = '';
@@ -42,19 +48,20 @@ describe('16. migrações', () => {
     const primeira = await migrarPorUrl(urlMigracao, pastaCopia);
     const segunda = await migrarPorUrl(urlMigracao, pastaCopia);
 
-    expect(primeira.aplicadas).toEqual([
+    expect(primeira.aplicadas).toEqual(VERSIONADAS);
+    expect(VERSIONADAS.slice(0, 5)).toEqual([
       '0001_fundacao',
       '0002_planos_e_restaurantes',
       '0003_mesas',
       '0004_caixa_saida_e_auditoria',
       '0005_resolver_mesa',
     ]);
-    expect(segunda).toEqual({ aplicadas: [], jaAplicadas: 5 });
+    expect(segunda).toEqual({ aplicadas: [], jaAplicadas: VERSIONADAS.length });
   });
 
   it('aplicam uma migração sem transação (índice CONCURRENTLY) por passos', async () => {
     writeFileSync(
-      path.join(pastaCopia, '0006_indice_concorrente.sql'),
+      path.join(pastaCopia, `${PROXIMA}_indice_concorrente.sql`),
       [
         '-- cardapio:sem-transacao',
         "SET lock_timeout = '5s';",
@@ -65,8 +72,8 @@ describe('16. migrações', () => {
     );
 
     await expect(migrarPorUrl(urlMigracao, pastaCopia)).resolves.toEqual({
-      aplicadas: ['0006_indice_concorrente'],
-      jaAplicadas: 5,
+      aplicadas: [`${PROXIMA}_indice_concorrente`],
+      jaAplicadas: VERSIONADAS.length,
     });
   });
 
@@ -94,7 +101,7 @@ describe('16b. migrações concorrentes', () => {
     pastaLenta = mkdtempSync(path.join(tmpdir(), 'migracoes-lentas-'));
     cpSync(PASTA_MIGRACOES, pastaLenta, { recursive: true });
     writeFileSync(
-      path.join(pastaLenta, '0006_lenta.sql'),
+      path.join(pastaLenta, `${PROXIMA}_lenta.sql`),
       "SET LOCAL lock_timeout = '5s';\nSET LOCAL statement_timeout = '60s';\nSELECT pg_sleep(0.5);\n",
     );
   });
@@ -111,12 +118,12 @@ describe('16b. migrações concorrentes', () => {
     ]);
     const [aplicou, esperou] = [...resultados].sort((a, b) => b.aplicadas.length - a.aplicadas.length);
 
-    expect(aplicou?.aplicadas).toHaveLength(6);
-    expect(esperou).toEqual({ aplicadas: [], jaAplicadas: 6 });
+    expect(aplicou?.aplicadas).toHaveLength(VERSIONADAS.length + 1);
+    expect(esperou).toEqual({ aplicadas: [], jaAplicadas: VERSIONADAS.length + 1 });
     const [controle] = await consultarComoAdminEm(
       urlConcorrente,
       'SELECT count(*)::int AS total FROM migracoes.aplicadas',
     );
-    expect(controle?.total).toBe(6);
+    expect(controle?.total).toBe(VERSIONADAS.length + 1);
   });
 });

@@ -76,3 +76,32 @@ Com "Reduzir movimento" ligado no sistema:
 
 - Nenhuma animação (carregando, esqueleto, transições).
 - O vídeo do prato não toca sozinho (ver item 1, passo 6).
+
+## 7. Segundo fator do admin em aplicativos reais
+
+O CI gera os códigos com a mesma biblioteca da API. A compatibilidade com os
+aplicativos só se prova no aparelho.
+
+Aplicativos: Google Authenticator, Microsoft Authenticator e o gerenciador de
+senhas da equipe, num iPhone e num Android.
+
+1. Criar um admin de teste com `pnpm admin:criar` em homologação.
+2. No primeiro acesso, adicionar a conta digitando a chave.
+   - Esperado: o aplicativo mostra a conta com o emissor "WebEsfera" e o código é aceito.
+3. Repetir tocando em "Abrir no autenticador" no celular.
+   - Esperado: o aplicativo abre com a conta preenchida.
+4. Entrar de novo com o código seguinte.
+   - Esperado: entra. Tentar o mesmo código outra vez é recusado.
+5. Entrar com um código de recuperação.
+   - Esperado: entra uma vez; o mesmo código é recusado depois.
+
+## 8. Gerenciador de senhas no painel
+
+No painel, com o gerenciador do navegador (Chrome e Safari) e um gerenciador
+externo:
+
+- Em "Criar conta", o gerenciador sugere uma senha forte e a salva com o
+  e-mail.
+- Em "Entrar", preenche e-mail e senha.
+- No admin, em "Confirme que é você", o campo aceita o preenchimento do código
+  pelo gerenciador (`autocomplete="one-time-code"`).

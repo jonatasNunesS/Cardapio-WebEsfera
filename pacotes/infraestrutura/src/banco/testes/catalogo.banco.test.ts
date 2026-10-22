@@ -14,6 +14,14 @@ const PAPEIS_DA_APLICACAO = [
   'cardapio_migracao',
   'cardapio_dono',
 ];
+const TABELAS_SO_POR_FUNCAO = [
+  'usuarios',
+  'administradores',
+  'codigos_recuperacao_admin',
+  'sessoes',
+  'tokens_redefinicao_senha',
+  'tentativas_login',
+];
 const NOMES_DE_SISTEMA = TABELAS_DE_SISTEMA.map((tabela) => tabela.tabela);
 
 async function tabelasDeRestaurante(): Promise<string[]> {
@@ -162,6 +170,21 @@ describe('catálogo do banco', () => {
       expect(executores?.papeis, funcao.assinatura).toEqual([declarada?.papel]);
     }
   });
+
+  it.each(TABELAS_SO_POR_FUNCAO)(
+    '7. app_runtime e app_sistema não têm permissão nenhuma em %s: só as funções privilegiadas chegam nela',
+    async (tabela) => {
+      const permissoes = await consultarComoAdmin<{ papel: string; permissao: string }>(
+        `SELECT grantee AS papel, privilege_type AS permissao FROM information_schema.role_table_grants
+          WHERE table_schema = 'public' AND table_name = $1 AND grantee IN ('app_runtime', 'app_sistema', 'PUBLIC')
+         UNION
+         SELECT grantee, privilege_type FROM information_schema.column_privileges
+          WHERE table_schema = 'public' AND table_name = $1 AND grantee IN ('app_runtime', 'app_sistema', 'PUBLIC')`,
+        [tabela],
+      );
+      expect(permissoes).toEqual([]);
+    },
+  );
 
   it('6. toda tabela de restaurante tem uma fábrica de dados de teste', async () => {
     const semFabrica = (await tabelasDeRestaurante()).filter(

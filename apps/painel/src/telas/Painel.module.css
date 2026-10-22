@@ -1,0 +1,73 @@
+.formulario {
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+.cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espaco-3) var(--espaco-5);
+  border-block-end: var(--borda-fina) solid var(--cor-borda);
+  background: var(--cor-superficie);
+}
+
+.restaurante {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-medio);
+}
+
+.conteudo {
+  box-sizing: border-box;
+  width: min(100%, 48rem);
+  margin-inline: auto;
+  padding: var(--espaco-6) var(--espaco-4);
+}
+
+.titulo {
+  margin: 0 0 var(--espaco-5);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-5);
+}
+
+.grupo {
+  display: grid;
+  gap: var(--espaco-4);
+  margin: 0 0 var(--espaco-5);
+  padding: var(--espaco-5);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+  background: var(--cor-superficie);
+}
+
+.legenda {
+  padding: 0 var(--espaco-2);
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-medio);
+}
+
+.cor {
+  display: grid;
+  grid-template-columns: var(--alvo-toque) 1fr;
+  gap: var(--espaco-3);
+  align-items: start;
+}
+
+.amostra {
+  width: var(--alvo-toque);
+  height: var(--alvo-toque);
+  margin-block-start: calc(var(--espaco-5) + var(--espaco-1));
+  border: var(--borda-fina) solid var(--cor-borda-campo);
+  border-radius: var(--raio-1);
+  background: var(--cor-marca);
+}
+
+.pagina {
+  min-height: 100dvh;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-texto);
+}

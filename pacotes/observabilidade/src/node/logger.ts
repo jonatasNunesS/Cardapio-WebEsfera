@@ -2,12 +2,27 @@ import { pino, type DestinationStream, type LevelWithSilent, type Logger } from 
 import { contextoAtual } from '../contexto.ts';
 import { limparValor, mascararTexto, OCULTO } from '../limpeza.ts';
 
-const CAMPOS_REDIGIDOS = ['cookie', 'authorization', 'senha', 'token', 'email', 'documento', 'c'];
+const CAMPOS_REDIGIDOS = [
+  'cookie',
+  'authorization',
+  'senha',
+  'senhaNova',
+  'token',
+  'email',
+  'documento',
+  'c',
+  'segredo',
+  'codigoDeVerificacao',
+  'codigosDeRecuperacao',
+  'uriOtpauth',
+];
 
 const CAMINHOS_REDIGIDOS = [
   ...CAMPOS_REDIGIDOS.flatMap((campo) => [campo, `*.${campo}`, `*.*.${campo}`]),
   'req.headers.cookie',
   'req.headers.authorization',
+  'req.headers["x-csrf-token"]',
+  'res.headers["set-cookie"]',
 ];
 
 export interface OpcoesLogger {

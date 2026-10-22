@@ -14,6 +14,13 @@ const CHAVES_SENSIVEIS: ReadonlySet<string> = new Set([
   'cnpj',
 ]);
 
+const PADRAO_DE_CHAVE_SENSIVEL =
+  /senha|token|segredo|totp|csrf|cookie|email|verificacao|recuperacao|otpauth/i;
+
+function ehChaveSensivel(chave: string): boolean {
+  return CHAVES_SENSIVEIS.has(chave.toLowerCase()) || PADRAO_DE_CHAVE_SENSIVEL.test(chave);
+}
+
 const CABECALHOS_PERMITIDOS: ReadonlySet<string> = new Set([
   'accept',
   'content-length',
@@ -25,6 +32,8 @@ const CABECALHOS_PERMITIDOS: ReadonlySet<string> = new Set([
 const SUBSTITUICOES: readonly (readonly [RegExp, string])[] = [
   [/((?:^|[?&])c=)[^&#\s"']*/g, `$1${OCULTO}`],
   [/(\/mesa\/)[^/?#\s"']+/g, `$1${OCULTO}`],
+  [/otpauth:\/\/[^\s"']+/gi, `otpauth://${OCULTO}`],
+  [/(redefinir-senha#)[^\s"']+/g, `$1${OCULTO}`],
   [/[\w.+-]+@(?:[a-z0-9-]+\.)+[a-z]{2,}\b/gi, '[email]'],
   [/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, '[cnpj]'],
   [/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g, '[cpf]'],
@@ -53,7 +62,7 @@ export function limparValor(valor: unknown): unknown {
   return Object.fromEntries(
     Object.entries(valor).map(([chave, item]) => [
       chave,
-      CHAVES_SENSIVEIS.has(chave.toLowerCase()) ? OCULTO : limparValor(item),
+      ehChaveSensivel(chave) ? OCULTO : limparValor(item),
     ]),
   );
 }
