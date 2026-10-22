@@ -2,7 +2,8 @@ import { juntarClasses } from '../../utilitarios/classes.ts';
 import tons from '../../utilitarios/tons.module.css';
 import estilos from './SeloSituacao.module.css';
 
-export type Situacao = 'aguardando' | 'emAtendimento' | 'concluido' | 'cancelado' | 'vencida' | 'paga';
+export type Situacao =
+  'aguardando' | 'emAtendimento' | 'concluido' | 'cancelado' | 'vencida' | 'paga' | 'esgotado' | 'destaque';
 
 type Tom = 'aviso' | 'informacao' | 'sucesso' | 'neutro' | 'erro';
 
@@ -13,6 +14,8 @@ const SITUACOES: Readonly<Record<Situacao, { texto: string; tom: Tom }>> = {
   cancelado: { texto: 'Cancelado', tom: 'neutro' },
   vencida: { texto: 'Vencida', tom: 'erro' },
   paga: { texto: 'Paga', tom: 'sucesso' },
+  esgotado: { texto: 'Esgotado', tom: 'aviso' },
+  destaque: { texto: 'Destaque', tom: 'informacao' },
 };
 
 export interface PropriedadesSeloSituacao {

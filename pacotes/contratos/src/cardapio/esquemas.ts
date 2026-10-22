@@ -176,3 +176,15 @@ export function centavosDoTexto(texto: string): number | null {
   const centavos = Number((partes[2] ?? '').padEnd(2, '0'));
   return reais * 100 + centavos;
 }
+
+function separarMilhares(reais: number): string {
+  return String(reais).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+export function textoDoPreco(centavos: number): string {
+  return `${separarMilhares(Math.trunc(centavos / 100))},${String(centavos % 100).padStart(2, '0')}`;
+}
+
+export function formatarPreco(centavos: number): string {
+  return `R$ ${textoDoPreco(centavos)}`;
+}
