@@ -22,6 +22,9 @@ function montarTags(
     contexto: contexto?.escopo,
     codigo: descricao.codigo,
     id_rastreio: idRastreio,
+    fila: contexto?.job?.fila,
+    job_id: contexto?.job?.id,
+    tentativa: contexto?.job === undefined ? undefined : String(contexto.job.tentativa),
   };
   return Object.fromEntries(
     Object.entries(tags).filter((par): par is [string, string] => par[1] !== undefined),

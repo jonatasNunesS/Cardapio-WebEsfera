@@ -1,5 +1,11 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
+export interface JobEmExecucao {
+  readonly fila: string;
+  readonly id: string;
+  readonly tentativa: number;
+}
+
 export interface ContextoDeExecucao {
   readonly idRastreio: string;
   readonly app: string;
@@ -8,6 +14,7 @@ export interface ContextoDeExecucao {
   readonly restauranteId?: string;
   readonly casoDeUso?: string;
   readonly escopo?: 'sistema';
+  readonly job?: JobEmExecucao;
 }
 
 const armazenamento = new AsyncLocalStorage<ContextoDeExecucao>();

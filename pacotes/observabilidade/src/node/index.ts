@@ -1,5 +1,5 @@
 export { abrirContexto, contextoAtual, executarComContexto } from '../contexto.ts';
-export type { ContextoDeExecucao } from '../contexto.ts';
+export type { ContextoDeExecucao, JobEmExecucao } from '../contexto.ts';
 export { esquemaAmbienteObservabilidade } from './ambiente.ts';
 export type { AmbienteObservabilidade } from './ambiente.ts';
 export { criarLogger, definirLoggerPadrao, obterLoggerPadrao } from './logger.ts';

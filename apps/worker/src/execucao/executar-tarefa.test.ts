@@ -51,4 +51,49 @@ describe('executarTarefa', () => {
     expect(resultado).toBe(7);
     expect(transporte.eventos).toHaveLength(0);
   });
+
+  it('com o job, as tags levam fila, job e tentativa', async () => {
+    const erro = new ErroAplicacao(CODIGOS.DEPURACAO_ERRO_PROVOCADO, 'falhou', { modulo: 'rotinas' });
+    const job = { fila: 'rotinas', id: 'expirar-sessoes-mesa-1', tentativa: 3 };
+
+    await expect(
+      executarTarefa('rotinas.expirar', { restauranteId: RESTAURANTE_ID }, () => Promise.reject(erro), {
+        job,
+      }),
+    ).rejects.toBe(erro);
+    await aguardarEnvio(1000);
+
+    expect(transporte.eventos[0]?.tags).toMatchObject({
+      fila: 'rotinas',
+      job_id: 'expirar-sessoes-mesa-1',
+      tentativa: '3',
+      restaurante_id: RESTAURANTE_ID,
+    });
+  });
+
+  it('tentativa que ainda vai se repetir não vai ao Sentry, mas o erro sobe', async () => {
+    const erro = new Error('instável');
+    await expect(
+      executarTarefa('rotinas.expirar', {}, () => Promise.reject(erro), { reportarFalha: false }),
+    ).rejects.toBe(erro);
+    await aguardarEnvio(1000);
+
+    expect(transporte.eventos).toHaveLength(0);
+  });
+
+  it('o predicado decide pelo erro se a falha vai ao Sentry', async () => {
+    const definitiva = new Error('definitiva');
+    const transitoria = new Error('transitória');
+    const reportarFalha = (erro: unknown) => erro === definitiva;
+
+    await expect(
+      executarTarefa('rotinas.expirar', {}, () => Promise.reject(transitoria), { reportarFalha }),
+    ).rejects.toBe(transitoria);
+    await expect(
+      executarTarefa('rotinas.expirar', {}, () => Promise.reject(definitiva), { reportarFalha }),
+    ).rejects.toBe(definitiva);
+    await aguardarEnvio(1000);
+
+    expect(transporte.eventos).toHaveLength(1);
+  });
 });
