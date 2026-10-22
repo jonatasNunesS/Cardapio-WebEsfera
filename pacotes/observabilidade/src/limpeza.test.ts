@@ -86,6 +86,48 @@ describe('limparEvento', () => {
   });
 });
 
+describe('campos de identidade (M04)', () => {
+  it('oculta senha nova, código de verificação, segredo TOTP, códigos de recuperação e token de CSRF', () => {
+    const limpo = limparEvento({
+      extra: {
+        senhaNova: 'cavalo-bateria-grampo',
+        codigoDeVerificacao: '123456',
+        segredoTotp: 'JBSWY3DPEHPK3PXP',
+        segredo: 'JBSWY3DPEHPK3PXP',
+        codigosDeRecuperacao: ['ABCDE-FGHJK'],
+        tokenDeRedefinicao: 'abc',
+        'x-csrf-token': 'def',
+        hashSenha: '$argon2id$v=19$abc',
+        emailDoDono: 'ana@brasa.com.br',
+        codigo: 'SESSAO_ENTRAR_CREDENCIAIS_INVALIDAS',
+      },
+    });
+
+    expect(limpo.extra).toEqual({
+      senhaNova: '[oculto]',
+      codigoDeVerificacao: '[oculto]',
+      segredoTotp: '[oculto]',
+      segredo: '[oculto]',
+      codigosDeRecuperacao: '[oculto]',
+      tokenDeRedefinicao: '[oculto]',
+      'x-csrf-token': '[oculto]',
+      hashSenha: '[oculto]',
+      emailDoDono: '[oculto]',
+      codigo: 'SESSAO_ENTRAR_CREDENCIAIS_INVALIDAS',
+    });
+  });
+
+  it('oculta o endereço otpauth e o token de redefinição em qualquer texto', () => {
+    const limpo = limparEvento({
+      message: 'Falhou: otpauth://totp/WebEsfera:Admin?secret=JBSWY3DPEHPK3PXP&issuer=WebEsfera',
+      extra: { link: 'https://painel.exemplo.com.br/redefinir-senha#Zm9vYmFy' },
+    });
+
+    expect(limpo.message).toBe('Falhou: otpauth://[oculto]');
+    expect(limpo.extra.link).toBe('https://painel.exemplo.com.br/redefinir-senha#[oculto]');
+  });
+});
+
 describe('limparBreadcrumb', () => {
   it('limpa a URL e os dados do passo', () => {
     const limpo = limparBreadcrumb({

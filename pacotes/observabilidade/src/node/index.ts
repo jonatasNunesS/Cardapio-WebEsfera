@@ -15,3 +15,5 @@ export { amostragemPadrao } from '../coleta.ts';
 export type { AmbienteApp } from '../coleta.ts';
 export { aguardarEnvio, iniciarSentryNode } from './sentry.ts';
 export type { OpcoesSentryNode } from './sentry.ts';
+export { CODIGO_DO_BLOQUEIO, criarSinaisDeSeguranca } from './sinais-de-seguranca.ts';
+export type { EtapaDoSinal, PublicoDoSinal, SinaisDeSegurancaNode } from './sinais-de-seguranca.ts';
