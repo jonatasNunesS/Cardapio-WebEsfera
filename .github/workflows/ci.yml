@@ -36,8 +36,18 @@ jobs:
           --health-interval 5s
           --health-timeout 3s
           --health-retries 20
+      redis:
+        image: redis:8.8.3-alpine3.23
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
     env:
       URL_BANCO_TESTE_ADMIN: postgres://cardapio:cardapio_local@127.0.0.1:5432/postgres
+      URL_REDIS_TESTE: redis://127.0.0.1:6379/15
     steps:
       - name: Baixar o código
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

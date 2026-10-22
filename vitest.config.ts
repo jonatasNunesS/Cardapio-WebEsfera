@@ -25,7 +25,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'banco',
-          include: ['pacotes/**/*.banco.test.ts'],
+          include: ['{apps,pacotes}/**/*.banco.test.ts'],
           exclude: ignorados,
           environment: 'node',
           globalSetup: ['pacotes/infraestrutura/src/banco/testes/preparar-banco-de-teste.ts'],

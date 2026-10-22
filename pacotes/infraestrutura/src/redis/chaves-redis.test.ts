@@ -11,6 +11,8 @@ describe('chavesRedis', () => {
     expect(chavesRedis.assinatura(RESTAURANTE)).toBe(`r:${RESTAURANTE}:assinatura`);
     expect(chavesRedis.mesaPorCodigo('Abcdefghijklmnopqrstuv')).toBe('qr:Abcdefghijklmnopqrstuv');
     expect(chavesRedis.limite('mesa', 'abc-123')).toBe('limite:mesa:abc-123');
+    expect(chavesRedis.tempoReal(RESTAURANTE)).toBe(`r:${RESTAURANTE}:tempo-real`);
+    expect(chavesRedis.trava('publicar-caixa-saida')).toBe('trava:publicar-caixa-saida');
   });
 
   it.each([
@@ -19,6 +21,8 @@ describe('chavesRedis', () => {
     () => chavesRedis.personalizacao('*'),
     () => chavesRedis.mesaPorCodigo('curto'),
     () => chavesRedis.limite('mesa', 'a:b'),
+    () => chavesRedis.tempoReal('*'),
+    () => chavesRedis.trava('a:b'),
   ])('recusa valores que poderiam atravessar o espaço de outro restaurante (%#)', (montar) => {
     expect(montar).toThrow(expect.objectContaining({ codigo: CODIGOS.REDIS_CHAVE_INVALIDA }));
   });

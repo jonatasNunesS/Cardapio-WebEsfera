@@ -37,7 +37,7 @@ function permitir(origem: string | readonly string[], destinos: readonly string[
 
 const politicasDeFronteira = [
   permitir('aplicacao', ['dominio'], false),
-  permitir('infraestrutura', ['banco', 'aplicacao', 'dominio', 'config'], true),
+  permitir('infraestrutura', ['banco', 'aplicacao', 'dominio', 'config', 'contratos'], true),
   permitir('banco', ['aplicacao', 'dominio', 'config'], true),
   {
     from: { element: { type: 'contratos' } },

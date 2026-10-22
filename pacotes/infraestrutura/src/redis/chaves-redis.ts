@@ -29,6 +29,8 @@ export const chavesRedis = {
   personalizacao: (restauranteId: string) => `${restaurante(restauranteId)}:personalizacao`,
   assinatura: (restauranteId: string) => `${restaurante(restauranteId)}:assinatura`,
   mesaPorCodigo: (codigo: string) => `qr:${exigir(codigo, /^[A-Za-z0-9_-]{22}$/, 'codigo')}`,
+  tempoReal: (restauranteId: string) => `${restaurante(restauranteId)}:tempo-real`,
+  trava: (nome: string) => `trava:${exigir(nome, PADRAO_SEGMENTO, 'nome')}`,
   limite: (escopo: string, chave: string) =>
     `limite:${exigir(escopo, PADRAO_SEGMENTO, 'escopo')}:${exigir(chave, PADRAO_SEGMENTO, 'chave')}`,
 } as const;

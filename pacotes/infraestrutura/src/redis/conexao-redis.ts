@@ -1,8 +1,15 @@
 import { CODIGOS, ErroDependenciaExterna, type RelatorDeErros } from '@cardapio/aplicacao';
 import { Redis } from 'ioredis';
 
-export function criarRedis(url: string, relator: RelatorDeErros): Redis {
-  const redis = new Redis(url, { connectTimeout: 500, maxRetriesPerRequest: 1 });
+export interface OpcoesDoRedis {
+  readonly connectionName?: string;
+  readonly connectTimeout?: number;
+  readonly enableOfflineQueue?: boolean;
+  readonly maxRetriesPerRequest?: number | null;
+}
+
+export function criarRedis(url: string, relator: RelatorDeErros, opcoes: OpcoesDoRedis = {}): Redis {
+  const redis = new Redis(url, { connectTimeout: 500, maxRetriesPerRequest: 1, ...opcoes });
   let reportado = false;
   redis.on('ready', () => {
     reportado = false;
