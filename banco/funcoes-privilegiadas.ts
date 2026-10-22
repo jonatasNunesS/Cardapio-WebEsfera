@@ -15,6 +15,14 @@ export const FUNCOES_PRIVILEGIADAS: readonly FuncaoPrivilegiada[] = [
     adr: 'docs/adr/0006-banco-e-isolamento.md',
   },
   {
+    nome: 'app.resolver_cardapio',
+    argumentos: 'p_slug text',
+    papel: 'app_runtime',
+    motivo:
+      'Resolver o slug público do cardápio (ou do histórico) antes de existir restaurante no contexto; devolve só id, slug atual, versão do cardápio e fuso, e nada para restaurante cancelado.',
+    adr: 'docs/adr/0010-cardapio-e-busca.md',
+  },
+  {
     nome: 'app.criar_usuario',
     argumentos: 'p_nome text, p_email text, p_hash_senha text',
     papel: 'app_runtime',
