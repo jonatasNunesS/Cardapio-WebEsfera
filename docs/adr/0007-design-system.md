@@ -47,7 +47,11 @@ abrimos exceção: ficamos na anterior.
   aceita, além de `tabpanel` (o padrão), o papel `region`. A tabela com
   rolagem lateral fica num contêiner `role="region"`, rotulado e com
   `tabIndex={0}`, porque sem foco quem usa só teclado não consegue rolar
-  (regra `scrollable-region-focusable` do axe).
+  (regra `scrollable-region-focusable` do axe). Condição (aprovada pelo John
+  em 2026-10-22): o `tabIndex` só vale com `role="region"` e rótulo
+  (`aria-label` ou `aria-labelledby`). Uma regra `no-restricted-syntax`
+  recusa a região focável sem rótulo, e o teste da `Tabela` falha se a região
+  rolável não tiver nome.
 - Regras de React: `@eslint-react/eslint-plugin` com o preset
   `recommended-type-checked`. Ele exige ESLint 10 e já inclui
   `rules-of-hooks`, então não usamos o `eslint-plugin-react-hooks`.
@@ -161,11 +165,30 @@ chromium`.
 
 ### Testes visuais no Docker
 
-- `@playwright/test` com `toHaveScreenshot` sobre o Storybook estático: cada
-  história do `index.json`, nos temas cardápio, painel e TV, a 360 e a 1280 px
-  (378 imagens na primeira base). A captura espera o fim da renderização e do
-  `play` (`__STORYBOOK_PREVIEW__.currentRender.phase`) e o carregamento das
-  fontes. Animações desligadas, cursor oculto, tolerância de 0,2% dos pixels.
+- `@playwright/test` com `toHaveScreenshot` sobre o Storybook estático. A
+  captura espera o fim da renderização e do `play`
+  (`__STORYBOOK_PREVIEW__.currentRender.phase`) e o carregamento das fontes.
+  Animações desligadas, cursor oculto, tolerância de 0,2% dos pixels.
+- Critério (decisão do John em 2026-10-22): snapshot só nas combinações reais.
+  Cada história declara onde aparece com as tags do Storybook `cardapio`,
+  `painel` e `tv`:
+
+  | Tag        | Tema     | Tela        |
+  | ---------- | -------- | ----------- |
+  | `cardapio` | cardápio | 360 x 800   |
+  | `painel`   | painel   | 1280 x 800  |
+  | `tv`       | TV       | 1920 x 1080 |
+  - Compartilhados (botões, campos, ícone, aviso, toast, esqueleto, tela de
+    erro) levam `cardapio` e `painel`.
+  - `tv` só em `ItemFila` (a versão TV), `SeloSituacao` e `Aviso`.
+  - Uma história de um arquivo pode trocar a tag com `!` (ex.: os filtros do
+    admin no arquivo dos chips levam `painel` e `!cardapio`).
+  - Base atual: 102 imagens (54 cardápio, 42 painel, 6 TV), 1,7 MB. A primeira
+    base, com tudo nos 3 temas e 2 larguras, tinha 378 imagens e 7,5 MB.
+
+- O axe não segue as tags: continua rodando em toda história nos três temas.
+- História sem nenhuma das três tags falha: no `beforeEach` da prévia (falha
+  nos testes das histórias, nos três projetos) e num teste da spec visual.
 - A base é gerada e comparada sempre na imagem oficial
   `mcr.microsoft.com/playwright:v1.64.1-noble`, na mesma versão do
   `@playwright/test` (um teste confere que o CI usa a mesma imagem):
@@ -194,8 +217,9 @@ chromium`.
 
 1. Criar a pasta em `pacotes/ui/src/componentes/<nome-em-kebab>` com o `.tsx`
    (nome em português, props tipadas), o `.module.css` (só tokens), a história
-   (`title` com o grupo: Formulario, Cardapio, Painel ou Compartilhados) com
-   todos os estados, e o teste de comportamento.
+   (`title` com o grupo: Formulario, Cardapio, Painel ou Compartilhados, e
+   `tags` com onde aparece: `cardapio`, `painel` e/ou `tv`) com todos os
+   estados, e o teste de comportamento.
 2. Comportamento que o jsdom não cobre (diálogo, foco real, mídia) vai como
    `play` na história, que roda no Chromium.
 3. Exportar no `pacotes/ui/src/index.ts`.
@@ -205,14 +229,21 @@ chromium`.
 6. Cor, espaço ou tamanho que não existe nos tokens entra primeiro em
    `tokens.css`, e o par de contraste novo entra em `tokens.test.ts`.
 
+## Roteiro manual
+
+O que o CI não prova fica em `docs/runbooks/roteiro-manual-de-testes.md`,
+rodado antes de cada versão. Entre os itens: o vídeo em MP4 no Safari do
+iPhone (o Chromium do CI toca o WebM), VoiceOver, TalkBack, zoom de 200% e
+movimento reduzido.
+
 ## Consequências
 
 - Uma cor fora dos tokens, um `!important`, um `style` em JSX, um `<div
 onClick>` ou uma história com violação do axe em qualquer tema quebram o CI.
 - Toda mudança visual aparece como diferença de imagem no PR e exige regravar a
   base no Docker.
-- O job visual leva cerca de 4 minutos. Se a base crescer muito, vale separar
-  por componente alterado.
+- O job visual leva cerca de 1 minuto com a base de 102 imagens. Se a base
+  crescer muito, vale separar por componente alterado.
 
 ## Documentação consultada
 
