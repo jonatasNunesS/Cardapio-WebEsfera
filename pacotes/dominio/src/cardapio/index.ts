@@ -1,3 +1,4 @@
+export { termosDeBusca } from './busca.ts';
 export { montarCardapio } from './cardapio.ts';
 export type { Cardapio, CategoriaDoCardapio, PratoDoCardapio, SecaoDoCardapio } from './cardapio.ts';
 export { criarDinheiro, DINHEIRO_MAXIMO_EM_CENTAVOS, formatarDinheiro, somarDinheiro } from './dinheiro.ts';
