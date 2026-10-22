@@ -19,11 +19,20 @@ import {
   type Processador,
   type Trabalhadores,
 } from '@cardapio/infraestrutura';
-import { contextoAtual, obterLoggerPadrao, reportarErro } from '@cardapio/observabilidade/node';
+import {
+  contextoAtual,
+  criarPulsoDeRotina,
+  monitorarRotina,
+  obterLoggerPadrao,
+  reportarErro,
+} from '@cardapio/observabilidade/node';
 import { executarTarefa } from '../execucao/executar-tarefa.ts';
 
 export const LIMITE_DE_ENCERRAMENTO_MS = 30_000;
 const DURACAO_DA_TRAVA_DO_PUBLICADOR_MS = 30_000;
+
+const MONITOR_DA_EXPIRACAO = { aCadaMinutos: 5, margemMinutos: 10, duracaoMaximaMinutos: 4 };
+const MONITOR_DO_PUBLICADOR = { aCadaMinutos: 1, margemMinutos: 5, duracaoMaximaMinutos: 1 };
 
 const ROTEAMENTO_DE_EVENTOS: RoteamentoDeEventos = {};
 
@@ -47,16 +56,22 @@ export function comporFilas(url: string, banco: AcessoAoBanco, relator: RelatorD
     filas,
     roteamento: ROTEAMENTO_DE_EVENTOS,
   };
+  const pulsarPublicador = criarPulsoDeRotina('caixa-saida-publicador', MONITOR_DO_PUBLICADOR);
   const processadores: Record<string, Processador> = {
-    'publicar-caixa-saida': () =>
-      trava.comTrava('publicar-caixa-saida', DURACAO_DA_TRAVA_DO_PUBLICADOR_MS, () =>
+    'publicar-caixa-saida': async () => {
+      const resumo = await trava.comTrava('publicar-caixa-saida', DURACAO_DA_TRAVA_DO_PUBLICADOR_MS, () =>
         publicarCaixaDeSaida(dependenciasDaCaixa),
-      ),
+      );
+      pulsarPublicador();
+      return resumo;
+    },
     'expirar-sessoes-mesa': () =>
-      expirarSessoesMesa({
-        sessoesMesa: criarSessoesMesaVencidas(banco),
-        relogio: { agora: () => new Date() },
-      }),
+      monitorarRotina('rotinas-expirar-sessoes-mesa', MONITOR_DA_EXPIRACAO, () =>
+        expirarSessoesMesa({
+          sessoesMesa: criarSessoesMesaVencidas(banco),
+          relogio: { agora: () => new Date() },
+        }),
+      ),
   };
   let trabalhadores: Trabalhadores | undefined;
 

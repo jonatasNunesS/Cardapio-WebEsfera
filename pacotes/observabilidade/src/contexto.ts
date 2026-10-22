@@ -4,6 +4,7 @@ export interface JobEmExecucao {
   readonly fila: string;
   readonly id: string;
   readonly tentativa: number;
+  readonly falhaDefinitiva?: boolean;
 }
 
 export interface ContextoDeExecucao {

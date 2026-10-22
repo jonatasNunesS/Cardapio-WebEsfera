@@ -25,6 +25,7 @@ function montarTags(
     fila: contexto?.job?.fila,
     job_id: contexto?.job?.id,
     tentativa: contexto?.job === undefined ? undefined : String(contexto.job.tentativa),
+    falha_definitiva: contexto?.job?.falhaDefinitiva === true ? 'sim' : undefined,
   };
   return Object.fromEntries(
     Object.entries(tags).filter((par): par is [string, string] => par[1] !== undefined),

@@ -11,8 +11,15 @@ export interface EventoCapturado {
 type ItemDoEnvelope = readonly [{ readonly type?: string }, unknown];
 type Envelope = readonly [unknown, readonly ItemDoEnvelope[]];
 
+export interface CheckInCapturado {
+  readonly monitor_slug?: string;
+  readonly status?: string;
+  readonly monitor_config?: Record<string, unknown>;
+}
+
 export interface TransporteFalso {
   readonly eventos: EventoCapturado[];
+  readonly checkIns: CheckInCapturado[];
   readonly fabrica: () => {
     send: (envelope: Envelope) => Promise<Record<string, never>>;
     flush: () => Promise<boolean>;
@@ -21,13 +28,18 @@ export interface TransporteFalso {
 
 export function criarTransporteFalso(): TransporteFalso {
   const eventos: EventoCapturado[] = [];
+  const checkIns: CheckInCapturado[] = [];
   return {
     eventos,
+    checkIns,
     fabrica: () => ({
       send: (envelope) => {
         for (const [cabecalho, carga] of envelope[1]) {
           if (cabecalho.type === 'event') {
             eventos.push(carga as EventoCapturado);
+          }
+          if (cabecalho.type === 'check_in') {
+            checkIns.push(carga as CheckInCapturado);
           }
         }
         return Promise.resolve({});

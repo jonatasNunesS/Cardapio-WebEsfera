@@ -67,6 +67,7 @@ describe('executarTarefa', () => {
       fila: 'rotinas',
       job_id: 'expirar-sessoes-mesa-1',
       tentativa: '3',
+      falha_definitiva: 'sim',
       restaurante_id: RESTAURANTE_ID,
     });
   });

@@ -122,7 +122,7 @@ function processarComEnvelope(opcoes: OpcoesDosTrabalhadores, fila: NomeDaFila) 
     const emExecucao = { fila, id: job.id ?? '', tentativa };
     try {
       return await opcoes.executarTarefa(
-        job.name,
+        `${fila}.${job.name}`,
         envelopeDoContexto(job.data),
         () => processarValidado(opcoes, fila, job),
         { job: emExecucao, reportarFalha: (erro) => ultima || ehFalhaDefinitiva(erro) },
@@ -161,7 +161,12 @@ function esperar(limiteMs: number) {
       resolver('forcado');
     }, limiteMs);
   });
-  return { promessa, cancelar: () => { clearTimeout(temporizador); } };
+  return {
+    promessa,
+    cancelar: () => {
+      clearTimeout(temporizador);
+    },
+  };
 }
 
 export function iniciarTrabalhadores(opcoes: OpcoesDosTrabalhadores): Trabalhadores {

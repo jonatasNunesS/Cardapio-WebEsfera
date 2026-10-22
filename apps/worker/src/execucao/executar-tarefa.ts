@@ -1,4 +1,5 @@
 import {
+  contextoAtual,
   ehIdRastreioValido,
   executarComContexto,
   gerarIdRastreio,
@@ -18,6 +19,17 @@ function contextoDaTarefa(nome: string, dados: DadosDaTarefa, job: JobEmExecucao
   const idRastreio = ehIdRastreioValido(dados.idRastreio) ? dados.idRastreio : gerarIdRastreio();
   const base = { idRastreio, app: 'worker', tarefa: nome, ...(job === undefined ? {} : { job }) };
   return typeof dados.restauranteId === 'string' ? { ...base, restauranteId: dados.restauranteId } : base;
+}
+
+function reportarFalhaDefinitiva(erro: unknown, nome: string, job: JobEmExecucao | undefined): void {
+  const contexto = contextoAtual();
+  if (job === undefined || contexto === undefined) {
+    reportarErro(erro, { tarefa: nome });
+    return;
+  }
+  executarComContexto({ ...contexto, job: { ...job, falhaDefinitiva: true } }, () =>
+    reportarErro(erro, { tarefa: nome }),
+  );
 }
 
 function deveReportar(reportarFalha: OpcoesDaTarefa['reportarFalha'], erro: unknown): boolean {
@@ -42,7 +54,7 @@ export async function executarTarefa<T>(
       if (!deveReportar(opcoes.reportarFalha, erro)) {
         logger.warn({ tarefa: nome, tentativa: opcoes.job?.tentativa }, 'tarefa falhou; vai tentar de novo');
       } else {
-        reportarErro(erro, { tarefa: nome });
+        reportarFalhaDefinitiva(erro, nome, opcoes.job);
       }
       throw erro;
     }
