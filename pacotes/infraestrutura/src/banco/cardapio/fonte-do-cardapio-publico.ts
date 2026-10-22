@@ -3,7 +3,7 @@ import {
   ErroEstadoInconsistente,
   type DadosDoCardapioPublico,
   type FonteDoCardapioPublico,
-  type PratoEncontrado,
+  type PratoEncontradoNoBanco,
   type ResolucaoDoCardapio,
 } from '@cardapio/aplicacao';
 import { sql } from 'drizzle-orm';
@@ -84,7 +84,7 @@ function paraDados(linha: LinhaDoCardapio): DadosDoCardapioPublico {
   };
 }
 
-function paraEncontrado(linha: LinhaEncontrada): PratoEncontrado {
+function paraEncontrado(linha: LinhaEncontrada): PratoEncontradoNoBanco {
   return {
     id: linha.id,
     nome: linha.nome,

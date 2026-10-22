@@ -20,11 +20,22 @@ export interface DadosDoCardapioPublico {
   readonly pratos: readonly PratoGuardado[];
 }
 
+export interface PratoEncontradoNoBanco {
+  readonly id: string;
+  readonly nome: string;
+  readonly descricao: string;
+  readonly precoCentavos: number;
+  readonly disponivel: boolean;
+  readonly destaque: boolean;
+  readonly categoria: string;
+}
+
 export interface PratoPublicado {
   readonly id: string;
   readonly nome: string;
   readonly descricao: string;
   readonly precoCentavos: number;
+  readonly preco: string;
   readonly disponivel: boolean;
   readonly destaque: boolean;
 }
@@ -51,7 +62,7 @@ export interface PratoEncontrado extends PratoPublicado {
 export interface FonteDoCardapioPublico {
   resolver(slug: string): Promise<ResolucaoDoCardapio>;
   ler(restauranteId: string): Promise<DadosDoCardapioPublico>;
-  buscar(restauranteId: string, termos: readonly string[]): Promise<readonly PratoEncontrado[]>;
+  buscar(restauranteId: string, termos: readonly string[]): Promise<readonly PratoEncontradoNoBanco[]>;
 }
 
 export interface CacheDoCardapio {

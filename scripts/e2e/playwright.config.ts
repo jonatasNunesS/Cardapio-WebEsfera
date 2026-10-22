@@ -15,6 +15,7 @@ const AMBIENTE_DA_API = {
   PORTA_API: String(PORTAS.api),
   URL_BANCO_API: urlDoBanco('cardapio_api', process.env.SENHA_BANCO_API ?? 'api_local'),
   URL_REDIS: URL_DO_REDIS_E2E,
+  DOMINIO_CARDAPIO: 'cardapio.localhost',
   DOMINIO_PAINEL: 'painel.localhost',
   DOMINIO_ADMIN: 'admin.localhost',
   URL_PAINEL: URL_DO_PAINEL,

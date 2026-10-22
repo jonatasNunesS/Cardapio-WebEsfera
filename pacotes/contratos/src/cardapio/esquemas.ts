@@ -135,7 +135,11 @@ export interface PersonalizacaoPublica {
   readonly capaUrl: string | null;
   readonly frase: string;
   readonly linkAvaliacaoGoogle: string | null;
-  readonly textos: Readonly<Record<string, string>>;
+  readonly textos: {
+    readonly boasVindas: string;
+    readonly aoChamarGarcom: string;
+    readonly restauranteFechado: string;
+  };
 }
 
 export interface RespostaCardapioPublico {

@@ -22,6 +22,7 @@ export type {
   DadosDoCardapioPublico,
   FonteDoCardapioPublico,
   PratoEncontrado,
+  PratoEncontradoNoBanco,
   PratoPublicado,
   ResolucaoDoCardapio,
   SecaoPublicada,
