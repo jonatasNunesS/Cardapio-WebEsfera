@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Admin: restaurantes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#303642}a:hover{color:#1C2028}
+a:focus-visible,button:focus-visible,input:focus{outline:3px solid #1849A9;outline-offset:2px}
+th{font-size:13px;font-weight:700;color:#5B6472;text-align:left;padding:12px 14px;border-bottom:1px solid #DCE1E7;white-space:nowrap}
+td{font-size:14px;padding:14px;border-bottom:1px solid #EEF1F4;white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F4F6F8;color:#303642;font-family:'Open Sans',system-ui,sans-serif;display:flex;flex-wrap:wrap">
+
+  <nav aria-label="Administração" style="flex:1 1 220px;max-width:100%;background:#1C2028;color:#FFFFFF;padding:24px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 8px 6px">
+      <span aria-hidden="true" style="width:32px;height:32px;border-radius:999px;background:#00C2CB"></span>
+      <span style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px">WebEsfera</span>
+    </div>
+    <span style="margin:0 8px 18px;align-self:flex-start;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1C2028;background:#FDB022;padding:3px 8px;border-radius:6px">Admin da plataforma</span>
+    <a href="AdminVisao.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Visão geral</a>
+    <a href="AdminRestaurantes.dc.html" aria-current="page" style="color:#303642;background:#00C2CB;text-decoration:none;padding:12px;border-radius:10px;font-size:15px;font-weight:700">Restaurantes</a>
+    <a href="AdminCobrancas.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Cobranças</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Planos</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Suporte e auditoria</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Saúde da plataforma</a>
+    <span style="margin-top:auto;padding:12px 8px 0;font-size:13px;color:#AEB6C2">Jonatas · login com 2 fatores</span>
+  </nav>
+
+  <div style="flex:999 1 560px;min-width:0;padding:32px 24px 48px;box-sizing:border-box">
+    <div style="max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
+
+      <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <h1 style="margin:0;font-family:'Poppins',sans-serif;font-size:28px;font-weight:600">Restaurantes</h1>
+          <p style="margin:0;font-size:15px;color:#5B6472">{{resumo}}</p>
+        </div>
+        <button type="button" style="height:44px;padding:0 18px;border-radius:10px;border:0;background:#00C2CB;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Cadastrar restaurante</button>
+      </header>
+
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <label for="busca-r" class="sr">Buscar restaurante</label>
+        <input id="busca-r" type="search" value="{{termo}}" onChange="{{digitar}}" placeholder="Buscar por nome, cidade ou responsável" style="flex:1 1 280px;height:44px;padding:0 14px;border:1px solid #7A8494;border-radius:10px;font-family:inherit;font-size:15px;color:#303642;background:#FFFFFF;box-sizing:border-box">
+        <div role="group" aria-label="Filtrar por situação" style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{filtros}}" as="f" hint-placeholder-count="5">
+            <sc-if value="{{f.ativo}}" hint-placeholder-val="{{ false }}">
+              <button type="button" aria-pressed="true" onClick="{{f.escolher}}" style="height:40px;padding:0 14px;border-radius:999px;border:1.5px solid #303642;background:#303642;color:#FFFFFF;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">{{f.nome}} · {{f.qtd}}</button>
+            </sc-if>
+            <sc-if value="{{f.inativo}}" hint-placeholder-val="{{ true }}">
+              <button type="button" aria-pressed="false" onClick="{{f.escolher}}" style="height:40px;padding:0 14px;border-radius:999px;border:1.5px solid #7A8494;background:#FFFFFF;color:#303642;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">{{f.nome}} · {{f.qtd}}</button>
+            </sc-if>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:860px">
+          <thead>
+            <tr><th scope="col">Restaurante</th><th scope="col">Plano</th><th scope="col">Situação</th><th scope="col">Mensalidade</th><th scope="col">Próxima cobrança</th><th scope="col">Mesas</th><th scope="col">Último uso</th></tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{linhas}}" as="r" hint-placeholder-count="6">
+              <tr>
+                <td>
+                  <a href="AdminRestaurante.dc.html" style="font-weight:700;font-size:15px">{{r.nome}}</a><br>
+                  <span style="font-size:13px;color:#5B6472">{{r.cidade}} · {{r.responsavel}}</span>
+                </td>
+                <td>{{r.plano}}</td>
+                <td><span style="font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;color:{{r.corTexto}};background:{{r.corFundo}}">{{r.situacao}}</span></td>
+                <td>{{r.mensalidade}}</td>
+                <td>{{r.proxima}}</td>
+                <td>{{r.mesas}}</td>
+                <td>{{r.uso}}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <sc-if value="{{vazio}}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;padding:32px;text-align:center;color:#5B6472">Nenhum restaurante com esse filtro.</p>
+        </sc-if>
+      </div>
+      <span style="font-size:13px;color:#5B6472">Dados de exemplo. Valores dos planos a definir.</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filtro: 'todos', termo: '' };
+  }
+  renderVals() {
+    const cores = {
+      ativo: ['Ativo', '#054F31', '#E2F1E7'],
+      teste: ['Em teste', '#1849A9', '#E8EEFB'],
+      atraso: ['Em atraso', '#7A271A', '#FDECEA'],
+      cancelado: ['Cancelado', '#3A4150', '#EEF1F4'],
+    };
+    const todos = [
+      { nome: 'Brasa & Trigo', cidade: 'Belo Horizonte', responsavel: 'Marcos', plano: 'Pro', st: 'ativo', mensalidade: 'R$ 149,00', proxima: '05/11', mesas: '24 de 30', uso: 'agora' },
+      { nome: 'Bar do Zé Pescador', cidade: 'Contagem', responsavel: 'José', plano: 'Pro', st: 'atraso', mensalidade: 'R$ 149,00', proxima: 'Venceu 12/10', mesas: '22 de 30', uso: 'ontem' },
+      { nome: 'Restaurante Mineirinho', cidade: 'Sete Lagoas', responsavel: 'Cida', plano: 'Básico', st: 'atraso', mensalidade: 'R$ 99,00', proxima: 'Venceu 15/10', mesas: '10 de 15', uso: 'hoje' },
+      { nome: 'Cantina Dona Lu', cidade: 'Betim', responsavel: 'Luciana', plano: 'Teste', st: 'teste', mensalidade: 'Grátis até 23/10', proxima: '23/10', mesas: '12 de 30', uso: 'há 2 h' },
+      { nome: 'Sushi Kenzo', cidade: 'Belo Horizonte', responsavel: 'Kenji', plano: 'Pro', st: 'ativo', mensalidade: 'R$ 149,00', proxima: '18/11', mesas: '30 de 30', uso: 'há 10 min' },
+      { nome: 'Padaria Pão Nosso', cidade: 'Divinópolis', responsavel: 'Rita', plano: 'Básico', st: 'ativo', mensalidade: 'R$ 99,00', proxima: '02/11', mesas: '15 de 15', uso: 'hoje' },
+      { nome: 'Hamburgueria 77', cidade: 'Itaúna', responsavel: 'Paulo', plano: 'Básico', st: 'cancelado', mensalidade: '-', proxima: '-', mesas: '0', uso: 'há 40 dias' },
+    ];
+    const normalizar = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const termo = normalizar(this.state.termo.trim());
+    const porTermo = todos.filter((r) => !termo || normalizar(r.nome + ' ' + r.cidade + ' ' + r.responsavel).includes(termo));
+    const defs = [['todos', 'Todos'], ['ativo', 'Ativos'], ['teste', 'Em teste'], ['atraso', 'Em atraso'], ['cancelado', 'Cancelados']];
+    const filtros = defs.map(([id, nome]) => ({
+      nome,
+      qtd: id === 'todos' ? porTermo.length : porTermo.filter((r) => r.st === id).length,
+      ativo: this.state.filtro === id,
+      inativo: this.state.filtro !== id,
+      escolher: () => this.setState({ filtro: id }),
+    }));
+    const linhas = porTermo
+      .filter((r) => this.state.filtro === 'todos' || r.st === this.state.filtro)
+      .map((r) => ({ ...r, situacao: cores[r.st][0], corTexto: cores[r.st][1], corFundo: cores[r.st][2] }));
+    return {
+      termo: this.state.termo,
+      digitar: (e) => this.setState({ termo: e.target.value }),
+      filtros,
+      linhas,
+      vazio: linhas.length === 0,
+      resumo: todos.length + ' cadastrados nesta amostra · clique no nome para abrir o restaurante',
+    };
+  }
+}
+</script>
+</body>
+</html>

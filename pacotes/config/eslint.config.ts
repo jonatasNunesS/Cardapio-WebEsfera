@@ -1,7 +1,9 @@
+import eslintReact from '@eslint-react/eslint-plugin';
 import js from '@eslint/js';
 import type { ESLint } from 'eslint';
 import moduloBoundaries from 'eslint-plugin-boundaries';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import jsxA11y from 'eslint-plugin-jsx-a11y-x';
 import tseslint from 'typescript-eslint';
 import { pluginCardapio } from './eslint/plugin.ts';
 
@@ -95,7 +97,7 @@ const politicasDeFronteira = [
 ];
 
 export default defineConfig(
-  globalIgnores(['**/node_modules/', '**/dist/', '**/coverage/', 'pnpm-lock.yaml']),
+  globalIgnores(['**/node_modules/', '**/dist/', '**/coverage/', '**/storybook-static/', 'pnpm-lock.yaml']),
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
@@ -110,6 +112,31 @@ export default defineConfig(
       'cardapio/sem-emoji': 'error',
       'cardapio/sem-catch-vazio': ['error', { funcoesDeReporte: ['reportarErro'] }],
       'no-console': 'error',
+    },
+  },
+  {
+    files: ['**/*.tsx'],
+    extends: [jsxA11y.configs.recommended, eslintReact.configs['recommended-type-checked']],
+    rules: {
+      // Região de rolagem rotulada precisa ser focável para quem usa teclado: docs/adr/0007-design-system.md#lint-de-acessibilidade
+      'jsx-a11y-x/no-noninteractive-tabindex': [
+        'error',
+        { tags: [], roles: ['tabpanel', 'region'], allowExpressionValues: true },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "JSXAttribute[name.name='style']",
+          message:
+            'Estilo inline é proibido; use CSS Modules e tokens. O tema entra por aplicarTemaRestaurante (docs/adr/0007-design-system.md).',
+        },
+        {
+          selector:
+            "JSXOpeningElement:has(JSXAttribute[name.name='role'][value.value='region']):has(JSXAttribute[name.name='tabIndex']):not(:has(JSXAttribute[name.name=/^aria-label(ledby)?$/]))",
+          message:
+            'Região rolável focável precisa de aria-label ou aria-labelledby (docs/adr/0007-design-system.md#lint-de-acessibilidade).',
+        },
+      ],
     },
   },
   {

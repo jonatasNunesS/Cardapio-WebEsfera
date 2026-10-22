@@ -1,0 +1,8 @@
+body {
+  margin: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-texto);
+  font-size: var(--tamanho-3);
+  line-height: var(--altura-linha-texto);
+}

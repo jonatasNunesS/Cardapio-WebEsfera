@@ -54,10 +54,13 @@ Pelo calendário oficial (https://github.com/nodejs/Release, arquivo
 | 26    | 2026-10-28 | 2027-10-20 | 2029-04-30 |
 
 O Node 24 entrou em manutenção em 2026-10-20: só recebe correções críticas e de
-segurança até 2028-04-30. O Node 26 vira LTS ativo em 2026-10-28. Ficamos no
-24, como decidido, e a migração para o 26 vira um módulo próprio com testes de
-regressão (seção 12 do plano). O Renovate está travado em `< 25` para o Node e
-o `@types/node`.
+segurança até 2028-04-30. O Node 26 vira LTS ativo em 2026-10-28.
+
+Decisão do John em 2026-10-22: o projeto fica no Node 24 LTS, e a tarefa de
+migração para o Node 26 foi cancelada. O Node 24 tem suporte de segurança até
+2028-04-30. A migração será reavaliada no primeiro trimestre de 2028, antes do
+fim do suporte. Até lá, o Renovate fica travado em `< 25` para o Node e o
+`@types/node`, e só sobe versões de correção da linha 24.
 
 ### TypeScript 6.0.3, e não o 7
 

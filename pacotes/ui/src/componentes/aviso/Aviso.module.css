@@ -1,0 +1,33 @@
+.caixa {
+  display: flex;
+  gap: var(--espaco-3);
+  align-items: flex-start;
+  padding: var(--espaco-3) var(--espaco-4);
+  border-radius: var(--raio-2);
+}
+
+.icone {
+  margin-top: var(--espaco-1);
+}
+
+.corpo {
+  display: grid;
+  gap: var(--espaco-1);
+}
+
+.titulo {
+  margin: 0;
+  font-weight: var(--peso-forte);
+}
+
+.texto {
+  font-size: var(--tamanho-2);
+}
+
+.texto p {
+  margin: 0;
+}
+
+.acao {
+  margin-top: var(--espaco-2);
+}

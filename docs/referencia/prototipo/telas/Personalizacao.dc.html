@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Personalização do restaurante</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Open+Sans:wght@400;600;700&amp;family=Bricolage+Grotesque:opsz,wght@12..96,700&amp;family=DM+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#303642}a:hover{color:#1C2028}
+input,textarea{font-family:inherit}
+input[type=text],input[type=time],textarea{font-size:15px;color:#303642;border:1px solid #7A8494;border-radius:10px;padding:10px 12px;background:#FFFFFF;box-sizing:border-box;width:100%}
+input:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid #1849A9;outline-offset:2px}
+.ph{background-color:#E6DED5;background-image:repeating-linear-gradient(135deg,rgba(31,26,23,.08) 0 10px,transparent 10px 20px)}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F4F6F8;color:#303642;font-family:'Open Sans',system-ui,sans-serif;display:flex;flex-wrap:wrap">
+
+  <nav aria-label="Painel" style="flex:1 1 220px;max-width:100%;background:#303642;color:#FFFFFF;padding:24px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 8px 20px">
+      <span aria-hidden="true" style="width:32px;height:32px;border-radius:999px;background:#00C2CB"></span>
+      <span style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px">WebEsfera</span>
+    </div>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Início</a>
+    <a href="Fila.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Fila ao vivo</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Cardápio e vídeos</a>
+    <a href="Mesas.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Mesas e QR Codes</a>
+    <a href="#" aria-current="page" style="color:#303642;background:#00C2CB;text-decoration:none;padding:12px;border-radius:10px;font-size:15px;font-weight:700">Personalização</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Plano e cobrança</a>
+  </nav>
+
+  <div style="flex:999 1 560px;min-width:0;padding:32px 24px 120px;box-sizing:border-box">
+    <div style="max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+
+      <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <h1 style="margin:0;font-family:'Poppins',sans-serif;font-size:28px;font-weight:600">Personalização</h1>
+          <p style="margin:0;font-size:15px;color:#5B6472">O que você muda aqui aparece na prévia ao lado. Os clientes só veem depois de publicar.</p>
+        </div>
+        <span role="status" style="font-size:14px;font-weight:600;color:{{corEstado}}">{{textoEstado}}</span>
+      </header>
+
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+
+        <form style="flex:999 1 480px;min-width:0;display:flex;flex-direction:column;gap:20px">
+
+          <fieldset style="margin:0;border:1px solid #DCE1E7;border-radius:16px;background:#FFFFFF;padding:20px;display:flex;flex-direction:column;gap:16px">
+            <legend style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px;padding:0 6px">Identidade</legend>
+            <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label for="nome" style="font-weight:600;font-size:14px">Nome do restaurante</label>
+                <input id="nome" type="text" value="{{nome}}" onChange="{{mudarNome}}" maxlength="40">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label for="slogan" style="font-weight:600;font-size:14px">Frase abaixo do nome</label>
+                <input id="slogan" type="text" value="{{slogan}}" onChange="{{mudarSlogan}}" maxlength="60">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <span style="font-weight:600;font-size:14px">Logo</span>
+                <button type="button" style="height:88px;border:1.5px dashed #7A8494;border-radius:12px;background:#F8FAFB;color:#303642;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">Enviar logo (PNG ou SVG)</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <span style="font-weight:600;font-size:14px">Foto de capa</span>
+                <button type="button" style="height:88px;border:1.5px dashed #7A8494;border-radius:12px;background:#F8FAFB;color:#303642;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">Enviar foto do salão</button>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="google" style="font-weight:600;font-size:14px">Link de avaliação do Google</label>
+              <input id="google" type="text" value="{{linkGoogle}}" onChange="{{mudarLinkGoogle}}" placeholder="Cole o link do seu Perfil da Empresa no Google" inputmode="url">
+              <span style="font-size:13px;color:{{corLinkGoogle}}">{{textoLinkGoogle}}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <span style="font-weight:600;font-size:14px">Endereço do restaurante</span>
+              <span style="font-size:15px;padding:10px 12px;border-radius:10px;background:#F4F6F8">[seu-dominio]/brasa-e-trigo</span>
+              <span style="font-size:13px;color:#5B6472">Fica fixo mesmo se o nome mudar, para nenhum QR impresso quebrar. O link de cada mesa está em <a href="Mesas.dc.html">Mesas e QR Codes</a>. Para trocar este endereço, fale com a WebEsfera.</span>
+            </div>
+          </fieldset>
+
+          <fieldset style="margin:0;border:1px solid #DCE1E7;border-radius:16px;background:#FFFFFF;padding:20px;display:flex;flex-direction:column;gap:16px">
+            <legend style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px;padding:0 6px">Cor da marca</legend>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <span id="rot-cor" style="font-weight:600;font-size:14px">Cor principal do seu guia de marca</span>
+              <span style="font-size:13px;color:#5B6472;margin-top:-6px">É a única cor que muda no cardápio. O resto do visual é fixo para manter tudo legível.</span>
+              <div role="group" aria-labelledby="rot-cor" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+                <sc-for list="{{amostras}}" as="a" hint-placeholder-count="5">
+                  <sc-if value="{{a.selecionada}}" hint-placeholder-val="{{ false }}">
+                    <button type="button" aria-pressed="true" aria-label="{{a.nome}}" onClick="{{a.escolher}}" style="width:44px;height:44px;border-radius:999px;border:3px solid #303642;outline:2px solid #FFFFFF;outline-offset:-5px;background:{{a.hex}};cursor:pointer"></button>
+                  </sc-if>
+                  <sc-if value="{{a.livre}}" hint-placeholder-val="{{ true }}">
+                    <button type="button" aria-pressed="false" aria-label="{{a.nome}}" onClick="{{a.escolher}}" style="width:44px;height:44px;border-radius:999px;border:1px solid #7A8494;background:{{a.hex}};cursor:pointer"></button>
+                  </sc-if>
+                </sc-for>
+                <label for="cor-livre" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding-left:6px">
+                  <input id="cor-livre" type="color" value="{{cor}}" onChange="{{mudarCor}}" style="width:44px;height:44px;border:1px solid #7A8494;border-radius:10px;padding:2px;background:#FFFFFF;cursor:pointer">
+                  Outra cor
+                </label>
+              </div>
+
+              <sc-if value="{{corOk}}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:#E2F1E7;color:#054F31;font-size:14px;line-height:1.5">
+                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px"><path d="M5 12l5 5L20 7"></path></svg>
+                  <span>Legível. Texto do botão {{contrasteTexto}}:1 e destaque contra o fundo {{contrasteFundo}}:1.</span>
+                </div>
+              </sc-if>
+              <sc-if value="{{corRuim}}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:12px;background:#FEF0C7;color:#7A2E0E;font-size:14px;line-height:1.5">
+                  <span><strong>Essa cor fica difícil de ler no celular.</strong> Texto do botão {{contrasteTexto}}:1 (mínimo 4,5) e destaque contra o fundo {{contrasteFundo}}:1 (mínimo 3). Ela não pode ser publicada assim.</span>
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <span aria-hidden="true" style="width:28px;height:28px;border-radius:8px;background:{{sugestao}};border:1px solid #7A8494"></span>
+                    <span>Tom mais próximo que passa: <strong>{{sugestao}}</strong></span>
+                    <button type="button" onClick="{{usarSugestao}}" style="height:40px;padding:0 14px;border-radius:10px;border:0;background:#303642;color:#FFFFFF;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer">Usar este tom</button>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+
+          </fieldset>
+
+          <fieldset style="margin:0;border:1px solid #DCE1E7;border-radius:16px;background:#FFFFFF;padding:20px;display:flex;flex-direction:column;gap:16px">
+            <legend style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px;padding:0 6px">Textos para o cliente</legend>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="boas" style="font-weight:600;font-size:14px">Mensagem de boas-vindas</label>
+              <textarea id="boas" rows="2" maxlength="140" onChange="{{mudarBoasVindas}}" value="{{boasVindas}}" style="resize:vertical"></textarea>
+              <span style="font-size:13px;color:#5B6472">Aparece no topo do cardápio. Até 140 caracteres.</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label for="chamado" style="font-weight:600;font-size:14px">Ao chamar o garçom</label>
+                <input id="chamado" type="text" value="{{textoChamado}}" onChange="{{mudarTextoChamado}}" maxlength="60">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label for="fechado" style="font-weight:600;font-size:14px">Restaurante fechado</label>
+                <input id="fechado" type="text" value="{{textoFechado}}" onChange="{{mudarTextoFechado}}" maxlength="60">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label for="abre" style="font-weight:600;font-size:14px">Abre às</label>
+                <input id="abre" type="time" value="18:00">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label for="fecha" style="font-weight:600;font-size:14px">Fecha às</label>
+                <input id="fecha" type="time" value="23:00">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset style="margin:0;border:1px solid #DCE1E7;border-radius:16px;background:#FFFFFF;padding:20px;display:flex;flex-direction:column;gap:12px">
+            <legend style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px;padding:0 6px">Recursos da mesa</legend>
+            <label style="display:flex;align-items:flex-start;gap:12px;font-size:15px;min-height:44px"><input type="checkbox" checked="{{garcom}}" onChange="{{alternarGarcom}}" style="width:22px;height:22px;margin-top:2px"><span><strong>Chamar garçom</strong><br><span style="font-size:13px;color:#5B6472">Botão fixo em todas as telas do cardápio</span></span></label>
+            <label style="display:flex;align-items:flex-start;gap:12px;font-size:15px;min-height:44px"><input type="checkbox" checked="{{conta}}" onChange="{{alternarConta}}" style="width:22px;height:22px;margin-top:2px"><span><strong>Pedir a conta</strong><br><span style="font-size:13px;color:#5B6472">O cliente pede a conta pelo celular</span></span></label>
+            <label style="display:flex;align-items:flex-start;gap:12px;font-size:15px;min-height:44px"><input type="checkbox" checked="{{autoplay}}" onChange="{{alternarAutoplay}}" style="width:22px;height:22px;margin-top:2px"><span><strong>Vídeos tocam sozinhos</strong><br><span style="font-size:13px;color:#5B6472">Desligado, o cliente vê a foto e toca para reproduzir. Quem pede menos movimento no celular sempre vê só a foto.</span></span></label>
+          </fieldset>
+        </form>
+
+        <aside aria-label="Prévia do cardápio" style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:12px;align-items:center">
+          <div style="display:flex;gap:8px;align-self:stretch;justify-content:center">
+            <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;min-height:40px"><input type="radio" name="previa" checked="{{previaAberto}}" onChange="{{verAberto}}" style="width:18px;height:18px"> Aberto</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;min-height:40px;margin-left:12px"><input type="radio" name="previa" checked="{{previaFechado}}" onChange="{{verFechado}}" style="width:18px;height:18px"> Fechado</label>
+          </div>
+
+          <div style="width:320px;max-width:100%;height:640px;border-radius:36px;border:10px solid #1C2028;background:{{fundoHex}};color:{{textoHex}};font-family:'DM Sans',sans-serif;overflow:hidden;position:relative;box-sizing:border-box;display:flex;flex-direction:column">
+            <div style="padding:18px 16px 10px;display:flex;align-items:center;gap:10px">
+              <span aria-hidden="true" style="width:40px;height:40px;border-radius:{{raio}}px;background:{{cor}};color:{{textoBotao}};display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;flex:none">{{iniciais}}</span>
+              <span style="display:flex;flex-direction:column;min-width:0">
+                <strong style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;line-height:1.1">{{nome}}</strong>
+                <span style="font-size:12px;opacity:.8">{{slogan}}</span>
+              </span>
+            </div>
+            <sc-if value="{{previaFechado}}" hint-placeholder-val="{{ false }}">
+              <div style="margin:0 16px 10px;padding:10px 12px;border-radius:{{raio}}px;background:#FEF0C7;color:#7A2E0E;font-size:13px;font-weight:600">{{textoFechado}} Abre às 18h.</div>
+            </sc-if>
+            <div style="margin:0 16px 12px;font-size:13px;line-height:1.45;opacity:.9">{{boasVindas}}</div>
+            <div class="ph" style="margin:0 16px;height:150px;border-radius:{{raio}}px;display:flex;align-items:flex-end;padding:10px;box-sizing:border-box">
+              <span style="font-size:11px;font-weight:600;color:#3A322D;background:rgba(255,255,255,.85);padding:3px 8px;border-radius:999px">{{rotuloVideo}}</span>
+            </div>
+            <div style="padding:10px 16px 0;display:flex;flex-direction:column;gap:2px">
+              <span style="font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:{{corTextoDestaque}}">Destaque da casa</span>
+              <strong style="font-size:16px">Costela na brasa</strong>
+              <span style="font-size:14px;font-weight:700">R$ 89,00</span>
+            </div>
+
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px;background:{{fundoHex}};border-top:1px solid {{bordaPrevia}}">
+              <sc-if value="{{previaAberto}}" hint-placeholder-val="{{ true }}">
+                <span style="height:44px;border-radius:{{raio}}px;background:{{cor}};color:{{textoBotao}};display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-weight:700;font-size:14px"><span>Ver pedido</span><span>R$ 113,00</span></span>
+              </sc-if>
+              <div style="display:flex;gap:8px">
+                <sc-if value="{{garcom}}" hint-placeholder-val="{{ true }}">
+                  <span style="flex:1;height:38px;border-radius:{{raio}}px;border:1.5px solid {{textoHex}};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">Chamar garçom</span>
+                </sc-if>
+                <sc-if value="{{conta}}" hint-placeholder-val="{{ true }}">
+                  <span style="flex:1;height:38px;border-radius:{{raio}}px;border:1.5px solid {{textoHex}};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">Pedir a conta</span>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+          <p style="margin:0;font-size:13px;color:#5B6472;text-align:center;max-width:320px">Ao chamar o garçom, o cliente vê: “{{textoChamado}}”</p>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:fixed;left:0;right:0;bottom:0;background:#FFFFFF;border-top:1px solid #DCE1E7;padding:12px 24px;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:12px">
+    <sc-if value="{{corRuim}}" hint-placeholder-val="{{ false }}">
+      <span style="font-size:14px;color:#7A2E0E;font-weight:600;margin-right:auto">Ajuste a cor de destaque para publicar.</span>
+    </sc-if>
+    <button type="button" onClick="{{descartar}}" style="height:44px;padding:0 18px;border-radius:10px;border:1.5px solid #303642;background:#FFFFFF;color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Descartar</button>
+    <button type="button" onClick="{{publicar}}" disabled="{{corRuim}}" style="height:44px;padding:0 20px;border-radius:10px;border:0;background:{{fundoPublicar}};color:#303642;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer">Publicar no cardápio</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.inicial = {
+      nome: 'Brasa & Trigo',
+      slogan: 'Cozinha de fogo e pão de fermentação natural',
+      boasVindas: 'Boa noite! Peça pelo celular quando quiser. Se preferir, chamamos alguém da equipe.',
+      textoChamado: 'Já avisamos a equipe. Alguém vem até a sua mesa.',
+      textoFechado: 'Estamos fechados agora.',
+      linkGoogle: '',
+      cor: '#B4441F',
+      fundo: 'claro',
+      cantos: 'suaves',
+      garcom: true,
+      conta: true,
+      autoplay: true,
+      previa: 'aberto',
+    };
+    this.state = { ...this.inicial, estado: 'publicado' };
+  }
+
+  rgb(hex) {
+    const h = hex.replace('#', '');
+    const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  hex(r, g, b) {
+    return '#' + [r, g, b].map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  luminancia(hex) {
+    const [r, g, b] = this.rgb(hex).map((v) => {
+      const c = v / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+  contraste(a, b) {
+    const la = this.luminancia(a);
+    const lb = this.luminancia(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  }
+  textoPara(cor) {
+    return this.contraste(cor, '#FFFFFF') >= this.contraste(cor, '#1F1A17') ? '#FFFFFF' : '#1F1A17';
+  }
+  avaliar(cor, fundo) {
+    const texto = this.textoPara(cor);
+    const cTexto = this.contraste(cor, texto);
+    const cFundo = this.contraste(cor, fundo);
+    return { texto, cTexto, cFundo, ok: cTexto >= 4.5 && cFundo >= 3 };
+  }
+  sugerir(cor, fundo, escuro) {
+    const [r, g, b] = this.rgb(cor);
+    const alvo = escuro ? 255 : 0;
+    for (let t = 0.05; t <= 1; t += 0.05) {
+      const c = this.hex(r + (alvo - r) * t, g + (alvo - g) * t, b + (alvo - b) * t);
+      if (this.avaliar(c, fundo).ok) return c;
+    }
+    return escuro ? '#F4EFEA' : '#1F1A17';
+  }
+  mudar(parcial) {
+    this.setState({ ...parcial, estado: 'rascunho' });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const escuro = s.fundo === 'escuro';
+    const fundoHex = escuro ? '#171311' : '#F7F4F0';
+    const textoHex = escuro ? '#F4EFEA' : '#1F1A17';
+    const av = this.avaliar(s.cor, fundoHex);
+    const virgula = (n) => n.toFixed(1).replace('.', ',');
+    const sugestao = av.ok ? s.cor : this.sugerir(s.cor, fundoHex, escuro);
+    const raios = { retos: 4, suaves: 12, arredondados: 22 };
+    const amostras = [
+      ['Terracota', '#B4441F'], ['Verde mata', '#2F6B3A'], ['Azul', '#1F4E8C'], ['Ameixa', '#6B2D5C'], ['Mostarda', '#E0B000'],
+    ].map(([nome, hex]) => ({
+      nome, hex,
+      selecionada: s.cor.toUpperCase() === hex,
+      livre: s.cor.toUpperCase() !== hex,
+      escolher: () => this.mudar({ cor: hex }),
+    }));
+    const opcoesCantos = [['retos', 'Retos'], ['suaves', 'Suaves'], ['arredondados', 'Arredondados']].map(([id, nome]) => ({
+      nome, marcado: s.cantos === id, escolher: () => this.mudar({ cantos: id }),
+    }));
+    const iniciais = s.nome.trim().split(/\s+/).filter((p) => /[A-Za-zÀ-ú0-9]/.test(p)).slice(0, 2).map((p) => p[0].toUpperCase()).join('') || 'R';
+    const slug = s.nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, 'e').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const estados = {
+      publicado: ['Tudo publicado', '#067647'],
+      rascunho: ['Alterações não publicadas', '#B54708'],
+    };
+    const valor = (campo) => (e) => this.mudar({ [campo]: e.target.value });
+    const link = (s.linkGoogle || '').trim();
+    let hostGoogle = false;
+    try {
+      const u = new URL(link);
+      hostGoogle = u.protocol === 'https:' && /(^|\.)(google\.com|g\.page|goo\.gl)$/.test(u.hostname);
+    } catch (e) {
+      hostGoogle = false;
+    }
+    const statusLink = !link
+      ? ['No Google, abra seu perfil e toque em "Pedir avaliações" para copiar o link. Sem link, o botão não aparece.', '#5B6472']
+      : hostGoogle
+        ? ['Link do Google reconhecido. O botão "Avaliar no Google" aparece no fim da conta.', '#067647']
+        : ['Esse link não é do Google. Copie o link em "Pedir avaliações" no seu perfil.', '#B42318'];
+
+    return {
+      ...s,
+      slug: slug || 'seu-restaurante',
+      iniciais,
+      fundoHex, textoHex,
+      bordaPrevia: escuro ? '#3A322D' : '#E3DBD2',
+      textoBotao: av.texto,
+      corTextoDestaque: this.contraste(s.cor, fundoHex) >= 4.5 ? s.cor : textoHex,
+      raio: raios[s.cantos],
+      contrasteTexto: virgula(av.cTexto),
+      contrasteFundo: virgula(av.cFundo),
+      corOk: av.ok,
+      corRuim: !av.ok,
+      sugestao,
+      fundoPublicar: av.ok ? '#00C2CB' : '#C9CED6',
+      amostras, opcoesCantos,
+      fundoClaro: !escuro, fundoEscuro: escuro,
+      previaAberto: s.previa === 'aberto', previaFechado: s.previa === 'fechado',
+      rotuloVideo: s.autoplay ? 'Vídeo em loop, toca sozinho' : 'Foto · toque para ver o vídeo',
+      textoEstado: estados[s.estado][0],
+      corEstado: estados[s.estado][1],
+      textoLinkGoogle: statusLink[0],
+      corLinkGoogle: statusLink[1],
+      mudarLinkGoogle: valor('linkGoogle'),
+      mudarNome: valor('nome'),
+      mudarSlogan: valor('slogan'),
+      mudarBoasVindas: valor('boasVindas'),
+      mudarTextoChamado: valor('textoChamado'),
+      mudarTextoFechado: valor('textoFechado'),
+      mudarCor: (e) => this.mudar({ cor: e.target.value.toUpperCase() }),
+      usarSugestao: () => this.mudar({ cor: sugestao }),
+      usarClaro: () => this.mudar({ fundo: 'claro' }),
+      usarEscuro: () => this.mudar({ fundo: 'escuro' }),
+      alternarGarcom: () => this.mudar({ garcom: !s.garcom }),
+      alternarConta: () => this.mudar({ conta: !s.conta }),
+      alternarAutoplay: () => this.mudar({ autoplay: !s.autoplay }),
+      verAberto: () => this.setState({ previa: 'aberto' }),
+      verFechado: () => this.setState({ previa: 'fechado' }),
+      descartar: () => this.setState({ ...this.inicial, estado: 'publicado' }),
+      publicar: () => {
+        if (!av.ok) return;
+        const { estado, ...publicado } = s;
+        this.inicial = publicado;
+        this.setState({ estado: 'publicado' });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

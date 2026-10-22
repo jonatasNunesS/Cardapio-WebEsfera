@@ -32,18 +32,26 @@ Os apps React rodam em desenvolvimento com `pnpm --filter @cardapio/cardapio dev
 
 ## Scripts
 
-| Script                 | O que faz                                                  |
-| ---------------------- | ---------------------------------------------------------- |
-| `pnpm verificar`       | Emoji, lint, formatação, tipos e testes                    |
-| `pnpm verificar:emoji` | Procura emoji em todos os arquivos versionados             |
-| `pnpm lint`            | ESLint (fronteiras, sem emoji, sem catch vazio) e Prettier |
-| `pnpm tipos`           | TypeScript em todos os pacotes                             |
-| `pnpm testes`          | Vitest                                                     |
-| `pnpm build`           | Build dos 5 apps                                           |
-| `pnpm ciclos`          | Dependências circulares (madge)                            |
-| `pnpm duplicacao`      | Código duplicado (jscpd, limite de 3%)                     |
-| `pnpm auditoria`       | Vulnerabilidades altas e críticas                          |
-| `pnpm banco:migrar`    | Aplica as migrações com `URL_BANCO_MIGRACAO`               |
+| Script                  | O que faz                                                        |
+| ----------------------- | ---------------------------------------------------------------- |
+| `pnpm verificar`        | Emoji, lint, formatação, tipos e testes                          |
+| `pnpm verificar:emoji`  | Procura emoji em todos os arquivos versionados                   |
+| `pnpm lint`             | ESLint (fronteiras, acessibilidade, React), stylelint e Prettier |
+| `pnpm tipos`            | TypeScript em todos os pacotes                                   |
+| `pnpm testes`           | Vitest, inclusive as histórias do Storybook nos 3 temas          |
+| `pnpm build`            | Build dos 5 apps                                                 |
+| `pnpm ciclos`           | Dependências circulares (madge)                                  |
+| `pnpm duplicacao`       | Código duplicado (jscpd, limite de 3%)                           |
+| `pnpm auditoria`        | Vulnerabilidades altas e críticas                                |
+| `pnpm banco:migrar`     | Aplica as migrações com `URL_BANCO_MIGRACAO`                     |
+| `pnpm storybook`        | Storybook do design system em http://localhost:6006              |
+| `pnpm storybook:build`  | Storybook estático em `pacotes/ui/storybook-static`              |
+| `pnpm visual`           | Compara os snapshots visuais, na imagem Docker do Playwright     |
+| `pnpm visual:atualizar` | Regrava a base de snapshots, na mesma imagem                     |
+
+As histórias rodam no Chromium do Playwright (`pnpm exec playwright install chromium`).
+Para usar outro Chromium, defina `CAMINHO_CHROMIUM`. O design system está no
+[ADR 0007](docs/adr/0007-design-system.md).
 
 O `pnpm install` liga o hook de commit em `.githooks`, que roda o commitlint.
 

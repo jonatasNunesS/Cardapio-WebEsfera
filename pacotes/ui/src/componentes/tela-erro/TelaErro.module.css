@@ -1,0 +1,44 @@
+.tela {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: var(--espaco-5);
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-texto);
+}
+
+.caixa {
+  display: grid;
+  gap: var(--espaco-4);
+  justify-items: center;
+  width: min(100%, 28rem);
+  padding: var(--espaco-6);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-3);
+  background: var(--cor-superficie);
+  text-align: center;
+}
+
+.icone {
+  color: var(--cor-perigo);
+}
+
+.titulo {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-5);
+  line-height: var(--altura-linha-titulo);
+}
+
+.texto {
+  margin: 0;
+}
+
+.rastreio {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-1);
+  overflow-wrap: anywhere;
+}

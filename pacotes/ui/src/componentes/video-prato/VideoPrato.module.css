@@ -1,0 +1,51 @@
+.video {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--raio-2);
+  background: var(--cor-esqueleto);
+}
+
+.midia {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.controle,
+.reproduzir {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  min-width: var(--alvo-toque);
+  min-height: var(--alvo-toque);
+  border: 0;
+  background: var(--cor-texto);
+  color: var(--cor-texto-inverso);
+  font: inherit;
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+}
+
+.controle {
+  right: var(--espaco-2);
+  bottom: var(--espaco-2);
+  border-radius: var(--raio-total);
+}
+
+.reproduzir {
+  inset: auto auto 50% 50%;
+  padding: 0 var(--espaco-4);
+  border-radius: var(--raio-total);
+  transform: translate(-50%, 50%);
+}
+
+.controle:focus-visible,
+.reproduzir:focus-visible {
+  outline: var(--foco-espessura) solid var(--cor-foco);
+  outline-offset: var(--foco-distancia);
+  box-shadow: 0 0 0 var(--foco-distancia) var(--cor-superficie);
+}

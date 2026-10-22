@@ -13,18 +13,18 @@ export interface PropriedadesFronteiraDeErro {
 }
 
 export function FronteiraDeErro({ children, TelaDeErro }: PropriedadesFronteiraDeErro) {
-  const idRastreio = useRef(uuidv7());
+  const idRastreioRef = useRef(uuidv7());
   return (
     <ErrorBoundary
       beforeCapture={(escopo) => {
-        escopo.setTag('id_rastreio', idRastreio.current);
+        escopo.setTag('id_rastreio', idRastreioRef.current);
       }}
       onReset={() => {
-        idRastreio.current = uuidv7();
+        idRastreioRef.current = uuidv7();
       }}
       fallback={(falha) => (
         <TelaDeErro
-          idRastreio={idRastreio.current}
+          idRastreio={idRastreioRef.current}
           aoTentarDeNovo={() => {
             falha.resetError();
           }}

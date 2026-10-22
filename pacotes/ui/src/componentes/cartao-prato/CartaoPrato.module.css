@@ -1,0 +1,125 @@
+.cartao {
+  position: relative;
+  display: grid;
+  grid-template-areas: 'texto midia';
+  grid-template-columns: 1fr auto;
+  gap: var(--espaco-4);
+  align-items: start;
+  padding-block: var(--espaco-4);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+  container-type: inline-size;
+}
+
+.midia {
+  grid-area: midia;
+}
+
+.midia:empty {
+  display: none;
+}
+
+.imagem {
+  display: block;
+  width: 5rem;
+  height: 5rem;
+  border-radius: var(--raio-2);
+  background: var(--cor-esqueleto);
+  object-fit: cover;
+}
+
+.texto {
+  display: grid;
+  grid-area: texto;
+  gap: var(--espaco-1);
+}
+
+.nome {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-3);
+  font-weight: var(--peso-medio);
+  line-height: var(--altura-linha-titulo);
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.link::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.cartao:has(.link:focus-visible) {
+  outline: var(--foco-espessura) solid var(--cor-foco);
+  outline-offset: var(--foco-distancia);
+  border-radius: var(--raio-2);
+}
+
+.descricao {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-2);
+}
+
+.preco {
+  margin: 0;
+  font-weight: var(--peso-medio);
+}
+
+.motivo {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-2);
+  font-weight: var(--peso-medio);
+}
+
+.rotuloDestaque {
+  margin: 0;
+  color: var(--cor-marca-texto);
+  font-size: var(--tamanho-1);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.destaque {
+  grid-template-areas:
+    'midia'
+    'texto';
+  grid-template-columns: 1fr;
+  gap: var(--espaco-3);
+  border-bottom: 0;
+}
+
+.destaque .midia {
+  position: relative;
+  z-index: 1;
+}
+
+.destaque .nome {
+  font-size: var(--tamanho-4);
+  font-weight: var(--peso-forte);
+}
+
+.esgotado .imagem {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.esgotado .nome {
+  color: var(--cor-texto-secundario);
+}
+
+@container (min-width: 36rem) {
+  .destaque {
+    grid-template-areas: 'midia texto';
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}

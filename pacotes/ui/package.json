@@ -4,19 +4,38 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css",
+    "./fontes/cardapio.css": "./src/fontes/cardapio.css",
+    "./fontes/painel.css": "./src/fontes/painel.css"
   },
   "scripts": {
-    "tipos": "tsc --noEmit -p ."
+    "tipos": "tsc --noEmit -p .",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build -o storybook-static",
+    "visual": "playwright test -c visual/playwright.config.ts",
+    "visual:atualizar": "playwright test -c visual/playwright.config.ts --update-snapshots"
   },
   "peerDependencies": {
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "10.6.3",
+    "@storybook/addon-docs": "10.6.3",
+    "@storybook/addon-vitest": "10.6.3",
+    "@storybook/react-vite": "10.6.3",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "storybook": "10.6.3"
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource-variable/dm-sans": "5.3.0",
+    "@fontsource-variable/open-sans": "5.3.0",
+    "@fontsource/poppins": "5.3.0",
+    "lucide-react": "1.60.0"
   }
 }

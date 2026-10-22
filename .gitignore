@@ -6,3 +6,8 @@ coverage/
 .env.*
 !.env.exemplo
 .DS_Store
+storybook-static/
+test-results/
+playwright-report/
+pacotes/ui/visual/resultados/
+pacotes/ui/visual/relatorio/

@@ -2,3 +2,10 @@ pnpm-lock.yaml
 docs/plano.md
 dist
 coverage
+storybook-static
+test-results
+playwright-report
+pacotes/ui/visual/resultados
+pacotes/ui/visual/relatorio
+docs/referencia
+docs/prompts

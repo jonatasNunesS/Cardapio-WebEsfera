@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Admin: visão geral</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#303642}a:hover{color:#1C2028}
+a:focus-visible,button:focus-visible{outline:3px solid #1849A9;outline-offset:2px}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F4F6F8;color:#303642;font-family:'Open Sans',system-ui,sans-serif;display:flex;flex-wrap:wrap">
+
+  <nav aria-label="Administração" style="flex:1 1 220px;max-width:100%;background:#1C2028;color:#FFFFFF;padding:24px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 8px 6px">
+      <span aria-hidden="true" style="width:32px;height:32px;border-radius:999px;background:#00C2CB"></span>
+      <span style="font-family:'Poppins',sans-serif;font-weight:600;font-size:17px">WebEsfera</span>
+    </div>
+    <span style="margin:0 8px 18px;align-self:flex-start;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1C2028;background:#FDB022;padding:3px 8px;border-radius:6px">Admin da plataforma</span>
+    <a href="AdminVisao.dc.html" aria-current="page" style="color:#303642;background:#00C2CB;text-decoration:none;padding:12px;border-radius:10px;font-size:15px;font-weight:700">Visão geral</a>
+    <a href="AdminRestaurantes.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Restaurantes</a>
+    <a href="AdminCobrancas.dc.html" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Cobranças</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Planos</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Suporte e auditoria</a>
+    <a href="#" style="color:#E4E8ED;text-decoration:none;padding:12px;border-radius:10px;font-size:15px">Saúde da plataforma</a>
+    <span style="margin-top:auto;padding:12px 8px 0;font-size:13px;color:#AEB6C2">Jonatas · login com 2 fatores</span>
+  </nav>
+
+  <div style="flex:999 1 560px;min-width:0;padding:32px 24px 48px;box-sizing:border-box">
+    <div style="max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+
+      <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <h1 style="margin:0;font-family:'Poppins',sans-serif;font-size:28px;font-weight:600">Visão geral</h1>
+          <p style="margin:0;font-size:15px;color:#5B6472">Outubro de 2026 · dados de exemplo, preços dos planos ainda não definidos</p>
+        </div>
+        <a href="AdminRestaurantes.dc.html" style="height:44px;padding:0 18px;border-radius:10px;background:#00C2CB;color:#303642;display:flex;align-items:center;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;text-decoration:none">Cadastrar restaurante</a>
+      </header>
+
+      <section aria-label="Indicadores" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px">
+        <a href="AdminRestaurantes.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:14px;color:#5B6472">Restaurantes ativos</span>
+          <strong style="font-family:'Poppins',sans-serif;font-size:32px;font-weight:600">18</strong>
+          <span style="font-size:13px;color:#067647">+3 neste mês</span>
+        </a>
+        <a href="AdminRestaurantes.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:14px;color:#5B6472">Em teste de 10 dias</span>
+          <strong style="font-family:'Poppins',sans-serif;font-size:32px;font-weight:600">4</strong>
+          <span style="font-size:13px;color:#5B6472">2 terminam esta semana</span>
+        </a>
+        <a href="AdminCobrancas.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:14px;color:#5B6472">Receita mensal recorrente</span>
+          <strong style="font-family:'Poppins',sans-serif;font-size:32px;font-weight:600">R$ 2.248</strong>
+          <span style="font-size:13px;color:#5B6472">R$ 1.948 já recebidos</span>
+        </a>
+        <a href="AdminCobrancas.dc.html" style="text-decoration:none;background:#FFFFFF;border:1px solid #F4C7C3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:14px;color:#5B6472">Em atraso</span>
+          <strong style="font-family:'Poppins',sans-serif;font-size:32px;font-weight:600;color:#B42318">2</strong>
+          <span style="font-size:13px;color:#B42318">R$ 248 vencidos</span>
+        </a>
+      </section>
+
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start">
+        <section aria-labelledby="t-acoes" style="flex:999 1 420px;min-width:0;background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:4px">
+          <h2 id="t-acoes" style="margin:0 0 8px;font-family:'Poppins',sans-serif;font-size:18px;font-weight:600">Precisa de você hoje</h2>
+          <sc-for list="{{pendencias}}" as="p" hint-placeholder-count="4">
+            <div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #EEF1F4">
+              <span aria-hidden="true" style="width:10px;height:10px;border-radius:999px;background:{{p.cor}};flex:none"></span>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                <strong style="font-size:15px">{{p.titulo}}</strong>
+                <span style="font-size:13px;color:#5B6472">{{p.detalhe}}</span>
+              </div>
+              <sc-if value="{{p.aberta}}" hint-placeholder-val="{{ true }}">
+                <a href="{{p.link}}" style="height:40px;padding:0 14px;border-radius:10px;border:1.5px solid #303642;display:flex;align-items:center;font-size:14px;font-weight:600;text-decoration:none;flex:none">{{p.acao}}</a>
+                <button type="button" onClick="{{p.resolver}}" aria-label="{{p.rotuloResolver}}" style="height:40px;padding:0 12px;border-radius:10px;border:0;background:transparent;color:#5B6472;font-family:inherit;font-size:13px;cursor:pointer;flex:none">Feito</button>
+              </sc-if>
+              <sc-if value="{{p.resolvida}}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:13px;font-weight:700;color:#067647;flex:none">Resolvido</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </section>
+
+        <section aria-labelledby="t-saude" style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #DCE1E7;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+          <h2 id="t-saude" style="margin:0;font-family:'Poppins',sans-serif;font-size:18px;font-weight:600">Saúde da plataforma</h2>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span>Disponibilidade (30 dias)</span><strong>99,96%</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span>Chamado até o painel (p95)</span><strong>1,1 s</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span>Fila de vídeo</span><strong>2 na fila · 40 s</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px"><span>Erros 5xx (24 h)</span><strong>0,08%</strong></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:10px 12px;border-radius:10px;background:#E2F1E7;color:#054F31"><span>Acesso entre restaurantes bloqueado</span><strong>0 ocorrências</strong></div>
+          <span style="font-size:12px;color:#5B6472">Vem do Sentry e das métricas. Qualquer ocorrência de acesso cruzado vira alerta imediato.</span>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { resolvidas: {} };
+  }
+  renderVals() {
+    const base = [
+      { id: 'a', cor: '#B42318', titulo: 'Bar do Zé Pescador: mensalidade vencida há 8 dias', detalhe: 'Pedidos são suspensos no dia 15. O cardápio continua no ar.', acao: 'Ver restaurante', link: 'AdminRestaurante.dc.html' },
+      { id: 'b', cor: '#B54708', titulo: 'Cantina Dona Lu: teste termina em 3 dias', detalhe: 'Publicou 34 pratos, 12 com vídeo. Bom momento para ligar.', acao: 'Ver restaurante', link: 'AdminRestaurantes.dc.html' },
+      { id: 'c', cor: '#B54708', titulo: 'Sushi Kenzo: 3 vídeos não processaram', detalhe: 'Arquivo acima de 10 s. O dono vê "Tentar de novo".', acao: 'Abrir suporte', link: '#' },
+      { id: 'd', cor: '#1849A9', titulo: 'Padaria Pão Nosso pediu troca para o plano Pro', detalhe: 'Chegou ao limite de 15 mesas do plano Básico.', acao: 'Ver cobranças', link: 'AdminCobrancas.dc.html' },
+    ];
+    const r = this.state.resolvidas;
+    const pendencias = base.map((p) => ({
+      ...p,
+      aberta: !r[p.id],
+      resolvida: !!r[p.id],
+      rotuloResolver: 'Marcar como resolvido: ' + p.titulo,
+      resolver: () => this.setState({ resolvidas: { ...r, [p.id]: true } }),
+    }));
+    return { pendencias };
+  }
+}
+</script>
+</body>
+</html>

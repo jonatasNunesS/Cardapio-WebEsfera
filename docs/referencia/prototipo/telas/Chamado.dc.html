@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Chamar garçom e pedir conta</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.92}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#F7F4F0;color:#1F1A17;font-family:'DM Sans',system-ui,sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden">
+
+  <header style="padding:16px 16px 12px;display:flex;align-items:center;gap:8px">
+    <a href="Main.dc.html" aria-label="Voltar ao cardápio" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:999px">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1A17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+    </a>
+    <span style="font-size:14px;color:#5C524B">Mesa 12 · Brasa &amp; Trigo</span>
+  </header>
+
+  <sc-if value="{{escolhendo}}" hint-placeholder-val="{{ true }}">
+    <main style="flex:1;padding:8px 20px 24px;display:flex;flex-direction:column;gap:16px">
+      <h1 style="margin:0 0 8px;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:700;line-height:1.15">Do que você precisa?</h1>
+
+      <button type="button" onClick="{{chamarGarcom}}" style="text-align:left;display:flex;gap:16px;align-items:center;padding:20px;border-radius:18px;border:1.5px solid #1F1A17;background:#FFFFFF;cursor:pointer;font-family:inherit;color:#1F1A17">
+        <span style="width:56px;height:56px;border-radius:14px;background:{{destaque}};display:flex;align-items:center;justify-content:center;flex:none">
+          <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21h4"></path></svg>
+        </span>
+        <span style="display:flex;flex-direction:column;gap:4px">
+          <strong style="font-size:18px">Chamar garçom</strong>
+          <span style="font-size:14px;color:#5C524B">Alguém da equipe vem até a mesa</span>
+        </span>
+      </button>
+
+      <button type="button" onClick="{{pedirConta}}" style="text-align:left;display:flex;gap:16px;align-items:center;padding:20px;border-radius:18px;border:1.5px solid #1F1A17;background:#FFFFFF;cursor:pointer;font-family:inherit;color:#1F1A17">
+        <span style="width:56px;height:56px;border-radius:14px;background:#1F1A17;display:flex;align-items:center;justify-content:center;flex:none">
+          <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"></path><path d="M9 8h6M9 12h6"></path></svg>
+        </span>
+        <span style="display:flex;flex-direction:column;gap:4px">
+          <strong style="font-size:18px">Pedir a conta</strong>
+          <span style="font-size:14px;color:#5C524B">Total até agora: R$ 113,00</span>
+        </span>
+      </button>
+
+      <p style="margin:auto 0 0;font-size:14px;color:#5C524B;line-height:1.5">Um toque basta. Se você tocar de novo, não cria outro chamado.</p>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{acompanhando}}" hint-placeholder-val="{{ false }}">
+    <main style="flex:1;padding:8px 20px 24px;display:flex;flex-direction:column;gap:24px">
+      <div role="status" aria-live="polite" style="display:flex;flex-direction:column;gap:8px">
+        <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:700;line-height:1.15">{{tituloStatus}}</h1>
+        <span style="font-size:16px;color:#3A322D">{{textoStatus}}</span>
+      </div>
+
+      <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px">
+        <sc-for list="{{etapas}}" as="e" hint-placeholder-count="3">
+          <li style="display:flex;align-items:center;gap:12px">
+            <sc-if value="{{e.feita}}" hint-placeholder-val="{{ false }}">
+              <span style="width:28px;height:28px;border-radius:999px;background:#067647;display:flex;align-items:center;justify-content:center;flex:none">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>
+              </span>
+            </sc-if>
+            <sc-if value="{{e.pendente}}" hint-placeholder-val="{{ true }}">
+              <span style="width:28px;height:28px;border-radius:999px;border:2px solid #8C8079;box-sizing:border-box;flex:none"></span>
+            </sc-if>
+            <span style="font-size:16px;font-weight:600">{{e.nome}}</span>
+          </li>
+        </sc-for>
+      </ol>
+
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+        <sc-if value="{{ehConta}}" hint-placeholder-val="{{ false }}">
+          <a href="Conta.dc.html" style="height:52px;border-radius:14px;border:1.5px solid #1F1A17;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px">Ver resumo da conta</a>
+        </sc-if>
+        <a href="Main.dc.html" style="height:52px;border-radius:14px;background:{{destaque}};color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px">Voltar ao cardápio</a>
+        <button type="button" onClick="{{cancelar}}" style="height:44px;border-radius:12px;border:1.5px solid #8C8079;background:transparent;color:#1F1A17;font-family:inherit;font-weight:600;font-size:15px;cursor:pointer">Cancelar chamado</button>
+      </div>
+    </main>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"destaque":{"editor":"color","default":"#B4441F","options":["#B4441F","#2F6B3A","#1F4E8C","#6B2D5C"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tipo: null, etapa: 0 };
+    this.timers = [];
+  }
+  componentWillUnmount() {
+    this.timers.forEach(clearTimeout);
+  }
+  iniciar(tipo) {
+    this.timers.forEach(clearTimeout);
+    this.setState({ tipo, etapa: 1 });
+    this.timers = [
+      setTimeout(() => this.setState({ etapa: 2 }), 2500),
+      setTimeout(() => this.setState({ etapa: 3 }), 5000),
+    ];
+  }
+  renderVals() {
+    const { tipo, etapa } = this.state;
+    const conta = tipo === 'conta';
+    const nomes = conta
+      ? ['Pedido de conta enviado', 'Rafael está fechando a conta', 'Conta a caminho da mesa']
+      : ['Garçom avisado', 'Rafael viu o chamado', 'Rafael está a caminho'];
+    const etapas = nomes.map((nome, i) => ({ nome, feita: etapa > i, pendente: etapa <= i }));
+    const titulos = conta
+      ? ['', 'Conta pedida', 'Fechando sua conta', 'Sua conta está chegando']
+      : ['', 'Garçom avisado', 'Chamado em atendimento', 'O garçom está vindo'];
+    return {
+      destaque: this.props.destaque ?? '#B4441F',
+      ehConta: conta,
+      escolhendo: tipo === null,
+      acompanhando: tipo !== null,
+      tituloStatus: titulos[etapa] || '',
+      textoStatus: etapa >= 2 ? 'Rafael assumiu o seu chamado.' : 'A equipe recebeu agora. Aguarde um instante.',
+      etapas,
+      chamarGarcom: () => this.iniciar('garcom'),
+      pedirConta: () => this.iniciar('conta'),
+      cancelar: () => { this.timers.forEach(clearTimeout); this.setState({ tipo: null, etapa: 0 }); },
+    };
+  }
+}
+</script>
+</body>
+</html>

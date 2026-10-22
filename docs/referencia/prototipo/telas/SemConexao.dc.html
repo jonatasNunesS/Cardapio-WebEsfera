@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Pedido sem conexão</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.92}
+.ph{background-color:#E6DED5;background-image:repeating-linear-gradient(135deg,rgba(31,26,23,.07) 0 10px,transparent 10px 20px)}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#F7F4F0;color:#1F1A17;font-family:'DM Sans',system-ui,sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden">
+
+  <header style="padding:16px 16px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #E3DBD2">
+    <a href="Main.dc.html" aria-label="Voltar ao cardápio" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:999px">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1A17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+    </a>
+    <div style="display:flex;flex-direction:column">
+      <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:700">Seu pedido</h1>
+      <span style="font-size:13px;color:#5C524B">Mesa 12 · Brasa &amp; Trigo</span>
+    </div>
+  </header>
+
+  <sc-if value="{{falhou}}" hint-placeholder-val="{{ true }}">
+    <div role="alert" style="margin:16px 20px 0;padding:14px 16px;border-radius:14px;background:#FDECEA;color:#7A271A;display:flex;gap:12px;align-items:flex-start">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><path d="M2 8.8a15 15 0 0 1 20 0"></path><path d="M5 12.5a10 10 0 0 1 14 0"></path><path d="M8.5 16a5 5 0 0 1 7 0"></path><path d="M3 3l18 18"></path></svg>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <strong style="font-size:15px">Sem conexão: seu pedido não foi enviado.</strong>
+        <span style="font-size:14px;line-height:1.4">Seus itens continuam guardados. Quando a internet voltar, tente de novo. Não vai duplicar.</span>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{enviando}}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="margin:16px 20px 0;padding:14px 16px;border-radius:14px;background:#EFE9E2;color:#1F1A17;font-size:15px;font-weight:600">Enviando o pedido...</div>
+  </sc-if>
+  <sc-if value="{{enviado}}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="margin:16px 20px 0;padding:14px 16px;border-radius:14px;background:#E2F1E7;color:#054F31;display:flex;flex-direction:column;gap:2px">
+      <strong style="font-size:15px">Pedido #42 enviado.</strong>
+      <span style="font-size:14px">A conexão voltou e a equipe já recebeu.</span>
+    </div>
+  </sc-if>
+
+  <main style="flex:1;overflow-y:auto;padding:8px 20px 180px;display:flex;flex-direction:column">
+    <div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #E3DBD2">
+      <div class="ph" aria-hidden="true" style="width:64px;height:64px;border-radius:10px;flex:none"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+        <span style="font-weight:600;font-size:16px">Costela na brasa</span>
+        <span style="font-size:13px;color:#5C524B">1 × · Sem cebola</span>
+      </div>
+      <span style="font-weight:700">R$ 89,00</span>
+    </div>
+    <div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #E3DBD2">
+      <div class="ph" aria-hidden="true" style="width:64px;height:64px;border-radius:10px;flex:none"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+        <span style="font-weight:600;font-size:16px">Pão de fermentação natural</span>
+        <span style="font-size:13px;color:#5C524B">1 ×</span>
+      </div>
+      <span style="font-weight:700">R$ 24,00</span>
+    </div>
+  </main>
+
+  <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 16px 20px;background:#F7F4F0;border-top:1px solid #E3DBD2;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between;font-size:16px"><span>Total</span><strong>R$ 113,00</strong></div>
+    <sc-if value="{{naoEnviado}}" hint-placeholder-val="{{ true }}">
+      <button type="button" onClick="{{tentar}}" disabled="{{enviando}}" style="height:52px;border-radius:14px;border:0;background:{{destaque}};color:#FFFFFF;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer">Tentar de novo</button>
+      <a href="Chamado.dc.html" style="height:44px;border-radius:12px;border:1.5px solid #1F1A17;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px">Pedir ao garçom</a>
+    </sc-if>
+    <sc-if value="{{enviado}}" hint-placeholder-val="{{ false }}">
+      <a href="Carrinho.dc.html" style="height:52px;border-radius:14px;background:{{destaque}};color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px">Acompanhar pedido</a>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"destaque":{"editor":"color","default":"#B4441F","options":["#B4441F","#2F6B3A","#1F4E8C","#6B2D5C"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { etapa: 'falhou' };
+  }
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+  renderVals() {
+    const etapa = this.state.etapa;
+    return {
+      destaque: this.props.destaque ?? '#B4441F',
+      falhou: etapa === 'falhou',
+      enviando: etapa === 'enviando',
+      enviado: etapa === 'enviado',
+      naoEnviado: etapa !== 'enviado',
+      tentar: () => {
+        this.setState({ etapa: 'enviando' });
+        this.timer = setTimeout(() => this.setState({ etapa: 'enviado' }), 1500);
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

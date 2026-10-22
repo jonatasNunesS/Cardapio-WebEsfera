@@ -13,7 +13,7 @@
       "allowedVersions": "<6.1.0"
     },
     {
-      "description": "Node fica na linha 24 até a migração planejada para o 26 (ADR 0001).",
+      "description": "Node fica na linha 24 LTS (suporte até 2028-04-30); reavaliar no 1º trimestre de 2028 (ADR 0001).",
       "matchPackageNames": ["node", "@types/node"],
       "allowedVersions": "<25"
     },
