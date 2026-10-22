@@ -60,6 +60,7 @@ describe('Entrar', () => {
     expect(!errada.ok && errada.erro.codigo).toBe(CODIGOS.SESSAO_ENTRAR_CREDENCIAIS_INVALIDAS);
     expect(dependencias.cofre.conferencias).toEqual([null, expect.any(String), null]);
     expect(dependencias.sessoes.guardadas).toHaveLength(1);
+    expect(dependencias.sinais.falhas).toEqual(['painel:senha', 'painel:senha', 'painel:senha']);
   });
 
   it('bloqueia o e-mail depois de N falhas, mesmo com a senha certa, e libera quando o tempo passa', async () => {
@@ -78,6 +79,8 @@ describe('Entrar', () => {
       detalhes: { tenteDeNovoEm: '2026-10-22T20:01:00.000Z' },
     });
     expect(dependencias.cofre.conferencias).toHaveLength(FALHAS_LIVRES.email);
+    expect(dependencias.sinais.falhas).toHaveLength(FALHAS_LIVRES.email);
+    expect(dependencias.sinais.bloqueios).toEqual(['painel:senha:email']);
 
     dependencias.relogio.avancar(60_000);
     expect((await entrar(dependencias, { email: 'ana@brasa.com.br', senha: SENHA, ip: '10.9.9.9' })).ok).toBe(

@@ -10,6 +10,7 @@ import type { Relogio } from '../../compartilhado/portas/relogio.ts';
 import { abrirSessao, type SessaoAberta } from '../abrir-sessao.ts';
 import type { CofreDeSenhas } from '../portas/cofre-de-senhas.ts';
 import type { GeradorDeSegredos } from '../portas/gerador-de-segredos.ts';
+import type { SinaisDeSeguranca } from '../portas/sinais-de-seguranca.ts';
 import type { RegistroDeTentativas } from '../portas/registro-de-tentativas.ts';
 import type { RepositorioDeContas } from '../portas/repositorio-de-contas.ts';
 import type { RepositorioDeSessoes } from '../portas/repositorio-de-sessoes.ts';
@@ -19,6 +20,7 @@ export interface DependenciasDeEntrar {
   readonly contas: RepositorioDeContas;
   readonly sessoes: RepositorioDeSessoes;
   readonly tentativas: RegistroDeTentativas;
+  readonly sinais: SinaisDeSeguranca;
   readonly cofre: CofreDeSenhas;
   readonly segredos: GeradorDeSegredos;
   readonly relogio: Relogio;
@@ -55,7 +57,7 @@ export async function entrar(
   const credenciais = ehEmailValido(email) ? await dependencias.contas.buscarCredenciais(email) : null;
   const confere = await dependencias.cofre.conferir(credenciais?.hashSenha ?? null, entrada.senha);
   if (credenciais === null || !confere) {
-    await registrarFalhas(dependencias.tentativas, 'painel', alvos, agora);
+    await registrarFalhas(dependencias, { publico: 'painel', etapa: 'senha', alvos, agora });
     return Resultado.falha(
       criarErroDeNegocio(CODIGOS.SESSAO_ENTRAR_CREDENCIAIS_INVALIDAS, 'E-mail ou senha incorretos.'),
     );

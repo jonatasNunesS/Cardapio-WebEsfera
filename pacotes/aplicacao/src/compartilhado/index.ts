@@ -6,7 +6,15 @@ export {
   criarErroDeNegocio,
   ehErroDeNegocio,
 } from '@cardapio/dominio';
-export type { Codigo, ContextoDoErro, ErroDeNegocio } from '@cardapio/dominio';
+export type {
+  Codigo,
+  ContextoDoErro,
+  DadosDaPersonalizacao,
+  ErroDeNegocio,
+  Horario,
+  NivelDaSessao,
+  Publico,
+} from '@cardapio/dominio';
 export { ErroDependenciaExterna } from './erros/erro-dependencia-externa.ts';
 export type { DadosDaDependencia } from './erros/erro-dependencia-externa.ts';
 export { ErroIsolamentoInquilino } from './erros/erro-isolamento-inquilino.ts';

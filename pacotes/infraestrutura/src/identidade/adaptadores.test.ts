@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { criarCifraAesGcm, lerChaveDeCifra } from './cifra-aes-gcm.ts';
 import { geradorDeCodigosDeRecuperacao } from './codigos-de-recuperacao.ts';
 import { criarCofreArgon2 } from './cofre-argon2.ts';
+import { criarEnviadorDeEmailIndisponivel } from './email-indisponivel.ts';
 import { criarEnviadorDeEmailNoConsole } from './email.ts';
 import { geradorDeSegredos } from './segredos-cripto.ts';
 import { carregarSenhasVazadas } from './senhas-vazadas.ts';
@@ -143,5 +144,13 @@ describe('e-mail no console', () => {
       texto: 'link',
     });
     expect(escritos.join('')).toContain('Para: ana@brasa.com.br\nAssunto: Redefinir a senha\n\nlink');
+  });
+});
+
+describe('e-mail sem provedor', () => {
+  it('falha com erro de dependência externa, que vai ao Sentry', async () => {
+    await expect(
+      criarEnviadorDeEmailIndisponivel().enviar({ para: 'a@b.co', assunto: 'x', texto: 'y' }),
+    ).rejects.toMatchObject({ name: 'ErroDependenciaExterna', codigo: CODIGOS.EMAIL_ENVIAR_FALHOU });
   });
 });

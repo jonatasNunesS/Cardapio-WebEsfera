@@ -11,3 +11,5 @@ export { criarRepositorioDeSessoes } from './identidade/repositorio-de-sessoes.t
 export { criarRepositorioDeHorarios } from './restaurantes/repositorio-de-horarios.ts';
 export { criarRepositorioDePersonalizacao } from './restaurantes/repositorio-de-personalizacao.ts';
 export { criarRepositorioDeRestaurantes } from './restaurantes/repositorio-de-restaurantes.ts';
+export { criarAdministradorPorUrl } from './admin/criar-administrador.ts';
+export type { NovoAdministrador, PapelDeAdministrador } from './admin/criar-administrador.ts';

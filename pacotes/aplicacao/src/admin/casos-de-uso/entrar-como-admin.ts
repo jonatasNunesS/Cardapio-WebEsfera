@@ -11,6 +11,7 @@ import { abrirSessao, type SessaoAberta } from '../../identidade/abrir-sessao.ts
 import { erroDeBloqueio } from '../../identidade/casos-de-uso/entrar.ts';
 import type { CofreDeSenhas } from '../../identidade/portas/cofre-de-senhas.ts';
 import type { GeradorDeSegredos } from '../../identidade/portas/gerador-de-segredos.ts';
+import type { SinaisDeSeguranca } from '../../identidade/portas/sinais-de-seguranca.ts';
 import type { RegistroDeTentativas } from '../../identidade/portas/registro-de-tentativas.ts';
 import type { RepositorioDeSessoes } from '../../identidade/portas/repositorio-de-sessoes.ts';
 import { alvoDeLogin, bloqueioAtual, registrarFalhas } from '../../identidade/protecao-de-login.ts';
@@ -20,6 +21,7 @@ export interface DependenciasDeEntrarComoAdmin {
   readonly admins: RepositorioDeAdmins;
   readonly sessoes: RepositorioDeSessoes;
   readonly tentativas: RegistroDeTentativas;
+  readonly sinais: SinaisDeSeguranca;
   readonly cofre: CofreDeSenhas;
   readonly segredos: GeradorDeSegredos;
   readonly relogio: Relogio;
@@ -50,7 +52,7 @@ export async function entrarComoAdmin(
   const admin = ehEmailValido(email) ? await dependencias.admins.buscar(email) : null;
   const confere = await dependencias.cofre.conferir(admin?.hashSenha ?? null, entrada.senha);
   if (admin === null || !confere) {
-    await registrarFalhas(dependencias.tentativas, 'admin', alvos, agora);
+    await registrarFalhas(dependencias, { publico: 'admin', etapa: 'senha', alvos, agora });
     return Resultado.falha(
       criarErroDeNegocio(CODIGOS.ADMIN_ENTRAR_CREDENCIAIS_INVALIDAS, 'E-mail ou senha incorretos.'),
     );

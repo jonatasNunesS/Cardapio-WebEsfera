@@ -3,6 +3,7 @@ import type { Relogio } from '../../compartilhado/portas/relogio.ts';
 import { abrirSessao, type SessaoAberta } from '../../identidade/abrir-sessao.ts';
 import { erroDeBloqueio } from '../../identidade/casos-de-uso/entrar.ts';
 import type { GeradorDeSegredos } from '../../identidade/portas/gerador-de-segredos.ts';
+import type { SinaisDeSeguranca } from '../../identidade/portas/sinais-de-seguranca.ts';
 import type { RegistroDeTentativas } from '../../identidade/portas/registro-de-tentativas.ts';
 import type { RepositorioDeSessoes } from '../../identidade/portas/repositorio-de-sessoes.ts';
 import { alvoDeLogin, bloqueioAtual, registrarFalhas } from '../../identidade/protecao-de-login.ts';
@@ -15,6 +16,7 @@ export interface DependenciasDeConfirmarSegundoFator {
   readonly admins: RepositorioDeAdmins;
   readonly sessoes: RepositorioDeSessoes;
   readonly tentativas: RegistroDeTentativas;
+  readonly sinais: SinaisDeSeguranca;
   readonly totp: AutenticadorTotp;
   readonly cifra: Cifra;
   readonly recuperacao: GeradorDeCodigosDeRecuperacao;
@@ -60,7 +62,7 @@ export async function confirmarSegundoFatorAdmin(
     return Resultado.falha(erroDeBloqueio(CODIGOS.ADMIN_ENTRAR_BLOQUEADA, bloqueio));
   }
   if (!(await codigoValido(dependencias, entrada, agora))) {
-    await registrarFalhas(dependencias.tentativas, 'admin', alvos, agora);
+    await registrarFalhas(dependencias, { publico: 'admin', etapa: 'segundo_fator', alvos, agora });
     return Resultado.falha(criarErroDeNegocio(CODIGOS.ADMIN_ENTRAR_CODIGO_INVALIDO, 'Código inválido.'));
   }
   await dependencias.tentativas.limpar('admin', alvos[0]?.alvo ?? '');

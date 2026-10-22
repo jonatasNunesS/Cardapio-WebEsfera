@@ -34,3 +34,4 @@ export type {
   Vinculo,
 } from './portas/repositorio-de-contas.ts';
 export type { NovaSessao, RepositorioDeSessoes, SessaoGuardada } from './portas/repositorio-de-sessoes.ts';
+export type { EtapaDeAutenticacao, SinaisDeSeguranca } from './portas/sinais-de-seguranca.ts';

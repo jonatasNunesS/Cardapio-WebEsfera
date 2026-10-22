@@ -1,4 +1,4 @@
-import type { Horario, Publico } from '@cardapio/dominio';
+import type { Horario, Publico, TipoDeAlvo } from '@cardapio/dominio';
 import type {
   AutenticadorTotp,
   Cifra,
@@ -11,6 +11,7 @@ import type { Relogio } from '../compartilhado/index.ts';
 import type {
   CofreDeSenhas,
   EnviadorDeEmail,
+  EtapaDeAutenticacao,
   GeradorDeSegredos,
   ListaDeSenhasVazadas,
   MensagemDeEmail,
@@ -20,6 +21,7 @@ import type {
   RepositorioDeContas,
   RepositorioDeSessoes,
   SessaoGuardada,
+  SinaisDeSeguranca,
   TentativasDoAlvo,
   Vinculo,
 } from '../identidade/index.ts';
@@ -78,6 +80,19 @@ export class CofreDeTeste implements CofreDeSenhas {
 export const senhasVazadasDeTeste: ListaDeSenhasVazadas = {
   contem: (senha) => ['1234567890', 'senhasenha'].includes(senha),
 };
+
+export class SinaisDeTeste implements SinaisDeSeguranca {
+  falhas: string[] = [];
+  bloqueios: string[] = [];
+
+  falhou(publico: Publico, etapa: EtapaDeAutenticacao): void {
+    this.falhas.push(`${publico}:${etapa}`);
+  }
+
+  bloqueou(publico: Publico, etapa: EtapaDeAutenticacao, alvo: TipoDeAlvo): void {
+    this.bloqueios.push(`${publico}:${etapa}:${alvo}`);
+  }
+}
 
 export class EmailDeTeste implements EnviadorDeEmail {
   enviados: MensagemDeEmail[] = [];
@@ -444,6 +459,7 @@ export function dependenciasDeIdentidade() {
     contas,
     sessoes,
     tentativas: new TentativasEmMemoria(),
+    sinais: new SinaisDeTeste(),
     cofre: new CofreDeTeste(),
     senhasVazadas: senhasVazadasDeTeste,
     segredos: new SegredosDeTeste(),

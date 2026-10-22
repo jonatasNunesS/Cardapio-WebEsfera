@@ -25,6 +25,7 @@ describe('casos de uso com os adaptadores reais', () => {
       contas: criarRepositorioDeContas(banco),
       sessoes: criarRepositorioDeSessoes(banco),
       tentativas: criarRegistroDeTentativas(banco),
+      sinais: { falhou: () => undefined, bloqueou: () => undefined },
       cofre: criarCofreArgon2(),
       senhasVazadas: carregarSenhasVazadas(),
       segredos: geradorDeSegredos,

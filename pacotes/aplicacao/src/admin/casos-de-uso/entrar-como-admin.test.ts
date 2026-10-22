@@ -64,6 +64,7 @@ describe('EntrarComoAdmin', () => {
     expect(inexistente).toEqual(errada);
     expect(!errada.ok && errada.erro.codigo).toBe(CODIGOS.ADMIN_ENTRAR_CREDENCIAIS_INVALIDAS);
     expect(dependencias.cofre.conferencias).toEqual([null, expect.any(String)]);
+    expect(dependencias.sinais.falhas).toEqual(['admin:senha', 'admin:senha']);
   });
 
   it('bloqueia o e-mail depois de N falhas', async () => {
@@ -132,6 +133,7 @@ describe('ConfirmarSegundoFatorAdmin', () => {
     const codigo = codigoTotpDeTeste('SEGREDO', dependencias.relogio.agora());
     const bloqueado = await confirmarSegundoFatorAdmin(dependencias, { ...entrada, codigo });
     expect(!bloqueado.ok && bloqueado.erro.codigo).toBe(CODIGOS.ADMIN_ENTRAR_BLOQUEADA);
+    expect(dependencias.sinais.bloqueios).toEqual(['admin:segundo_fator:segundo_fator']);
   });
 
   it('código de recuperação vale uma vez só', async () => {
