@@ -6,6 +6,7 @@ import estilos from '../../storybook/historias.module.css';
 
 const meta = {
   title: 'Formulario/Botao',
+  tags: ['cardapio', 'painel'],
   component: Botao,
   args: { children: 'Ver cardápio' },
 } satisfies Meta<typeof Botao>;

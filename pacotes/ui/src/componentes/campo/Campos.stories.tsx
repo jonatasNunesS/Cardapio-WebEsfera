@@ -9,6 +9,7 @@ import { Seletor } from './Seletor.tsx';
 
 const meta = {
   title: 'Formulario/Campos',
+  tags: ['cardapio', 'painel'],
   component: CampoTexto,
   args: { rotulo: 'Nome do restaurante' },
   decorators: [

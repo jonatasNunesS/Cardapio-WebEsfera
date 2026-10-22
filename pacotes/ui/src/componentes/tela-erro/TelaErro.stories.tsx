@@ -3,6 +3,7 @@ import { TelaErro } from './TelaErro.tsx';
 
 const meta = {
   title: 'Compartilhados/TelaErro',
+  tags: ['cardapio', 'painel'],
   component: TelaErro,
   args: { idRastreio: '01a15eda-4bef-7721-9371-fcb3c22b525a', aoTentarDeNovo: () => undefined },
   parameters: { layout: 'fullscreen' },

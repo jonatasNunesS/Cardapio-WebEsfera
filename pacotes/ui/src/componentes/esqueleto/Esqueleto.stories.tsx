@@ -4,6 +4,7 @@ import { Esqueleto } from './Esqueleto.tsx';
 
 const meta = {
   title: 'Compartilhados/Esqueleto',
+  tags: ['cardapio', 'painel'],
   component: Esqueleto,
   args: { rotulo: 'Carregando cardápio' },
   decorators: [

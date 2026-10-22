@@ -5,6 +5,7 @@ import estilos from './Icone.stories.module.css';
 
 const meta = {
   title: 'Base/Icone',
+  tags: ['cardapio', 'painel'],
   component: Icone,
   args: { nome: 'buscar' },
 } satisfies Meta<typeof Icone>;

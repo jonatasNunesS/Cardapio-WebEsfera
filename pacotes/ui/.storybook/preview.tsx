@@ -3,6 +3,7 @@ import '../src/fontes/cardapio.css';
 import '../src/fontes/painel.css';
 import '../src/tokens.css';
 import './previa.css';
+import { exigirSuperficie } from '../src/storybook/superficies.ts';
 
 export type TemaDaPrevia = 'cardapio' | 'painel' | 'tv';
 
@@ -27,6 +28,9 @@ const aplicarTema: Decorator = (Historia, contexto) => {
 
 const previa: Preview = {
   decorators: [aplicarTema],
+  beforeEach: ({ title, name, tags }) => {
+    exigirSuperficie(title, name, tags);
+  },
   globalTypes: {
     tema: {
       description: 'Tema do design system',

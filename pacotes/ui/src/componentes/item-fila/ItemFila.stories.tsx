@@ -4,6 +4,7 @@ import { ItemFila } from './ItemFila.tsx';
 
 const meta = {
   title: 'Painel/ItemFila',
+  tags: ['painel'],
   component: ItemFila,
   args: {
     mesa: 12,
@@ -45,4 +46,5 @@ export const NaTv: Historia = {
     naTv: true,
   },
   globals: { tema: 'tv' },
+  tags: ['tv', '!painel'],
 };

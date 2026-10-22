@@ -4,5 +4,5 @@
     "types": ["node"],
     "lib": ["ES2024", "DOM"]
   },
-  "include": ["*.ts"]
+  "include": ["*.ts", "../src/storybook/superficies.ts"]
 }

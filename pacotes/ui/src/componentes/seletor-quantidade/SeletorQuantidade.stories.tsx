@@ -28,6 +28,7 @@ function Controlado({
 
 const meta = {
   title: 'Cardapio/SeletorQuantidade',
+  tags: ['cardapio'],
   component: SeletorQuantidade,
   args: { nomeDoItem: 'Costela na brasa', valor: 1, aoMudar: () => undefined },
 } satisfies Meta<typeof SeletorQuantidade>;

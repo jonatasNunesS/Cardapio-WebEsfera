@@ -5,6 +5,7 @@ import { Aviso } from './Aviso.tsx';
 
 const meta = {
   title: 'Compartilhados/Aviso',
+  tags: ['cardapio', 'painel', 'tv'],
   component: Aviso,
   args: { tipo: 'informacao', children: 'Os clientes só veem depois de publicar.' },
   decorators: [

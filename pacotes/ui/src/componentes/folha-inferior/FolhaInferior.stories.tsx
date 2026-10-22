@@ -37,6 +37,7 @@ function Carrinho({ abertaDesdeOInicio = false }: { abertaDesdeOInicio?: boolean
 
 const meta = {
   title: 'Cardapio/FolhaInferior',
+  tags: ['cardapio'],
   component: FolhaInferior,
   args: { aberta: false, aoFechar: () => undefined, titulo: 'Seu pedido', children: null },
   parameters: { layout: 'fullscreen' },

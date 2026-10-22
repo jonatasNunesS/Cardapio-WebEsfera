@@ -5,6 +5,7 @@ import { CartaoPrato } from './CartaoPrato.tsx';
 
 const meta = {
   title: 'Cardapio/CartaoPrato',
+  tags: ['cardapio'],
   component: CartaoPrato,
   args: {
     nome: 'Pão de fermentação natural',

@@ -19,6 +19,7 @@ function economizarDados(): () => void {
 
 const meta = {
   title: 'Cardapio/VideoPrato',
+  tags: ['cardapio'],
   component: VideoPrato,
   args: { ...MIDIA_DE_EXEMPLO, descricao: 'Costela na brasa girando no prato' },
   decorators: [

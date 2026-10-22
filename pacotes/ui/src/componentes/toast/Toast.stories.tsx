@@ -30,6 +30,7 @@ function Disparadores() {
 
 const meta = {
   title: 'Compartilhados/Toast',
+  tags: ['cardapio', 'painel'],
   component: Toast,
   args: { tipo: 'sucesso', texto: 'Pedido #42 enviado', aoFechar: () => undefined },
 } satisfies Meta<typeof Toast>;

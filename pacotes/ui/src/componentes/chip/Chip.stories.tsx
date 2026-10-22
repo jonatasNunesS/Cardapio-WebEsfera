@@ -11,6 +11,7 @@ const CATEGORIAS = ['Entradas', 'Principais', 'Massas', 'Sobremesas', 'Bebidas']
 
 const meta = {
   title: 'Cardapio/Chips',
+  tags: ['cardapio'],
   component: ChipCategoria,
   args: {
     rotulo: 'Categorias',
@@ -72,4 +73,4 @@ function FiltrosControlados() {
   );
 }
 
-export const Filtros: Historia = { render: () => <FiltrosControlados /> };
+export const Filtros: Historia = { tags: ['painel', '!cardapio'], render: () => <FiltrosControlados /> };

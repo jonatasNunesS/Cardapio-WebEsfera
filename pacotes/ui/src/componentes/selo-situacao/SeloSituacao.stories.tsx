@@ -13,6 +13,7 @@ const SITUACOES: readonly Situacao[] = [
 
 const meta = {
   title: 'Painel/SeloSituacao',
+  tags: ['painel', 'tv'],
   component: SeloSituacao,
   args: { situacao: 'aguardando' },
 } satisfies Meta<typeof SeloSituacao>;

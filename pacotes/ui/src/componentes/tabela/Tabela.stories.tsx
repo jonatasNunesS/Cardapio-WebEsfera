@@ -71,6 +71,7 @@ const LINHAS: readonly Restaurante[] = [
 
 const meta = {
   title: 'Painel/Tabela',
+  tags: ['painel'],
   component: Tabela<Restaurante>,
   args: {
     legenda: 'Restaurantes',
