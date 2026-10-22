@@ -21,8 +21,11 @@ export function criarPool(opcoes: OpcoesDoPool, aoFalharConexaoOciosa: AoFalharC
     idleTimeoutMillis: 30_000,
   });
   pool.on('error', aoFalharConexaoOciosa);
-  pool.on('connect', (cliente) => {
+  pool.on('acquire', (cliente) => {
     cliente.on('error', aoFalharConexaoOciosa);
+  });
+  pool.on('release', (_erro, cliente) => {
+    cliente.removeListener('error', aoFalharConexaoOciosa);
   });
   return pool;
 }
