@@ -1,6 +1,6 @@
 # Runbook: alertas do Sentry
 
-Os 6 alertas da seção 8 do plano, para configurar manualmente no Sentry. O
+Os 6 alertas da seção 8 do plano, mais os 2 de autenticação do M04, para configurar manualmente no Sentry. O
 caminho segue a documentação atual de Monitors e Alerts
 (`docs/product/monitors-and-alerts/alerts/create-alerts.mdx` no repositório
 getsentry/sentry-docs, consultado em 2026-10-21): **Monitors > Alerts >
@@ -109,6 +109,48 @@ restaurante>`. Then: e-mail.
   oferecer. A decisão é do John.
 - O que fazer: abrir o filtro `restaurante_id:<id>`. Costuma ser cardápio
   com dado ruim ou plano inadimplente; confirmar antes de mexer.
+
+## 7. Pico de bloqueios de login (M04)
+
+Falha de login é erro de negócio e não vira evento. O código só manda ao
+Sentry um aviso quando um bloqueio progressivo começa (ADR 0008).
+
+- Source: `cardapio-backend`.
+- When: **An event or issue activity is captured**.
+- If (all): **Tagged event** `codigo` equals `AUTENTICACAO_SENHA_BLOQUEADA`;
+  **Tagged event** `publico` equals `painel`; **Number of events** more than
+  10 in 15 minutes.
+- Then: notificação imediata.
+- Repita com `publico` igual a `admin` e **Number of events** more than 0:
+  qualquer bloqueio no admin avisa na hora.
+- Complemento para pico sem bloqueio (tentativas espalhadas por muitos
+  e-mails): **Metric Monitor** no dataset de spans, contagem de spans com
+  `autenticacao.falha:senha`, intervalo de 5 minutos, limite fixo de 200 no
+  painel e 20 no admin (`autenticacao.publico`). Em homologação e produção a
+  amostragem de traces é 10%; o Sentry estima o total a partir da amostra,
+  então o número é aproximado.
+- O que fazer:
+  1. Ver a tag `alvo` dos eventos: `ip` indica um endereço atacando; `email`
+     indica uma conta sob ataque.
+  2. Nos logs, filtrar `evento:autenticacao_bloqueada` e
+     `evento:autenticacao_falhou` no período. Não há e-mail nem IP nos logs;
+     o IP aparece nos logs do proxy.
+  3. Ataque de um IP ou de uma faixa: bloquear no WAF. Muitos e-mails do mesmo
+     restaurante: avisar o dono e pedir a troca de senha.
+
+## 8. Código errado no segundo fator do admin (M04)
+
+- Source: `cardapio-backend`.
+- When: **An event or issue activity is captured**.
+- If (all): **Tagged event** `codigo` equals
+  `AUTENTICACAO_SEGUNDO_FATOR_BLOQUEADO`.
+- Then: notificação imediata ao John, por e-mail e celular.
+- Throttling: **Get notified on every trigger**.
+- Complemento: **Metric Monitor** no dataset de spans com
+  `autenticacao.falha:segundo_fator`, intervalo de 5 minutos, limite fixo de 5.
+- O que fazer: alguém tem a senha de um admin e está tentando o código.
+  Trocar a senha desse admin na hora (`docs/runbooks/admin.md`) e revisar de
+  onde veio o acesso.
 
 ## Antes de configurar
 

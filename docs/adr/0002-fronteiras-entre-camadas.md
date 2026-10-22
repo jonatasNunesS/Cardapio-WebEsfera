@@ -37,6 +37,25 @@ e `node:*`, inclusive no domínio. Os testes do elemento `banco` também podem
 importar a observabilidade, para provar que a violação de RLS chega ao Sentry
 como `fatal` (ADR 0006).
 
+Desde o M04:
+
+- Os testes de `dominio`, `aplicacao` e `ui` podem importar `contratos`. É
+  onde ficam os vetores de contraste compartilhados
+  (`contratos/src/cor-da-marca/casos.ts`): o teste dos tokens do `ui` e o da
+  `CorDaMarca` do domínio leem os mesmos casos, e uma mudança na fórmula de um
+  lado quebra o outro. O código de produção desses pacotes continua sem
+  importar `contratos`.
+- `@cardapio/aplicacao/testes` exporta as portas em memória usadas nos testes
+  dos casos de uso. Os testes da API também as usam; não é importação nova,
+  porque o `app-servidor` já pode importar `aplicacao`.
+- `@cardapio/contratos/cliente` é o cliente HTTP dos apps (CSRF e Problem
+  Details). Fica num subcaminho porque usa `fetch`, e os pacotes que importam
+  os esquemas de `contratos` (domínio, aplicação) não têm os tipos do
+  navegador. Continua sem importar nada além de globais.
+- `ui` ganhou o gancho `useEnvioDeFormulario`, que não conhece a API: recebe
+  uma função que devolve `{ ok, dados }` ou `{ ok: false, problema }` e só
+  depende da forma do Problem Details.
+
 As 9 regras do M00:
 
 1. `dominio` não importa nenhum pacote do monorepo nem biblioteca externa,
