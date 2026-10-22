@@ -65,7 +65,8 @@ no próprio host, e um proxy reverso encaminha para a API.
 ## Consequências
 
 - `DOMINIO_API` saiu do `.env.exemplo` no M04. A API usa `DOMINIO_PAINEL`,
-  `DOMINIO_ADMIN` e `PROXIES_CONFIAVEIS`.
+  `DOMINIO_ADMIN` e `PROXIES_CONFIAVEIS`, e desde o M06 `DOMINIO_CARDAPIO`:
+  a leitura pública do cardápio e a busca só respondem nesse host (ADR 0010).
 - Impacto no deploy (M17): o proxy reverso de cada host precisa encaminhar
   `/api/` para a API, repassar `Host` e `X-Forwarded-For` e servir o resto
   como arquivos estáticos do app. O endereço do proxy entra em

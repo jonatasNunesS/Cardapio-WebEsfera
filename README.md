@@ -27,7 +27,8 @@ docker compose down --volumes
 
 Banco, migrações e usuários: [docs/runbooks/banco.md](docs/runbooks/banco.md).
 Filas, outbox e Bull Board: [docs/runbooks/filas.md](docs/runbooks/filas.md) e
-[ADR 0009](docs/adr/0009-filas-e-outbox.md).
+[ADR 0009](docs/adr/0009-filas-e-outbox.md). Cardápio, busca e leitura
+pública: [ADR 0010](docs/adr/0010-cardapio-e-busca.md).
 
 Os apps React rodam em desenvolvimento com `pnpm --filter @cardapio/cardapio dev`
 (o mesmo para `painel` e `admin`).
