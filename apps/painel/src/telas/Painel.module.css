@@ -71,3 +71,8 @@
   color: var(--cor-texto);
   font-family: var(--fonte-texto);
 }
+
+.navegacao {
+  display: flex;
+  gap: var(--espaco-4);
+}

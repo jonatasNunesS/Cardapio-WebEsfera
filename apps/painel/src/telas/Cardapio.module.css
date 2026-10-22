@@ -1,0 +1,101 @@
+.secao {
+  display: grid;
+  gap: var(--espaco-3);
+  margin: 0 0 var(--espaco-5);
+  padding: var(--espaco-4);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+  background: var(--cor-superficie);
+}
+
+.topoDaSecao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nomeDaSecao {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-4);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  align-items: center;
+}
+
+.lista {
+  display: grid;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prato {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--espaco-2) var(--espaco-3);
+  align-items: center;
+  padding: var(--espaco-3);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-1);
+  background: var(--cor-fundo);
+  cursor: grab;
+}
+
+.pratoArrastado {
+  opacity: 0.5;
+}
+
+.nomeDoPrato {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  align-items: center;
+}
+
+.tituloDoPrato {
+  margin: 0;
+  font-size: var(--tamanho-3);
+  font-weight: var(--peso-medio);
+}
+
+.preco {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.chaves {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  gap: var(--espaco-4);
+}
+
+.novaCategoria {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--espaco-3);
+  align-items: end;
+  margin: 0 0 var(--espaco-5);
+}
+
+.vazio {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}
+
+.somenteLeitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

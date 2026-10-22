@@ -2,7 +2,7 @@ import { ROTAS_DO_PAINEL, type RestauranteDaSessao } from '@cardapio/contratos';
 import { Botao, Esqueleto } from '@cardapio/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { Navigate, useNavigate } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 import { api, CHAVE_DA_SESSAO, useSessao } from '../api.ts';
 import estilos from './Painel.module.css';
 
@@ -53,6 +53,10 @@ export function ComRestaurante({
     <div className={estilos.pagina}>
       <header className={estilos.cabecalho}>
         <p className={estilos.restaurante}>{restaurante.nome}</p>
+        <nav aria-label="Seções do painel" className={estilos.navegacao}>
+          <Link to="/cardapio">Cardápio</Link>
+          <Link to="/personalizacao">Personalização</Link>
+        </nav>
         <BotaoSair />
       </header>
       {children(restaurante)}

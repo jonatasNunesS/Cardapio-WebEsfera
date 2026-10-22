@@ -22,8 +22,8 @@ export async function semViolacoesDeAcessibilidade(pagina: Page): Promise<void> 
   ).toEqual([]);
 }
 
-export async function demonstrar(pagina: Page, nome: string): Promise<void> {
+export async function demonstrar(pagina: Page, nome: string, modulo = 'm04'): Promise<void> {
   if (process.env.CAPTURAR_DEMONSTRACOES === '1') {
-    await pagina.screenshot({ path: `docs/demonstracoes/m04/${nome}.png`, fullPage: true });
+    await pagina.screenshot({ path: `docs/demonstracoes/${modulo}/${nome}.png`, fullPage: true });
   }
 }
