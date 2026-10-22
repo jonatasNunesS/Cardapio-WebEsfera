@@ -36,7 +36,11 @@ function montar() {
     ambiente: 'local',
     relatorDeErros: relatorDeErrosSentry,
     verificarProntidao: () => Promise.resolve(),
-    identidade: { dependencias, hosts: HOSTS },
+    identidade: {
+      dependencias,
+      hosts: HOSTS,
+      painelDeFilas: { adaptadores: [], aoFalhar: () => undefined },
+    },
   });
   return { servidor, dependencias };
 }
@@ -468,5 +472,77 @@ describe('logs', () => {
     ]) {
       expect(log).not.toContain(proibido);
     }
+  });
+});
+
+describe('painel de filas (Bull Board)', () => {
+  async function adminCompleto() {
+    const montado = montar();
+    const { navegador } = await adminComSegundoFator(montado.servidor, montado.dependencias);
+    await navegador.pedir('POST', ROTAS_DO_ADMIN.segundoFator, {
+      codigoDeVerificacao: codigoTotpDeTeste('SEGREDO', montado.dependencias.relogio.agora()),
+    });
+    return { ...montado, admin: navegador };
+  }
+
+  it('sem sessão de admin responde 401, e no host do painel nem existe', async () => {
+    const { servidor } = montar();
+
+    const semSessao = await new Navegador(servidor, HOSTS.admin).pedir('GET', ROTAS_DO_ADMIN.filas);
+    const noPainel = await new Navegador(servidor, HOSTS.painel).pedir('GET', ROTAS_DO_ADMIN.filas);
+
+    expect(semSessao.statusCode).toBe(401);
+    expect(semSessao.json()).toMatchObject({ codigo: 'SESSAO_VALIDAR_INVALIDA' });
+    expect(noPainel.statusCode).toBe(404);
+  });
+
+  it('com sessão de dono de restaurante responde 403', async () => {
+    const { servidor } = montar();
+    const { navegador: painel } = await donoNoPainel(servidor);
+    const dono = new Navegador(servidor, HOSTS.admin);
+    dono.cookies.set('__Host-sessao_painel', painel.cookies.get('__Host-sessao_painel') ?? '');
+
+    const resposta = await dono.pedir('GET', `${ROTAS_DO_ADMIN.filas}/api/queues`);
+
+    expect(resposta.statusCode).toBe(403);
+    expect(resposta.json()).toMatchObject({ codigo: 'FILAS_PAINEL_SEM_PERMISSAO' });
+  });
+
+  it('admin sem o segundo fator confirmado não entra', async () => {
+    const { servidor, dependencias } = montar();
+    const { navegador } = await adminComSegundoFator(servidor, dependencias);
+
+    expect((await navegador.pedir('GET', ROTAS_DO_ADMIN.filas)).statusCode).toBe(401);
+  });
+
+  it('admin com segundo fator vê o painel; ação de escrita exige a origem do próprio admin', async () => {
+    const { admin } = await adminCompleto();
+
+    const pagina = await admin.pedir('GET', ROTAS_DO_ADMIN.filas);
+    const filas = await admin.pedir('GET', `${ROTAS_DO_ADMIN.filas}/api/queues`);
+    const semOrigem = await admin.pedir('PUT', `${ROTAS_DO_ADMIN.filas}/api/queues/rotinas/pause`);
+    const outraOrigem = await admin.pedir(
+      'PUT',
+      `${ROTAS_DO_ADMIN.filas}/api/queues/rotinas/pause`,
+      undefined,
+      {
+        origin: 'https://atacante.exemplo',
+      },
+    );
+    const mesmaOrigem = await admin.pedir(
+      'PUT',
+      `${ROTAS_DO_ADMIN.filas}/api/queues/rotinas/pause`,
+      undefined,
+      {
+        origin: `https://${HOSTS.admin}`,
+      },
+    );
+
+    expect(pagina.statusCode).toBe(200);
+    expect(pagina.headers['content-type']).toMatch(/text\/html/);
+    expect(filas.statusCode).toBe(200);
+    expect(semOrigem.statusCode).toBe(403);
+    expect(outraOrigem.json()).toMatchObject({ codigo: 'FILAS_PAINEL_ORIGEM_RECUSADA' });
+    expect(mesmaOrigem.statusCode).not.toBe(403);
   });
 });

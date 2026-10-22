@@ -24,6 +24,7 @@ export const ROTAS_DO_ADMIN = {
   segundoFator: '/api/v1/admin/sessao/segundo-fator',
   cadastroDoSegundoFator: '/api/v1/admin/segundo-fator/cadastro',
   confirmacaoDoCadastro: '/api/v1/admin/segundo-fator/cadastro/confirmacao',
+  filas: '/api/v1/admin/filas',
 } as const;
 
 export const esquemaCriarConta = z.strictObject({ nome: texto(200), email, senha });

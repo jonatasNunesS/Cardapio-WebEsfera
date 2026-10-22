@@ -8,6 +8,7 @@ import {
 import type { FastifyInstance } from 'fastify';
 import type { AmbienteApi } from '../ambiente.ts';
 import { construirServidor } from '../servidor.ts';
+import { comporPainelDeFilas } from './filas.ts';
 import { comporIdentidade } from './identidade.ts';
 
 export function comporApi(ambiente: AmbienteApi): FastifyInstance {
@@ -19,6 +20,7 @@ export function comporApi(ambiente: AmbienteApi): FastifyInstance {
     relator: relatorDeErrosSentry,
   });
   const redis = criarRedis(ambiente.URL_REDIS, relatorDeErrosSentry);
+  const painelDeFilas = comporPainelDeFilas(ambiente.URL_REDIS, relatorDeErrosSentry);
   const servidor = construirServidor({
     logger,
     ambiente: ambiente.APP_ENV,
@@ -31,10 +33,12 @@ export function comporApi(ambiente: AmbienteApi): FastifyInstance {
       dependencias: comporIdentidade(ambiente, banco, logger),
       hosts: { painel: ambiente.DOMINIO_PAINEL, admin: ambiente.DOMINIO_ADMIN },
       armazenamentoDeLimites: redis,
+      painelDeFilas: painelDeFilas.opcoes,
     },
   });
   servidor.addHook('onClose', async () => {
     redis.disconnect();
+    await painelDeFilas.encerrar();
     await banco.encerrar();
   });
   return servidor;
