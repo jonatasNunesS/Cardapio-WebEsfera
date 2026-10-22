@@ -44,6 +44,8 @@ export { SeletorQuantidade } from './componentes/seletor-quantidade/SeletorQuant
 export type { PropriedadesSeletorQuantidade } from './componentes/seletor-quantidade/SeletorQuantidade.tsx';
 export { Tabela } from './componentes/tabela/Tabela.tsx';
 export type { ColunaTabela, PropriedadesTabela } from './componentes/tabela/Tabela.tsx';
+export { PaginaDeAcesso } from './componentes/pagina-de-acesso/PaginaDeAcesso.tsx';
+export type { PropriedadesPaginaDeAcesso } from './componentes/pagina-de-acesso/PaginaDeAcesso.tsx';
 export { TelaErro } from './componentes/tela-erro/TelaErro.tsx';
 export type { PropriedadesTelaErro } from './componentes/tela-erro/TelaErro.tsx';
 export { ProvedorDeToast, useToasts } from './componentes/toast/ProvedorDeToast.tsx';
@@ -57,3 +59,10 @@ export type { PropriedadesToast } from './componentes/toast/Toast.tsx';
 export { ProvedorDeVideos, useCoordenadorDeVideos } from './componentes/video-prato/CoordenadorDeVideos.tsx';
 export { VideoPrato } from './componentes/video-prato/VideoPrato.tsx';
 export type { PropriedadesVideoPrato } from './componentes/video-prato/VideoPrato.tsx';
+export { errosDoProblema, SEM_ERROS, useEnvioDeFormulario } from './formulario/useEnvioDeFormulario.ts';
+export type {
+  EnvioDeFormulario,
+  ErrosDoFormulario,
+  ProblemaDoFormulario,
+  RespostaDoEnvio,
+} from './formulario/useEnvioDeFormulario.ts';

@@ -11,3 +11,5 @@ test-results/
 playwright-report/
 pacotes/ui/visual/resultados/
 pacotes/ui/visual/relatorio/
+scripts/e2e/resultados/
+scripts/e2e/relatorio/

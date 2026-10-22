@@ -1,3 +1,3 @@
 import { criarConfiguracaoVite } from '@cardapio/config/vite';
 
-export default criarConfiguracaoVite('painel', new URL('./package.json', import.meta.url));
+export default criarConfiguracaoVite('painel', new URL('./package.json', import.meta.url), { porta: 5173 });

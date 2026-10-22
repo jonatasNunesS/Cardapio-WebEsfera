@@ -63,6 +63,7 @@ export function criarCorDaMarca(hex: string): Resultado<CorDaMarca, ErroDeNegoci
       criarErroDeNegocio(
         CODIGOS.PERSONALIZACAO_PUBLICAR_COR_INVALIDA,
         'A cor precisa estar no formato #RRGGBB.',
+        { campo: 'corMarca' },
       ),
     );
   }
@@ -73,6 +74,7 @@ export function criarCorDaMarca(hex: string): Resultado<CorDaMarca, ErroDeNegoci
         CODIGOS.PERSONALIZACAO_PUBLICAR_COR_SEM_CONTRASTE,
         'Essa cor fica ilegível no cardápio. Use a sugestão ou escolha outra.',
         {
+          campo: 'corMarca',
           sugestao: sugerirCorDaMarca(hex),
           contrasteTexto: arredondar(avaliacao.contrasteTexto),
           contrasteFundo: arredondar(avaliacao.contrasteFundo),

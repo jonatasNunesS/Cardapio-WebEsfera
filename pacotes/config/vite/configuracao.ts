@@ -16,6 +16,7 @@ const esquemaAmbienteBuild = z.object({
   SENTRY_AUTH_TOKEN: z.preprocess(vazioComoAusente, z.string().optional()),
   SENTRY_ORG: z.preprocess(vazioComoAusente, z.string().optional()),
   SENTRY_PROJETO_FRONTEND: z.preprocess(vazioComoAusente, z.string().optional()),
+  URL_API_LOCAL: z.preprocess(vazioComoAusente, z.url().default('http://127.0.0.1:3000')),
 });
 
 const esquemaPacote = z.object({ version: z.string() });
@@ -42,7 +43,25 @@ function pluginsDeEnvioDeMapas(ambiente: AmbienteBuild, release: string) {
   });
 }
 
-export function criarConfiguracaoVite(app: string, urlDoPacote: URL): UserConfig {
+export interface OpcoesDoServidorLocal {
+  readonly porta: number;
+}
+
+// Cada app chama /api no próprio host; o proxy mantém o Host para a API conferir o app: docs/adr/0003-dominios-e-ambientes.md
+function servidorLocal(ambiente: AmbienteBuild, opcoes: OpcoesDoServidorLocal) {
+  return {
+    host: '127.0.0.1',
+    port: opcoes.porta,
+    strictPort: true,
+    proxy: { '/api': { target: ambiente.URL_API_LOCAL, changeOrigin: false } },
+  };
+}
+
+export function criarConfiguracaoVite(
+  app: string,
+  urlDoPacote: URL,
+  servidor?: OpcoesDoServidorLocal,
+): UserConfig {
   const ambiente = esquemaAmbienteBuild.parse(process.env);
   const { version } = esquemaPacote.parse(JSON.parse(readFileSync(urlDoPacote, 'utf8')));
   const release = montarRelease(app, version, ambiente.COMMIT_SHA);
@@ -57,5 +76,6 @@ export function criarConfiguracaoVite(app: string, urlDoPacote: URL): UserConfig
       }),
     },
     build: { sourcemap: 'hidden' },
+    ...(servidor === undefined ? {} : { server: servidorLocal(ambiente, servidor) }),
   });
 }

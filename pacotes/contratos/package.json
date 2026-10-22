@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./cliente": "./src/cliente/cliente-da-api.ts"
   },
   "scripts": {
     "tipos": "tsc --noEmit -p ."

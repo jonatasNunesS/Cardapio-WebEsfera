@@ -10,10 +10,13 @@
   },
   "dependencies": {
     "@cardapio/config": "workspace:*",
+    "@cardapio/contratos": "workspace:*",
     "@cardapio/observabilidade": "workspace:*",
     "@cardapio/ui": "workspace:*",
+    "@tanstack/react-query": "5.104.1",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "react-router": "8.4.0"
   },
   "devDependencies": {
     "@types/react": "19.3.0",
