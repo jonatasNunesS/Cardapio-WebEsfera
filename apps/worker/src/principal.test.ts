@@ -16,7 +16,7 @@ describe('worker', () => {
         env: {
           NODE_ENV: 'test',
           APP_ENV: 'local',
-          URL_REDIS: 'redis://localhost:6379',
+          URL_REDIS: 'redis://127.0.0.1:1',
           URL_BANCO_WORKER: 'postgres://cardapio_worker:x@127.0.0.1:1/cardapio',
         },
         stdio: ['ignore', 'ignore', 'pipe', 'ipc'],

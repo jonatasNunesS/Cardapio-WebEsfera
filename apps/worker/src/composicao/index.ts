@@ -7,6 +7,7 @@ import {
 } from '@cardapio/observabilidade/node';
 import type { AmbienteWorker } from '../ambiente.ts';
 import { criarProcessoWorker, type ProcessoWorker } from '../processo.ts';
+import { comporFilas } from './filas.ts';
 
 export function comporWorker(ambiente: AmbienteWorker): ProcessoWorker {
   definirLoggerPadrao(criarLogger({ app: 'worker' }));
@@ -16,5 +17,14 @@ export function comporWorker(ambiente: AmbienteWorker): ProcessoWorker {
     propagador: propagadorDeContexto,
     relator: relatorDeErrosSentry,
   });
-  return criarProcessoWorker({ aoEncerrar: () => banco.encerrar() });
+  const filas = comporFilas(ambiente.URL_REDIS, banco, relatorDeErrosSentry);
+  return criarProcessoWorker({
+    aoIniciar: () => {
+      filas.iniciar();
+    },
+    aoEncerrar: async () => {
+      await filas.encerrar();
+      await banco.encerrar();
+    },
+  });
 }

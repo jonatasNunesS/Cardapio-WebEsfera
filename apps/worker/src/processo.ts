@@ -6,19 +6,25 @@ export interface ProcessoWorker {
 }
 
 export interface OpcoesDoProcesso {
+  readonly aoIniciar?: (() => void) | undefined;
   readonly aoEncerrar: () => Promise<void>;
 }
 
 export function criarProcessoWorker(opcoes: OpcoesDoProcesso): ProcessoWorker {
   let temporizador: NodeJS.Timeout | undefined;
+  let encerramento: Promise<void> | undefined;
   return {
     iniciar() {
       temporizador = setInterval(() => undefined, INTERVALO_DE_VIDA_MS);
+      opcoes.aoIniciar?.();
     },
-    async encerrar() {
-      clearInterval(temporizador);
-      temporizador = undefined;
-      await opcoes.aoEncerrar();
+    encerrar() {
+      encerramento ??= (async () => {
+        clearInterval(temporizador);
+        temporizador = undefined;
+        await opcoes.aoEncerrar();
+      })();
+      return encerramento;
     },
   };
 }
