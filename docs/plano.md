@@ -518,7 +518,7 @@ A pilha é a que você definiu (React, Node, PostgreSQL, Redis, Sentry, CSS puro
 
 | Camada | Escolha | Alternativa avaliada | Motivo |
 | --- | --- | --- | --- |
-| Runtime | Node 24 LTS; migrar para o Node 26 quando virar LTS ativo | Node 22 | O 24 tem suporte de segurança até 30/04/2028 ([endoflife.date](https://endoflife.date/nodejs)) |
+| Runtime | Node 24 LTS mantido; reavaliar no primeiro trimestre de 2028 (ADR 0001) | Node 22 | O 24 tem suporte de segurança até 30/04/2028 ([endoflife.date](https://endoflife.date/nodejs)) |
 | Linguagem | TypeScript estrito | JavaScript com JSDoc | Tipos de ponta a ponta com os contratos Zod |
 | Front | React + Vite + React Router | Next.js | Três SPAs leves; o servidor é a API, não o front |
 | Dados no front | TanStack Query | Redux | Cache, reenvio e estados de carregamento prontos |
@@ -1038,7 +1038,7 @@ A documentação mora no repositório e muda no mesmo pull request que muda o co
 - Cerca de 20% de cada ciclo para dívida técnica e atualizações.
 - API: versão nova convive com a anterior por 6 meses, com aviso.
 - Recurso removido: aviso, desligado por flag, e só depois o código sai.
-- Node 24 para 26 quando o 26 for LTS ativo, num módulo próprio com testes de regressão.
+- Node 24 LTS mantido; reavaliar no primeiro trimestre de 2028, antes do fim do suporte de segurança em 2028-04-30 (ADR 0001).
 
 ### Relatório de decisões
 
