@@ -47,3 +47,80 @@ export function validarHorarios(horarios: readonly Horario[]): Resultado<readonl
 export function viraODia(horario: Horario): boolean {
   return horario.fecha < horario.abre;
 }
+
+export interface MomentoLocal {
+  readonly diaSemana: DiaDaSemana;
+  readonly minutos: number;
+}
+
+export interface SituacaoDoHorario {
+  readonly aberto: boolean;
+  readonly proximaAbertura: {
+    readonly diaSemana: DiaDaSemana;
+    readonly abre: string;
+    readonly hoje: boolean;
+  } | null;
+}
+
+const DIAS: Readonly<Record<string, DiaDaSemana>> = {
+  Sun: 0,
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+};
+
+export function momentoLocal(instante: Date, fusoHorario: string): MomentoLocal {
+  const partes = new Intl.DateTimeFormat('en-US', {
+    timeZone: fusoHorario,
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(instante);
+  const valor = (tipo: string) => partes.find((parte) => parte.type === tipo)?.value ?? '';
+  return {
+    diaSemana: DIAS[valor('weekday')] ?? 0,
+    minutos: Number(valor('hour')) * 60 + Number(valor('minute')),
+  };
+}
+
+function emMinutos(hora: string): number {
+  const [horas = 0, minutos = 0] = hora.split(':').map(Number);
+  return horas * 60 + minutos;
+}
+
+function cobre(horario: Horario, momento: MomentoLocal): boolean {
+  const [abre, fecha] = [emMinutos(horario.abre), emMinutos(horario.fecha)];
+  if (!viraODia(horario)) {
+    return horario.diaSemana === momento.diaSemana && momento.minutos >= abre && momento.minutos < fecha;
+  }
+  const ontem = ((momento.diaSemana + 6) % 7) as DiaDaSemana;
+  return (
+    (horario.diaSemana === momento.diaSemana && momento.minutos >= abre) ||
+    (horario.diaSemana === ontem && momento.minutos < fecha)
+  );
+}
+
+function proximaAbertura(
+  horarios: readonly Horario[],
+  momento: MomentoLocal,
+): SituacaoDoHorario['proximaAbertura'] {
+  for (let distancia = 0; distancia <= 7; distancia += 1) {
+    const dia = ((momento.diaSemana + distancia) % 7) as DiaDaSemana;
+    const horario = horarios.find((item) => item.diaSemana === dia);
+    if (horario !== undefined && (distancia > 0 || emMinutos(horario.abre) > momento.minutos)) {
+      return { diaSemana: dia, abre: horario.abre, hoje: distancia === 0 };
+    }
+  }
+  return null;
+}
+
+export function situacaoDoHorario(horarios: readonly Horario[], momento: MomentoLocal): SituacaoDoHorario {
+  if (horarios.length === 0 || horarios.some((horario) => cobre(horario, momento))) {
+    return { aberto: true, proximaAbertura: null };
+  }
+  return { aberto: false, proximaAbertura: proximaAbertura(horarios, momento) };
+}
