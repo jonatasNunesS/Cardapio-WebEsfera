@@ -8,7 +8,7 @@ export interface DependenciasDeIniciarCadastro {
   readonly admins: RepositorioDeAdmins;
   readonly totp: AutenticadorTotp;
   readonly cifra: Cifra;
-  readonly emissor: string;
+  readonly rotuloDoTotp: string;
 }
 
 export interface CadastroIniciado {
@@ -37,5 +37,5 @@ export async function iniciarCadastroSegundoFatorAdmin(
       },
     );
   }
-  return { segredo, endereco: dependencias.totp.enderecoDeCadastro(segredo, dependencias.emissor) };
+  return { segredo, endereco: dependencias.totp.enderecoDeCadastro(segredo, dependencias.rotuloDoTotp) };
 }

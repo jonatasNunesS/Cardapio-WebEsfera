@@ -460,6 +460,6 @@ export function dependenciasDeAdmin() {
     totp: totpDeTeste,
     cifra: cifraDeTeste,
     recuperacao: recuperacaoDeTeste,
-    emissor: 'WebEsfera Admin',
+    rotuloDoTotp: 'WebEsfera Admin',
   };
 }

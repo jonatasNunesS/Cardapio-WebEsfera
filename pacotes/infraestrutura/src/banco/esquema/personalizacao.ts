@@ -3,9 +3,9 @@ import { idUuidV7, momento, restauranteId } from './comum.ts';
 import { restaurantes } from './restaurantes.ts';
 
 export interface TextosDaPersonalizacao {
-  readonly boasVindas?: string | undefined;
-  readonly aoChamarGarcom?: string | undefined;
-  readonly restauranteFechado?: string | undefined;
+  readonly boasVindas: string;
+  readonly aoChamarGarcom: string;
+  readonly restauranteFechado: string;
 }
 
 export const personalizacoes = pgTable(
@@ -20,7 +20,10 @@ export const personalizacoes = pgTable(
     capaUrl: text('capa_url'),
     frase: text('frase').notNull().default(''),
     linkAvaliacaoGoogle: text('link_avaliacao_google'),
-    textos: jsonb('textos').$type<TextosDaPersonalizacao>().notNull().default({}),
+    textos: jsonb('textos')
+      .$type<TextosDaPersonalizacao>()
+      .notNull()
+      .default({ boasVindas: '', aoChamarGarcom: '', restauranteFechado: '' }),
     versao: integer('versao').notNull().default(1),
     atualizadoEm: momento('atualizado_em').notNull().defaultNow(),
   },
