@@ -5,6 +5,8 @@ import { criarPersonalizacao, type DadosDaPersonalizacao } from './personalizaca
 
 const VALIDA: DadosDaPersonalizacao = {
   corMarca: '#B4441F',
+  logoUrl: '/midias/restaurantes/logo.webp',
+  capaUrl: null,
   frase: 'Cozinha de fogo e pão de fermentação natural',
   linkAvaliacaoGoogle: 'https://g.page/r/brasa-e-trigo/review',
   textos: {
@@ -77,6 +79,26 @@ describe('criarPersonalizacao', () => {
       textos: { ...VALIDA.textos, boasVindas: 'a'.repeat(141) },
     });
     expect(!resultado.ok && resultado.erro.detalhes).toEqual({ campo: 'boasVindas', limite: 140 });
+  });
+
+  it.each([
+    'https://evil.com/logo.png',
+    '//evil.com/midias/logo.png',
+    '/midias/../segredo.png',
+    '/midias//logo.png',
+    '/midias/logo.svg',
+    'javascript:alert(1)',
+  ])('recusa logo fora das mídias internas: %s', (logoUrl) => {
+    const resultado = criarPersonalizacao({ ...VALIDA, logoUrl });
+    expect(!resultado.ok && resultado.erro).toMatchObject({
+      codigo: CODIGOS.PERSONALIZACAO_PUBLICAR_IMAGEM_INVALIDA,
+      detalhes: { campo: 'logoUrl' },
+    });
+  });
+
+  it('logo e capa vazias viram nulo', () => {
+    const resultado = criarPersonalizacao({ ...VALIDA, logoUrl: ' ', capaUrl: '' });
+    expect(resultado.ok && [resultado.valor.logoUrl, resultado.valor.capaUrl]).toEqual([null, null]);
   });
 
   it('conta caracteres, não unidades de código (acentos)', () => {
