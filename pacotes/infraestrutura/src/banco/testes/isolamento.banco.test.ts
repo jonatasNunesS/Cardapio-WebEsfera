@@ -114,3 +114,21 @@ describe('contexto entre transações', () => {
     expect(semContexto.rows[0]).toEqual({ total: 0, valor: '' });
   });
 });
+
+describe.each<Usuario>(['api', 'worker'])('tabelas de identidade com o usuário %s', (usuario) => {
+  it.each(['usuarios', 'sessoes', 'administradores', 'tentativas_login'])(
+    '10. ler %s direto falha, com ou sem restaurante no contexto',
+    async (tabela) => {
+      const banco = abrirBanco(usuario, {}, 1);
+      const restaurante = await criarRestauranteDeTeste(banco);
+      const consulta = sql`SELECT count(*)::int AS total FROM ${sql.identifier(tabela)}`;
+      await expect(
+        banco.semRestaurante('teste', (transacao) => transacao.execute(consulta)),
+      ).rejects.toBeInstanceOf(ErroIsolamentoInquilino);
+      await expect(
+        banco.comRestaurante(restaurante.id, (transacao) => transacao.execute(consulta)),
+      ).rejects.toBeInstanceOf(ErroIsolamentoInquilino);
+      await banco.encerrar();
+    },
+  );
+});
