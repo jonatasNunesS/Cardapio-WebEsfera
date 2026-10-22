@@ -1,6 +1,8 @@
 # ADR 0008: Identidade e sessões
 
-- Situação: proposta (M04)
+- Situação: aceita (proposta no M04; aceita pelo John em 2026-10-22, com as
+  três decisões: admin com identidade própria, redefinição de senha com 503
+  sem provedor de e-mail e enumeração no cadastro mitigada por limite de taxa)
 - Data: 2026-10-22
 
 ## Contexto
