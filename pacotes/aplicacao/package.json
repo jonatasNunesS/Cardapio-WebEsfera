@@ -11,5 +11,8 @@
   },
   "dependencies": {
     "@cardapio/dominio": "workspace:*"
+  },
+  "devDependencies": {
+    "@cardapio/contratos": "workspace:*"
   }
 }

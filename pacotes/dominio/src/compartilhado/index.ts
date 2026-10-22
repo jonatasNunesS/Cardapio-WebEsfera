@@ -7,3 +7,4 @@ export type { ErroDeNegocio } from './erro-de-negocio.ts';
 export { ErroInvarianteDominio } from './erro-invariante-dominio.ts';
 export { Resultado } from './resultado.ts';
 export type { Falha, Ok } from './resultado.ts';
+export { contarCaracteres } from './texto.ts';

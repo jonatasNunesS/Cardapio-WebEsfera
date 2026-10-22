@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { CORES_DE_REFERENCIA } from '@cardapio/contratos';
+import { razaoDeContraste } from './tema/contraste.ts';
 import CSS from './tokens.css?raw';
 
 type Tema = 'cardapio' | 'painel' | 'tv';
@@ -17,22 +19,6 @@ function bloco(seletor: string): Record<string, string> {
 function variaveisDoTema(tema: Tema): Record<string, string> {
   const raiz = bloco(':root');
   return tema === 'cardapio' ? raiz : { ...raiz, ...bloco(`[data-tema='${tema}']`) };
-}
-
-function canal(valor: number): number {
-  const c = valor / 255;
-  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-}
-
-function luminancia(hex: string): number {
-  const cheio = hex.length === 4 ? hex.replace(/[0-9a-f]/gi, (c) => c + c) : hex;
-  const [r, g, b] = [1, 3, 5].map((i) => canal(Number.parseInt(cheio.slice(i, i + 2), 16)));
-  return 0.2126 * (r ?? 0) + 0.7152 * (g ?? 0) + 0.0722 * (b ?? 0);
-}
-
-function razaoDeContraste(a: string, b: string): number {
-  const [clara, escura] = [luminancia(a), luminancia(b)].sort((x, y) => y - x);
-  return ((clara ?? 0) + 0.05) / ((escura ?? 0) + 0.05);
 }
 
 const TEXTO: readonly Par[] = [
@@ -85,6 +71,12 @@ describe('contraste dos tokens', () => {
     const painel = variaveisDoTema('painel');
     expect(painel['--cor-sobre-marca']).toBe('#303642');
     expect(razaoDeContraste('#00c2cb', '#fff')).toBeLessThan(3);
+  });
+
+  it('o fundo e o texto do cardápio são os mesmos que o servidor usa para validar a cor da marca', () => {
+    const cardapio = variaveisDoTema('cardapio');
+    expect(cardapio['--cor-fundo']?.toUpperCase()).toBe(CORES_DE_REFERENCIA.fundo);
+    expect(cardapio['--cor-texto']?.toUpperCase()).toBe(CORES_DE_REFERENCIA.textoPadrao);
   });
 
   it('a TV usa texto de 24 px no mínimo', () => {

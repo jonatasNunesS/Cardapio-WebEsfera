@@ -87,6 +87,10 @@ const politicasDeFronteira = [
       'O driver do Postgres e o Drizzle só entram por pacotes/infraestrutura/src/banco (docs/adr/0006-banco-e-isolamento.md).',
   },
   {
+    from: { element: { type: ['dominio', 'aplicacao', 'ui'] }, file: { categories: 'teste' } },
+    allow: { to: { element: { type: 'contratos' } } },
+  },
+  {
     from: { element: { type: 'banco' }, file: { categories: 'teste' } },
     allow: { to: { element: { type: 'observabilidade' } } },
   },

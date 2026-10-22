@@ -400,6 +400,10 @@ importers:
       '@cardapio/dominio':
         specifier: workspace:*
         version: link:../dominio
+    devDependencies:
+      '@cardapio/contratos':
+        specifier: workspace:*
+        version: link:../contratos
 
   pacotes/config:
     dependencies:
@@ -422,7 +426,11 @@ importers:
 
   pacotes/contratos: {}
 
-  pacotes/dominio: {}
+  pacotes/dominio:
+    devDependencies:
+      '@cardapio/contratos':
+        specifier: workspace:*
+        version: link:../contratos
 
   pacotes/infraestrutura:
     dependencies:
@@ -507,6 +515,9 @@ importers:
         specifier: 1.60.0
         version: 1.60.0(@types/react@19.3.0)(react@19.3.1)
     devDependencies:
+      '@cardapio/contratos':
+        specifier: workspace:*
+        version: link:../contratos
       '@storybook/addon-a11y':
         specifier: 10.6.3
         version: 10.6.3(storybook@10.6.3(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1))
