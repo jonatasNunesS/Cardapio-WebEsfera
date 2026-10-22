@@ -33,6 +33,40 @@ async function tabelasDeRestaurante(): Promise<string[]> {
   return linhas.map((linha) => linha.tabela);
 }
 
+interface PermissaoConcedida {
+  readonly tabela: string;
+  readonly permissao: string;
+  readonly coluna: string | null;
+}
+
+async function permissoesDoSistema(): Promise<Record<string, string[]>> {
+  const linhas = await consultarComoAdmin<PermissaoConcedida>(
+    `SELECT c.relname AS tabela, a.privilege_type AS permissao, NULL AS coluna
+       FROM pg_class c, aclexplode(c.relacl) a
+      WHERE c.relnamespace = 'public'::regnamespace AND a.grantee = 'app_sistema'::regrole
+     UNION ALL
+     SELECT c.relname, a.privilege_type, att.attname
+       FROM pg_attribute att JOIN pg_class c ON c.oid = att.attrelid, aclexplode(att.attacl) a
+      WHERE c.relnamespace = 'public'::regnamespace AND a.grantee = 'app_sistema'::regrole`,
+  );
+  const porTabela = new Map<string, Map<string, string[]>>();
+  for (const { tabela, permissao, coluna } of linhas) {
+    const permissoes = porTabela.get(tabela) ?? new Map<string, string[]>();
+    permissoes.set(permissao, coluna === null ? [] : [...(permissoes.get(permissao) ?? []), coluna]);
+    porTabela.set(tabela, permissoes);
+  }
+  return Object.fromEntries(
+    [...porTabela].map(([tabela, permissoes]) => [
+      tabela,
+      [...permissoes]
+        .map(([permissao, colunas]) =>
+          colunas.length === 0 ? permissao : `${permissao} (${colunas.sort().join(', ')})`,
+        )
+        .sort(),
+    ]),
+  );
+}
+
 describe('catálogo do banco', () => {
   it('1. toda tabela de restaurante tem RLS ligado, forçado e política com USING e WITH CHECK para app_runtime', async () => {
     const linhas = await consultarComoAdmin<{
@@ -139,6 +173,14 @@ describe('catálogo do banco', () => {
     for (const permissao of permissoes) {
       expect(NOMES_DE_SISTEMA).toContain(permissao.tabela);
     }
+  });
+
+  it('4b. app_sistema tem exatamente as permissões da lista, nem uma a mais', async () => {
+    const concedidas = await permissoesDoSistema();
+    const esperadas = Object.fromEntries(
+      TABELAS_DE_SISTEMA.map((tabela) => [tabela.tabela, [...tabela.permissoes].sort()]),
+    );
+    expect(concedidas).toEqual(esperadas);
   });
 
   it('5. as funções SECURITY DEFINER são exatamente as da lista, com search_path fixo e execução restrita', async () => {
