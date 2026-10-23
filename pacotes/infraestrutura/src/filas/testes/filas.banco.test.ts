@@ -165,6 +165,52 @@ describe('filas BullMQ com Redis e Postgres reais', () => {
     expect(executor.reportadas.at(-1)?.erro).toBeInstanceOf(ErroIsolamentoInquilino);
   });
 
+  it('job de mídia roda sem transação aberta; falha definitiva não repete e avisa o esgotamento uma vez', async () => {
+    preparar();
+    const restauranteId = uuidv7();
+    const midiaId = uuidv7();
+    const esgotados: string[] = [];
+    const recebidas: unknown[] = [];
+    const executor = criarExecutorDeTeste();
+    trabalhadores = iniciarTrabalhadores({
+      conexao: conexoes.consumidora,
+      banco,
+      relator: criarRelatorDeTeste(),
+      processadores: {
+        'processar-midia': (execucao) => {
+          recebidas.push(execucao.transacao);
+          return Promise.reject(
+            new ErroAplicacao(CODIGOS.MIDIA_PROCESSAR_FERRAMENTA_FALHOU, 'ffmpeg falhou', {
+              modulo: 'midia',
+            }),
+          );
+        },
+      },
+      executarTarefa: executor.executar,
+      aoEsgotarTentativas: (nome) => {
+        esgotados.push(nome);
+        return Promise.resolve();
+      },
+      filas: ['midia'],
+      prefixo,
+    });
+    const dados = {
+      restauranteId,
+      eventoId: uuidv7(),
+      tipo: 'MidiaEnviada',
+      carga: { versao: 1, midiaId, tentativa: 1 },
+    };
+    const midia = filas.filas.get('midia');
+    await midia?.add('processar-midia', dados, { jobId: 'midia-falha', attempts: 5 });
+    await esperarAte(
+      async () => midia !== undefined && (await estadoDoJob(midia, 'midia-falha')) === 'failed',
+    );
+
+    expect(recebidas).toEqual([undefined]);
+    expect(esgotados).toEqual(['processar-midia']);
+    expect((await midia?.getJob('midia-falha'))?.attemptsMade).toBe(1);
+  });
+
   it('job concluído fica com o resultado do processador', async () => {
     preparar();
     trabalhar(() => Promise.resolve({ fechadas: 0 }));

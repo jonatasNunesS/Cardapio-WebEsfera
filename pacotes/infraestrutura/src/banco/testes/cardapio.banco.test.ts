@@ -18,6 +18,7 @@ import { criarRepositorioDoCardapio } from '../cardapio/repositorio-do-cardapio.
 import { pratos, restaurantes } from '../esquema/index.ts';
 import { abrirBanco, consultarComoAdmin, criarRestauranteDeTeste } from './apoio.ts';
 
+const enderecos = { urlPublica: (caminho: string) => `https://midia.exemplo/${caminho}` };
 const semCache: CacheDoCardapio = { ler: () => Promise.resolve(null), gravar: () => Promise.resolve() };
 
 function valor<T>(resultado: { ok: true; valor: T } | { ok: false }): T {
@@ -181,7 +182,7 @@ describe('cardápio no Postgres', () => {
   it('busca ignora acento e maiúscula, casa nome, descrição e categoria, e marca esgotado', async () => {
     const { restaurante, acesso, costela } = await restauranteComCardapio();
     const nomes = async (termo: string) => {
-      const resultado = valor(await buscarPratos({ fonte }, restaurante.slug, termo));
+      const resultado = valor(await buscarPratos({ fonte, enderecos }, restaurante.slug, termo));
       return resultado.tipo === 'resultados' ? resultado.pratos.map((prato) => prato.nome) : [];
     };
 
@@ -191,7 +192,7 @@ describe('cardápio no Postgres', () => {
     expect(await nomes('chao')).toEqual(['Costela na brasa']);
     expect(await nomes('massas')).toEqual(['Pappardelle']);
     expect(await nomes('lagosta')).toEqual([]);
-    const esgotada = valor(await buscarPratos({ fonte }, restaurante.slug, 'burrata'));
+    const esgotada = valor(await buscarPratos({ fonte, enderecos }, restaurante.slug, 'burrata'));
     expect(esgotada.tipo === 'resultados' && esgotada.pratos[0]?.disponivel).toBe(false);
 
     await removerPrato(dependencias, acesso, costela);
@@ -203,7 +204,9 @@ describe('cardápio no Postgres', () => {
     await removerPrato(dependencias, acesso, costela);
     const relogio = { agora: () => new Date() };
 
-    const lido = valor(await obterCardapioPublicado({ fonte, cache: semCache, relogio }, restaurante.slug));
+    const lido = valor(
+      await obterCardapioPublicado({ fonte, cache: semCache, relogio, enderecos }, restaurante.slug),
+    );
     if (lido.tipo !== 'cardapio') {
       throw new Error('esperava cardápio');
     }
@@ -221,13 +224,15 @@ describe('cardápio no Postgres', () => {
       );
       await transacao.update(restaurantes).set({ slug: novoSlug });
     });
-    const antigo = valor(await obterCardapioPublicado({ fonte, cache: semCache, relogio }, restaurante.slug));
+    const antigo = valor(
+      await obterCardapioPublicado({ fonte, cache: semCache, relogio, enderecos }, restaurante.slug),
+    );
     expect(antigo).toEqual({ tipo: 'redirecionar', slug: novoSlug });
 
     await banco.comRestaurante(restaurante.id, (transacao) =>
       transacao.update(restaurantes).set({ situacao: 'cancelado' }),
     );
-    const cancelado = await obterCardapioPublicado({ fonte, cache: semCache, relogio }, novoSlug);
+    const cancelado = await obterCardapioPublicado({ fonte, cache: semCache, relogio, enderecos }, novoSlug);
     expect(!cancelado.ok && cancelado.erro.codigo).toBe(CODIGOS.CARDAPIO_CONSULTAR_NAO_ENCONTRADO);
   });
 });
