@@ -15,3 +15,5 @@ export { criarAdministradorPorUrl } from './admin/criar-administrador.ts';
 export type { NovoAdministrador, PapelDeAdministrador } from './admin/criar-administrador.ts';
 export { criarCaixaDeSaida, TENTATIVAS_MAXIMAS_DA_CAIXA_DE_SAIDA } from './filas/caixa-de-saida.ts';
 export { criarSessoesMesaVencidas } from './filas/sessoes-mesa-vencidas.ts';
+export { criarFonteDoCardapioPublico } from './cardapio/fonte-do-cardapio-publico.ts';
+export { criarRepositorioDoCardapio } from './cardapio/repositorio-do-cardapio.ts';

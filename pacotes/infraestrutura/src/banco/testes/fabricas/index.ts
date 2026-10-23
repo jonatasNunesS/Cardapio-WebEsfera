@@ -4,11 +4,13 @@ import type { Transacao } from '../../banco.ts';
 import {
   auditoria,
   caixaSaida,
+  categorias,
   historicoNumerosMesa,
   historicoSlugs,
   horarios,
   mesas,
   personalizacoes,
+  pratos,
   restaurantes,
   sessoesMesa,
   vinculos,
@@ -31,6 +33,14 @@ export async function criarUsuarioDeFabrica(transacao: Transacao): Promise<strin
     sql`SELECT app.criar_usuario('Fábrica', ${email}, ${HASH_DE_FABRICA}) AS id`,
   );
   return resultado.rows[0]?.id ?? '';
+}
+
+async function criarCategoria(transacao: Transacao, restauranteId: string): Promise<string> {
+  const id = uuidv7();
+  await transacao
+    .insert(categorias)
+    .values({ id, restauranteId, nome: `Categoria ${sufixoUnico()}`, ordem: proximoNumero * 1024 });
+  return id;
 }
 
 async function criarMesa(transacao: Transacao, restauranteId: string): Promise<string> {
@@ -129,6 +139,23 @@ export const FABRICAS: readonly Fabrica[] = [
       await transacao
         .insert(horarios)
         .values({ restauranteId, diaSemana: proximoNumero % 7, abre: '18:00', fecha: '23:00' });
+    },
+  },
+  {
+    tabela: 'categorias',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      await criarCategoria(transacao, restauranteId);
+    },
+  },
+  {
+    tabela: 'pratos',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      const categoriaId = await criarCategoria(transacao, restauranteId);
+      await transacao
+        .insert(pratos)
+        .values({ restauranteId, categoriaId, nome: 'Prato de fábrica', precoCentavos: 1000, ordem: 1024 });
     },
   },
 ];

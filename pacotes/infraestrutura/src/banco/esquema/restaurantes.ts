@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
+import { bigint, pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
 import { idUuidV7, momento, restauranteId } from './comum.ts';
 
 export const restaurantes = pgTable('restaurantes', {
@@ -13,6 +13,7 @@ export const restaurantes = pgTable('restaurantes', {
     .default('teste'),
   fusoHorario: text('fuso_horario').notNull().default('America/Sao_Paulo'),
   testeTerminaEm: momento('teste_termina_em'),
+  versaoCardapio: bigint('versao_cardapio', { mode: 'number' }).notNull().default(1),
   criadoEm: momento('criado_em').notNull().defaultNow(),
   atualizadoEm: momento('atualizado_em').notNull().defaultNow(),
 });

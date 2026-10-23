@@ -25,7 +25,7 @@ export function enviarProblema(resposta: FastifyReply, problema: Problema): Fast
     });
 }
 
-export type MapaDeStatusDeNegocio = Readonly<Record<string, 401 | 403 | 409 | 422 | 429>>;
+export type MapaDeStatusDeNegocio = Readonly<Record<string, 401 | 403 | 404 | 409 | 422 | 429>>;
 
 export function enviarFalhaDeNegocio(
   requisicao: FastifyRequest,

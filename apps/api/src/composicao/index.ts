@@ -8,6 +8,7 @@ import {
 import type { FastifyInstance } from 'fastify';
 import type { AmbienteApi } from '../ambiente.ts';
 import { construirServidor } from '../servidor.ts';
+import { comporCardapio } from './cardapio.ts';
 import { comporPainelDeFilas } from './filas.ts';
 import { comporIdentidade } from './identidade.ts';
 
@@ -34,6 +35,7 @@ export function comporApi(ambiente: AmbienteApi): FastifyInstance {
       hosts: { painel: ambiente.DOMINIO_PAINEL, admin: ambiente.DOMINIO_ADMIN },
       armazenamentoDeLimites: redis,
       painelDeFilas: painelDeFilas.opcoes,
+      cardapio: { dependencias: comporCardapio(banco, redis), hostPublico: ambiente.DOMINIO_CARDAPIO },
     },
   });
   servidor.addHook('onClose', async () => {

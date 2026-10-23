@@ -479,3 +479,4 @@ export function dependenciasDeAdmin() {
     rotuloDoTotp: 'WebEsfera Admin',
   };
 }
+export { CardapioEmMemoria } from './cardapio-em-memoria.ts';

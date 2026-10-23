@@ -3,3 +3,4 @@ export type { CasoDeCorDaMarca, CasoDeRazao } from './cor-da-marca/casos.ts';
 export * from './identidade/esquemas.ts';
 export * from './filas/eventos.ts';
 export * from './filas/jobs.ts';
+export * from './cardapio/esquemas.ts';

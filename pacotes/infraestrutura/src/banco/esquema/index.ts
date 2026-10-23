@@ -1,3 +1,4 @@
+export { categorias, pratos } from './cardapio.ts';
 export { auditoria, caixaSaida } from './eventos.ts';
 export {
   administradores,

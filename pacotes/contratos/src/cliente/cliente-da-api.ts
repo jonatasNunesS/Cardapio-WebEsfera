@@ -1,6 +1,6 @@
 import { CABECALHO_CSRF, type ProblemaDaApi, type RespostaCsrf } from '../identidade/esquemas.ts';
 
-export type Metodo = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export type Metodo = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export type RespostaDaApi<T> =
   | { readonly ok: true; readonly status: number; readonly dados: T }
