@@ -16,5 +16,6 @@ USER node
 CMD ["node", "--import", "./apps/api/dist/instrumentacao.js", "apps/api/dist/principal.js"]
 
 FROM base AS worker
+RUN apk add --no-cache ffmpeg util-linux-misc
 USER node
 CMD ["node", "--import", "./apps/worker/dist/instrumentacao.js", "apps/worker/dist/principal.js"]
