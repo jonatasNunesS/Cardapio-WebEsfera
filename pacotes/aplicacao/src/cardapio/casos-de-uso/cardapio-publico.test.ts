@@ -1,4 +1,4 @@
-import { CODIGOS } from '@cardapio/dominio';
+import { CODIGOS, type Derivados } from '@cardapio/dominio';
 import { describe, expect, it } from 'vitest';
 import { RelogioDeTeste } from '../../testes/dobles.ts';
 import type {
@@ -12,8 +12,27 @@ import { buscarPratos } from './buscar-pratos.ts';
 import { obterCardapioPublicado } from './obter-cardapio-publicado.ts';
 
 const RID = '0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b';
+const ENDERECOS = { urlPublica: (caminho: string) => `https://midia.exemplo/${caminho}` };
+const PREFIXO = `r/${RID}/midias/m1/`;
 
-function dados(versao: number): DadosDoCardapioPublico {
+const VIDEO_PRONTO: Derivados = {
+  tipo: 'video',
+  capa: { caminho: `${PREFIXO}capa.jpg`, bytes: 1 },
+  mp4: { caminho: `${PREFIXO}video.mp4`, bytes: 1 },
+  webm: { caminho: `${PREFIXO}video.webm`, bytes: 1 },
+  duracaoMs: 8000,
+  imagem: {
+    largura: 1280,
+    altura: 720,
+    variantes: [
+      { caminho: `${PREFIXO}imagem-640.webp`, bytes: 1, formato: 'webp', largura: 640 },
+      { caminho: `${PREFIXO}imagem-320.webp`, bytes: 1, formato: 'webp', largura: 320 },
+      { caminho: `${PREFIXO}imagem-320.avif`, bytes: 1, formato: 'avif', largura: 320 },
+    ],
+  },
+};
+
+function dados(versao: number, midias: DadosDoCardapioPublico['midias'] = {}): DadosDoCardapioPublico {
   return {
     versao,
     restaurante: { nome: 'Brasa', slug: 'brasa', fusoHorario: 'America/Sao_Paulo' },
@@ -33,12 +52,14 @@ function dados(versao: number): DadosDoCardapioPublico {
         versao: 1,
       },
     ],
+    midias,
   };
 }
 
 class Fonte implements FonteDoCardapioPublico {
   leituras = 0;
   versao = 1;
+  midias: DadosDoCardapioPublico['midias'] = {};
   buscas: (readonly string[])[] = [];
   private readonly resolucao: (slug: string) => ResolucaoDoCardapio;
   constructor(resolucao: (slug: string) => ResolucaoDoCardapio) {
@@ -49,7 +70,7 @@ class Fonte implements FonteDoCardapioPublico {
   }
   ler() {
     this.leituras += 1;
-    return Promise.resolve(dados(this.versao));
+    return Promise.resolve(dados(this.versao, this.midias));
   }
   buscar(_restauranteId: string, termos: readonly string[]) {
     this.buscas.push(termos);
@@ -80,7 +101,7 @@ describe('cardápio público', () => {
     let versao = 1;
     const fonte = new Fonte(() => valido(versao));
     const cache = new CacheEmMemoria();
-    const dependencias = { fonte, cache, relogio: new RelogioDeTeste() };
+    const dependencias = { fonte, cache, relogio: new RelogioDeTeste(), enderecos: ENDERECOS };
 
     await obterCardapioPublicado(dependencias, 'brasa');
     await obterCardapioPublicado(dependencias, 'brasa');
@@ -98,6 +119,7 @@ describe('cardápio público', () => {
       fonte: new Fonte(() => valido(1)),
       cache: new CacheEmMemoria(),
       relogio: new RelogioDeTeste(),
+      enderecos: ENDERECOS,
     };
     const resultado = await obterCardapioPublicado(dependencias, 'brasa');
 
@@ -119,10 +141,13 @@ describe('cardápio público', () => {
     const relogio = new RelogioDeTeste();
 
     const antigo = await obterCardapioPublicado(
-      { fonte: redireciona, cache: new CacheEmMemoria(), relogio },
+      { fonte: redireciona, cache: new CacheEmMemoria(), relogio, enderecos: ENDERECOS },
       'brasa',
     );
-    const ausente = await obterCardapioPublicado({ fonte: some, cache: new CacheEmMemoria(), relogio }, 'x');
+    const ausente = await obterCardapioPublicado(
+      { fonte: some, cache: new CacheEmMemoria(), relogio, enderecos: ENDERECOS },
+      'x',
+    );
 
     expect(antigo.ok && antigo.valor).toEqual({ tipo: 'redirecionar', slug: 'brasa-nova' });
     expect(!ausente.ok && ausente.erro.codigo).toBe(CODIGOS.CARDAPIO_CONSULTAR_NAO_ENCONTRADO);
@@ -131,15 +156,19 @@ describe('cardápio público', () => {
   it('busca normaliza o termo e não consulta o banco com termo vazio', async () => {
     const fonte = new Fonte(() => valido(1));
 
-    await buscarPratos({ fonte }, 'brasa', '  Abóbora ');
-    const vazia = await buscarPratos({ fonte }, 'brasa', '!!!');
+    await buscarPratos({ fonte, enderecos: ENDERECOS }, 'brasa', '  Abóbora ');
+    const vazia = await buscarPratos({ fonte, enderecos: ENDERECOS }, 'brasa', '!!!');
 
     expect(fonte.buscas).toEqual([['abobora']]);
     expect(vazia.ok && vazia.valor).toEqual({ tipo: 'resultados', pratos: [] });
   });
 
   it('busca em restaurante inexistente dá não encontrado, e slug antigo redireciona', async () => {
-    const ausente = await buscarPratos({ fonte: new Fonte(() => ({ situacao: 'inexistente' })) }, 'x', 'pao');
+    const ausente = await buscarPratos(
+      { fonte: new Fonte(() => ({ situacao: 'inexistente' })), enderecos: ENDERECOS },
+      'x',
+      'pao',
+    );
     const antigo = await buscarPratos(
       {
         fonte: new Fonte(() => ({
@@ -148,11 +177,55 @@ describe('cardápio público', () => {
           slugAtual: 'novo',
           versao: 1,
         })),
+        enderecos: ENDERECOS,
       },
       'velho',
       'pao',
     );
     expect(ausente.ok).toBe(false);
     expect(antigo.ok && antigo.valor).toEqual({ tipo: 'redirecionar', slug: 'novo' });
+  });
+
+  it('prato com vídeo pronto traz capa, mp4, webm e os srcset; sem mídia, traz nulo', async () => {
+    const fonte = new Fonte(() => valido(1));
+    fonte.midias = { p1: VIDEO_PRONTO };
+    const dependencias = {
+      fonte,
+      cache: new CacheEmMemoria(),
+      relogio: new RelogioDeTeste(),
+      enderecos: ENDERECOS,
+    };
+    const comVideo = await obterCardapioPublicado(dependencias, 'brasa');
+    const prato =
+      comVideo.ok && comVideo.valor.tipo === 'cardapio'
+        ? comVideo.valor.cardapio.secoes[0]?.pratos[0]
+        : undefined;
+
+    expect(prato?.midia).toEqual({
+      tipo: 'video',
+      imagem: {
+        largura: 1280,
+        altura: 720,
+        src: `https://midia.exemplo/${PREFIXO}imagem-640.webp`,
+        avif: `https://midia.exemplo/${PREFIXO}imagem-320.avif 320w`,
+        webp: `https://midia.exemplo/${PREFIXO}imagem-320.webp 320w, https://midia.exemplo/${PREFIXO}imagem-640.webp 640w`,
+      },
+      video: {
+        capa: `https://midia.exemplo/${PREFIXO}capa.jpg`,
+        mp4: `https://midia.exemplo/${PREFIXO}video.mp4`,
+        webm: `https://midia.exemplo/${PREFIXO}video.webm`,
+        duracaoMs: 8000,
+      },
+    });
+
+    const semMidia = await obterCardapioPublicado(
+      { ...dependencias, fonte: new Fonte(() => valido(1)), cache: new CacheEmMemoria() },
+      'brasa',
+    );
+    expect(
+      semMidia.ok &&
+        semMidia.valor.tipo === 'cardapio' &&
+        semMidia.valor.cardapio.secoes[0]?.pratos[0]?.midia,
+    ).toBeNull();
   });
 });

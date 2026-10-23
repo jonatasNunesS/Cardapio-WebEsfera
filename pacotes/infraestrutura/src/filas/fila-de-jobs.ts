@@ -93,7 +93,7 @@ export function criarFilasBullMQ(opcoes: OpcoesDasFilas): FilasBullMQ {
       if ((await fila.getJob(pedido.idDoJob)) !== undefined) {
         return { situacao: 'duplicado', atrasoMs: 0 };
       }
-      const atrasoMs = await atrasoPara(job, pedido.restauranteId);
+      const atrasoMs = Math.max(await atrasoPara(job, pedido.restauranteId), pedido.atrasoMs ?? 0);
       await fila.add(job.nome, job.dados, opcoesDoJob(job, pedido.idDoJob, atrasoMs));
       return { situacao: 'enfileirado', atrasoMs };
     } catch (erro) {
