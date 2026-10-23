@@ -17,3 +17,4 @@ export { criarCaixaDeSaida, TENTATIVAS_MAXIMAS_DA_CAIXA_DE_SAIDA } from './filas
 export { criarSessoesMesaVencidas } from './filas/sessoes-mesa-vencidas.ts';
 export { criarFonteDoCardapioPublico } from './cardapio/fonte-do-cardapio-publico.ts';
 export { criarRepositorioDoCardapio } from './cardapio/repositorio-do-cardapio.ts';
+export { criarRepositorioDeMidias } from './midia/repositorio-de-midias.ts';

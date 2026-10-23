@@ -9,6 +9,7 @@ import {
   historicoSlugs,
   horarios,
   mesas,
+  midias,
   personalizacoes,
   pratos,
   restaurantes,
@@ -40,6 +41,14 @@ async function criarCategoria(transacao: Transacao, restauranteId: string): Prom
   await transacao
     .insert(categorias)
     .values({ id, restauranteId, nome: `Categoria ${sufixoUnico()}`, ordem: proximoNumero * 1024 });
+  return id;
+}
+
+async function criarPrato(transacao: Transacao, restauranteId: string, categoriaId: string): Promise<string> {
+  const id = uuidv7();
+  await transacao
+    .insert(pratos)
+    .values({ id, restauranteId, categoriaId, nome: 'Prato de fábrica', precoCentavos: 1000, ordem: 1024 });
   return id;
 }
 
@@ -153,9 +162,28 @@ export const FABRICAS: readonly Fabrica[] = [
     colunaDoRestaurante: 'restaurante_id',
     async criar(transacao, restauranteId) {
       const categoriaId = await criarCategoria(transacao, restauranteId);
-      await transacao
-        .insert(pratos)
-        .values({ restauranteId, categoriaId, nome: 'Prato de fábrica', precoCentavos: 1000, ordem: 1024 });
+      await criarPrato(transacao, restauranteId, categoriaId);
+    },
+  },
+  {
+    tabela: 'midias',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      const pratoId = await criarPrato(
+        transacao,
+        restauranteId,
+        await criarCategoria(transacao, restauranteId),
+      );
+      const id = uuidv7();
+      await transacao.insert(midias).values({
+        id,
+        restauranteId,
+        pratoId,
+        tipo: 'foto',
+        tipoConteudo: 'image/jpeg',
+        tamanhoBytes: 1000,
+        caminhoOriginal: `r/${restauranteId}/midias/${id}/original`,
+      });
     },
   },
 ];
