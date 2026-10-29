@@ -29,3 +29,16 @@
   margin: 0;
   padding-inline-start: var(--espaco-5);
 }
+
+.pagina {
+  display: grid;
+  gap: var(--espaco-4);
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--espaco-5) var(--espaco-4);
+}
+
+.link {
+  font-family: ui-monospace, monospace;
+  overflow-wrap: anywhere;
+}

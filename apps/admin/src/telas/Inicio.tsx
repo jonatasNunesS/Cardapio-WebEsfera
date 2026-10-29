@@ -1,7 +1,7 @@
 import { ROTAS_DO_ADMIN } from '@cardapio/contratos';
 import { Botao, Esqueleto, PaginaDeAcesso } from '@cardapio/ui';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Navigate, useNavigate } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 import { api, MARCA } from '../api.ts';
 
 const CHAVE = ['sessao-admin'] as const;
@@ -24,6 +24,7 @@ export function Inicio() {
   };
   return (
     <PaginaDeAcesso marca={MARCA} titulo="Sessão ativa" descricao="Você entrou com senha e segundo fator.">
+      <Link to="/mesas">Mesas de um restaurante</Link>
       <Botao variante="secundario" onClick={sair}>
         Sair
       </Botao>
