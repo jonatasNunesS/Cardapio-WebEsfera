@@ -10,6 +10,7 @@ export const esquemaAmbienteApi = esquemaAmbienteBase.extend({
   DOMINIO_ADMIN: z.string().min(1),
   URL_PAINEL: z.url(),
   CHAVE_CIFRA_TOTP: z.base64().length(44),
+  CHAVE_SESSAO_MESA: z.string().min(32),
   PROXIES_CONFIAVEIS: z.string().optional(),
   ...camposDoArmazenamento,
 });

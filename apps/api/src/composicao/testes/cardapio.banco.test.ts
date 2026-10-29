@@ -50,6 +50,7 @@ describe('cardápio pela API', () => {
         DOMINIO_ADMIN: 'admin.localhost',
         URL_PAINEL: 'http://painel.localhost:5173',
         CHAVE_CIFRA_TOTP: Buffer.alloc(32, 7).toString('base64'),
+        CHAVE_SESSAO_MESA: 'mesa-teste-mesa-teste-mesa-teste-mesa',
         ...VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE,
       }),
     );
