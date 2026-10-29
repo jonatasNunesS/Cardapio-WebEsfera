@@ -40,6 +40,7 @@ const AMBIENTE_DA_API = {
   DOMINIO_ADMIN: 'admin.localhost',
   URL_PAINEL: URL_DO_PAINEL,
   CHAVE_CIFRA_TOTP: 'ZTJlLWNoYXZlLWRlLXRlc3RlLTMyLWJ5dGVzLW9rISE=',
+  CHAVE_SESSAO_MESA: 'mesa-e2e-mesa-e2e-mesa-e2e-mesa-e2e',
   SENTRY_DSN_BACKEND: '',
 };
 
