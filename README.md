@@ -14,7 +14,8 @@ decisões em [docs/adr](docs/adr).
 
 ```sh
 pnpm install --frozen-lockfile
-docker compose up --detach --wait postgres   # os testes de banco precisam dele
+docker compose up --detach --wait postgres redis garage   # os testes de banco e de mídia precisam deles
+pnpm armazenamento:preparar   # buckets locais do Garage
 pnpm verificar        # emoji, lint, formatação, tipos e testes
 pnpm build            # gera os 5 apps em apps/*/dist
 
@@ -28,29 +29,32 @@ docker compose down --volumes
 Banco, migrações e usuários: [docs/runbooks/banco.md](docs/runbooks/banco.md).
 Filas, outbox e Bull Board: [docs/runbooks/filas.md](docs/runbooks/filas.md) e
 [ADR 0009](docs/adr/0009-filas-e-outbox.md). Cardápio, busca e leitura
-pública: [ADR 0010](docs/adr/0010-cardapio-e-busca.md).
+pública: [ADR 0010](docs/adr/0010-cardapio-e-busca.md). Foto e vídeo do prato:
+[docs/runbooks/midia.md](docs/runbooks/midia.md) e [ADR 0011](docs/adr/0011-midia-e-video.md);
+os testes de mídia e o worker precisam de `ffmpeg`, `ffprobe` e `prlimit`.
 
 Os apps React rodam em desenvolvimento com `pnpm --filter @cardapio/cardapio dev`
 (o mesmo para `painel` e `admin`).
 
 ## Scripts
 
-| Script                  | O que faz                                                        |
-| ----------------------- | ---------------------------------------------------------------- |
-| `pnpm verificar`        | Emoji, lint, formatação, tipos e testes                          |
-| `pnpm verificar:emoji`  | Procura emoji em todos os arquivos versionados                   |
-| `pnpm lint`             | ESLint (fronteiras, acessibilidade, React), stylelint e Prettier |
-| `pnpm tipos`            | TypeScript em todos os pacotes                                   |
-| `pnpm testes`           | Vitest, inclusive as histórias do Storybook nos 3 temas          |
-| `pnpm build`            | Build dos 5 apps                                                 |
-| `pnpm ciclos`           | Dependências circulares (madge)                                  |
-| `pnpm duplicacao`       | Código duplicado (jscpd, limite de 3%)                           |
-| `pnpm auditoria`        | Vulnerabilidades altas e críticas                                |
-| `pnpm banco:migrar`     | Aplica as migrações com `URL_BANCO_MIGRACAO`                     |
-| `pnpm storybook`        | Storybook do design system em http://localhost:6006              |
-| `pnpm storybook:build`  | Storybook estático em `pacotes/ui/storybook-static`              |
-| `pnpm visual`           | Compara os snapshots visuais, na imagem Docker do Playwright     |
-| `pnpm visual:atualizar` | Regrava a base de snapshots, na mesma imagem                     |
+| Script                        | O que faz                                                        |
+| ----------------------------- | ---------------------------------------------------------------- |
+| `pnpm verificar`              | Emoji, lint, formatação, tipos e testes                          |
+| `pnpm verificar:emoji`        | Procura emoji em todos os arquivos versionados                   |
+| `pnpm lint`                   | ESLint (fronteiras, acessibilidade, React), stylelint e Prettier |
+| `pnpm tipos`                  | TypeScript em todos os pacotes                                   |
+| `pnpm testes`                 | Vitest, inclusive as histórias do Storybook nos 3 temas          |
+| `pnpm build`                  | Build dos 5 apps                                                 |
+| `pnpm ciclos`                 | Dependências circulares (madge)                                  |
+| `pnpm duplicacao`             | Código duplicado (jscpd, limite de 3%)                           |
+| `pnpm auditoria`              | Vulnerabilidades altas e críticas                                |
+| `pnpm banco:migrar`           | Aplica as migrações com `URL_BANCO_MIGRACAO`                     |
+| `pnpm armazenamento:preparar` | Cria os buckets e o CORS no Garage local                         |
+| `pnpm storybook`              | Storybook do design system em http://localhost:6006              |
+| `pnpm storybook:build`        | Storybook estático em `pacotes/ui/storybook-static`              |
+| `pnpm visual`                 | Compara os snapshots visuais, na imagem Docker do Playwright     |
+| `pnpm visual:atualizar`       | Regrava a base de snapshots, na mesma imagem                     |
 
 As histórias rodam no Chromium do Playwright (`pnpm exec playwright install chromium`).
 Para usar outro Chromium, defina `CAMINHO_CHROMIUM`. O design system está no
