@@ -21,6 +21,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { api } from '../api.ts';
 import { useAtualizarCardapio, useCardapio } from '../cardapio.ts';
+import { MidiaDoPrato } from './MidiaDoPrato.tsx';
 import estilos from './Painel.module.css';
 
 const CODIGO_DE_CONFLITO = 'CARDAPIO_EDITAR_CONFLITO_DE_VERSAO';
@@ -198,6 +199,7 @@ export function EditarPrato() {
           void atualizar();
         }}
       />
+      {prato !== undefined && <MidiaDoPrato pratoId={prato.id} nome={prato.nome} />}
     </main>
   );
 }
