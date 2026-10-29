@@ -91,10 +91,12 @@ código antigo não vai para histórico nenhum.
   PNG com jsQR e compara.
 - Nada sobre o QR. O cartão traz o nome do restaurante, "Mesa N", o nome da
   mesa e a instrução, fora da área do código.
-- Desvio do prompt: o cartão usa o nome do restaurante, não o logo. Buscar o
-  logo no servidor exigiria baixar uma URL vinda da personalização, o que abre
-  risco de SSRF. Quando o logo passar a viver no nosso bucket (M07), o cartão
-  pode usá-lo lendo do armazenamento, não por URL.
+- Desvio do prompt, aprovado por enquanto pelo John (2026-10-29): o cartão
+  usa o nome do restaurante, não o logo. Buscar o logo no servidor exigiria
+  baixar uma URL vinda da personalização, o que abre risco de SSRF. O próximo
+  passo (issue #12, M09 ou depois) é ler o logo do nosso bucket de mídia pelo
+  adaptador de armazenamento, por chave e nunca por URL externa, e compô-lo
+  fora da área do QR. Sem logo, o cartão continua com o nome.
 - Sem cache de QR (`qr:`): gerar o cartão custa milissegundos e o cache
   atrasaria a troca de código.
 - O ZIP sai em fluxo, sem compressão (PNG já é comprimido), só com mesas
