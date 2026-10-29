@@ -1,0 +1,65 @@
+.abertura {
+  display: grid;
+  min-height: 100dvh;
+  align-content: end;
+  background: var(--cor-fundo);
+}
+
+.capa {
+  width: 100%;
+  max-height: 40dvh;
+  object-fit: cover;
+}
+
+.conteudo {
+  display: grid;
+  gap: var(--espaco-3);
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-6);
+  animation: entrar 400ms ease-out both;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--raio-2);
+  object-fit: cover;
+}
+
+.restaurante {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-4);
+  font-weight: var(--peso-forte);
+}
+
+.frase,
+.texto,
+.nota {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}
+
+.nota {
+  font-size: var(--tamanho-2);
+}
+
+.mesa {
+  margin: 0;
+  color: var(--cor-marca-texto);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-6);
+}
+
+@keyframes entrar {
+  from {
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conteudo {
+    animation: none;
+  }
+}

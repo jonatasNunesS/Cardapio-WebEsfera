@@ -1,0 +1,55 @@
+.prato {
+  display: grid;
+  gap: var(--espaco-3);
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--espaco-4) var(--espaco-4) var(--espaco-7);
+}
+
+.voltar {
+  display: inline-flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  min-height: 44px;
+  color: var(--cor-texto);
+}
+
+.midia {
+  overflow: hidden;
+  border-radius: var(--raio-2);
+}
+
+.imagem {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.rotulo {
+  margin: 0;
+  color: var(--cor-marca-texto);
+  font-size: var(--tamanho-2);
+  font-weight: var(--peso-medio);
+}
+
+.nome {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-5);
+}
+
+.preco {
+  margin: 0;
+  font-weight: var(--peso-forte);
+}
+
+.esgotado {
+  margin: 0;
+  color: var(--cor-perigo);
+  font-weight: var(--peso-medio);
+}
+
+.descricao {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}
