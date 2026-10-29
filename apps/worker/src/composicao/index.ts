@@ -17,7 +17,7 @@ export function comporWorker(ambiente: AmbienteWorker): ProcessoWorker {
     propagador: propagadorDeContexto,
     relator: relatorDeErrosSentry,
   });
-  const filas = comporFilas(ambiente.URL_REDIS, banco, relatorDeErrosSentry);
+  const filas = comporFilas(ambiente, banco, relatorDeErrosSentry);
   return criarProcessoWorker({
     aoIniciar: () => {
       filas.iniciar();

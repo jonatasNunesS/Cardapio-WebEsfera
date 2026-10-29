@@ -424,6 +424,9 @@ importers:
       '@cardapio/config':
         specifier: workspace:*
         version: link:../../pacotes/config
+      '@cardapio/contratos':
+        specifier: workspace:*
+        version: link:../../pacotes/contratos
       '@cardapio/infraestrutura':
         specifier: workspace:*
         version: link:../../pacotes/infraestrutura
