@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { MidiaPublica } from '../midia/esquemas.ts';
 
 export const LIMITES_DO_CARDAPIO_NA_API = {
   nomeDaCategoria: 40,
@@ -119,6 +120,7 @@ export interface PratoPublico {
   readonly preco: string;
   readonly disponivel: boolean;
   readonly destaque: boolean;
+  readonly midia: MidiaPublica | null;
 }
 
 export interface SecaoPublica {

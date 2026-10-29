@@ -18,6 +18,13 @@ describe('worker', () => {
           APP_ENV: 'local',
           URL_REDIS: 'redis://127.0.0.1:1',
           URL_BANCO_WORKER: 'postgres://cardapio_worker:x@127.0.0.1:1/cardapio',
+          URL_ARMAZENAMENTO: 'http://127.0.0.1:1',
+          REGIAO_ARMAZENAMENTO: 'garage',
+          CHAVE_ARMAZENAMENTO: 'chave',
+          SEGREDO_ARMAZENAMENTO: 'segredo',
+          BUCKET_ORIGINAIS: 'midia-originais',
+          BUCKET_PUBLICO: 'midia-publica',
+          URL_PUBLICA_MIDIA: 'http://midia-publica.web.localhost:3902',
         },
         stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
       });

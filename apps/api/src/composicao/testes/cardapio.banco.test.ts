@@ -10,7 +10,7 @@ import {
   type RespostaCardapioPublico,
 } from '@cardapio/contratos';
 import { criarRedis } from '@cardapio/infraestrutura';
-import { consultarComUrl } from '@cardapio/infraestrutura/testes';
+import { consultarComUrl, VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE } from '@cardapio/infraestrutura/testes';
 import type { FastifyInstance } from 'fastify';
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest';
@@ -50,6 +50,7 @@ describe('cardápio pela API', () => {
         DOMINIO_ADMIN: 'admin.localhost',
         URL_PAINEL: 'http://painel.localhost:5173',
         CHAVE_CIFRA_TOTP: Buffer.alloc(32, 7).toString('base64'),
+        ...VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE,
       }),
     );
     await servidor.ready();

@@ -79,7 +79,16 @@ jobs:
       - name: Chromium do Playwright (histórias do Storybook com o axe)
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Testes (banco, componentes e histórias do Storybook nos 3 temas)
+      - name: FFmpeg (pipeline de mídia)
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends ffmpeg
+
+      - name: Armazenamento local (Garage, com os dois buckets)
+        run: |
+          cp .env.exemplo .env
+          docker compose up --detach --wait garage
+          node scripts/armazenamento-preparar.ts
+
+      - name: Testes (banco, mídia, componentes e histórias do Storybook nos 3 temas)
         run: pnpm testes
 
       - name: Build dos 5 apps
@@ -185,10 +194,14 @@ jobs:
       - name: Instalar dependências (lockfile congelado)
         run: pnpm install --frozen-lockfile
 
-      - name: PostgreSQL e Redis (compose, com papéis e usuários)
+      - name: FFmpeg (worker do e2e)
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends ffmpeg
+
+      - name: PostgreSQL, Redis e Garage (compose, com papéis, usuários e buckets)
         run: |
           cp .env.exemplo .env
-          docker compose up --detach --wait postgres redis
+          docker compose up --detach --wait postgres redis garage
+          node scripts/armazenamento-preparar.ts
 
       - name: Migrações
         run: pnpm banco:migrar
@@ -196,7 +209,7 @@ jobs:
       - name: Chromium do Playwright
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Criar conta, restaurante, cor da marca e admin com TOTP
+      - name: Conta, restaurante, cardápio, mídia e admin com TOTP
         env:
           CI: '1'
         run: pnpm e2e
@@ -243,6 +256,9 @@ jobs:
           resposta="$(curl --silent --show-error --fail http://127.0.0.1:3000/saude/pronto)"
           echo "$resposta"
           test "$resposta" = '{"situacao":"pronto"}'
+
+      - name: FFmpeg e prlimit na imagem do worker
+        run: docker compose exec -T worker sh -c 'ffmpeg -version | head -1 && ffprobe -version | head -1 && prlimit --version'
 
       - name: Migrações aplicadas e idempotentes
         run: |

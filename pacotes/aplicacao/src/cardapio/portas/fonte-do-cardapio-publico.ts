@@ -1,4 +1,5 @@
-import type { Horario } from '@cardapio/dominio';
+import type { Derivados, Horario } from '@cardapio/dominio';
+import type { MidiaPublicada } from '../../midia/publicacao.ts';
 import type { PersonalizacaoPublicada } from '../../personalizacao/portas/repositorio-de-personalizacao.ts';
 import type { CategoriaGuardada, PratoGuardado } from './repositorio-do-cardapio.ts';
 
@@ -18,6 +19,7 @@ export interface DadosDoCardapioPublico {
   readonly horarios: readonly Horario[];
   readonly categorias: readonly CategoriaGuardada[];
   readonly pratos: readonly PratoGuardado[];
+  readonly midias: Readonly<Record<string, Derivados>>;
 }
 
 export interface PratoEncontradoNoBanco {
@@ -28,6 +30,7 @@ export interface PratoEncontradoNoBanco {
   readonly disponivel: boolean;
   readonly destaque: boolean;
   readonly categoria: string;
+  readonly derivados: Derivados | null;
 }
 
 export interface PratoPublicado {
@@ -38,6 +41,7 @@ export interface PratoPublicado {
   readonly preco: string;
   readonly disponivel: boolean;
   readonly destaque: boolean;
+  readonly midia: MidiaPublicada | null;
 }
 
 export interface SecaoPublicada {

@@ -10,19 +10,25 @@ import type {
   PratoEncontrado,
   PratoEncontradoNoBanco,
 } from '../portas/fonte-do-cardapio-publico.ts';
+import { midiaPublicada, type EnderecosDeMidia } from '../../midia/publicacao.ts';
 import { CARDAPIO_NAO_ENCONTRADO } from './obter-cardapio-publicado.ts';
 
 export type BuscaParaOCliente =
   | { readonly tipo: 'redirecionar'; readonly slug: string }
   | { readonly tipo: 'resultados'; readonly pratos: readonly PratoEncontrado[] };
 
-function comPreco(prato: PratoEncontradoNoBanco): PratoEncontrado[] {
+function comPreco(prato: PratoEncontradoNoBanco, enderecos: EnderecosDeMidia): PratoEncontrado[] {
   const preco = criarDinheiro(prato.precoCentavos);
-  return preco.ok ? [{ ...prato, preco: formatarDinheiro(preco.valor) }] : [];
+  if (!preco.ok) {
+    return [];
+  }
+  const { derivados, ...dados } = prato;
+  const midia = derivados === null ? null : midiaPublicada(derivados, enderecos);
+  return [{ ...dados, preco: formatarDinheiro(preco.valor), midia }];
 }
 
 export async function buscarPratos(
-  dependencias: { readonly fonte: FonteDoCardapioPublico },
+  dependencias: { readonly fonte: FonteDoCardapioPublico; readonly enderecos: EnderecosDeMidia },
   slug: string,
   termo: string,
 ): Promise<Resultado<BuscaParaOCliente, ErroDeNegocio>> {
@@ -36,5 +42,8 @@ export async function buscarPratos(
   const termos = termosDeBusca(termo);
   const encontrados =
     termos.length === 0 ? [] : await dependencias.fonte.buscar(resolucao.restauranteId, termos);
-  return Resultado.ok({ tipo: 'resultados', pratos: encontrados.flatMap(comPreco) });
+  return Resultado.ok({
+    tipo: 'resultados',
+    pratos: encontrados.flatMap((prato) => comPreco(prato, dependencias.enderecos)),
+  });
 }

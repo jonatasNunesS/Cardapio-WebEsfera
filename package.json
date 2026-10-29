@@ -11,6 +11,7 @@
     "verificar": "pnpm verificar:emoji && pnpm lint && pnpm tipos && pnpm testes",
     "verificar:emoji": "node scripts/verificar-emoji.ts",
     "banco:migrar": "node --env-file-if-exists=.env scripts/banco-migrar.ts",
+    "armazenamento:preparar": "node --env-file-if-exists=.env scripts/armazenamento-preparar.ts",
     "admin:criar": "node --env-file-if-exists=.env scripts/admin-criar.ts",
     "lint": "eslint . --max-warnings 0 && stylelint \"**/*.css\" --max-warnings 0 && prettier --check .",
     "formatar": "prettier --write .",

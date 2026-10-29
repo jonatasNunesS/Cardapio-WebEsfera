@@ -3,6 +3,7 @@ export interface PedidoDeJob {
   readonly idDoJob: string;
   readonly dados: Readonly<Record<string, unknown>>;
   readonly restauranteId?: string | undefined;
+  readonly atrasoMs?: number | undefined;
 }
 
 export interface JobEnfileirado {

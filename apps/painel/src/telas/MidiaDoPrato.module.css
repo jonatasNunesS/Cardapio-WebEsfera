@@ -1,0 +1,31 @@
+.previa {
+  overflow: hidden;
+  max-width: 24rem;
+  border-radius: var(--raio-2);
+  background: var(--cor-superficie-suave);
+}
+
+.imagem {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: center;
+}
+
+.arquivo {
+  display: grid;
+  gap: var(--espaco-2);
+  font-weight: var(--peso-medio);
+}
+
+.dica {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-2);
+}

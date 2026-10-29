@@ -12,6 +12,7 @@ import {
   type SituacaoDoHorario,
 } from '@cardapio/dominio';
 import type { Relogio } from '../../compartilhado/portas/relogio.ts';
+import { midiaPublicada, type EnderecosDeMidia } from '../../midia/publicacao.ts';
 import { personalizacaoPadrao } from '../../personalizacao/personalizacao-padrao.ts';
 import type {
   CacheDoCardapio,
@@ -25,6 +26,7 @@ export interface DependenciasDoCardapioPublico {
   readonly fonte: FonteDoCardapioPublico;
   readonly cache: CacheDoCardapio;
   readonly relogio: Relogio;
+  readonly enderecos: EnderecosDeMidia;
 }
 
 export type CardapioParaOCliente =
@@ -41,7 +43,15 @@ function paraDoCardapio(prato: PratoGuardado): PratoDoCardapio | undefined {
   return preco.ok ? { ...prato, preco: preco.valor, removido: false } : undefined;
 }
 
-export function montarCardapioPublicado(dados: DadosDoCardapioPublico): CardapioPublicado {
+function midiaDoPrato(dados: DadosDoCardapioPublico, pratoId: string, enderecos: EnderecosDeMidia) {
+  const derivados = dados.midias[pratoId];
+  return derivados === undefined ? null : midiaPublicada(derivados, enderecos);
+}
+
+export function montarCardapioPublicado(
+  dados: DadosDoCardapioPublico,
+  enderecos: EnderecosDeMidia,
+): CardapioPublicado {
   const pratos = dados.pratos.flatMap((prato) => paraDoCardapio(prato) ?? []);
   const montado = montarCardapio(dados.categorias, pratos);
   return {
@@ -60,6 +70,7 @@ export function montarCardapioPublicado(dados: DadosDoCardapioPublico): Cardapio
         preco: formatarDinheiro(prato.preco),
         disponivel: prato.disponivel,
         destaque: prato.destaque,
+        midia: midiaDoPrato(dados, prato.id, enderecos),
       })),
     })),
     destaques: montado.destaques.map((prato) => prato.id),
@@ -75,7 +86,10 @@ async function cardapioDaVersao(
   if (guardado !== null) {
     return guardado;
   }
-  const cardapio = montarCardapioPublicado(await dependencias.fonte.ler(restauranteId));
+  const cardapio = montarCardapioPublicado(
+    await dependencias.fonte.ler(restauranteId),
+    dependencias.enderecos,
+  );
   await dependencias.cache.gravar(restauranteId, cardapio);
   return cardapio;
 }

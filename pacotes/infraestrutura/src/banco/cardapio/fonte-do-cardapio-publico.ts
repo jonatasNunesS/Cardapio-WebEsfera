@@ -26,10 +26,12 @@ interface LinhaDoCardapio extends Record<string, unknown> {
   readonly horarios: DadosDoCardapioPublico['horarios'];
   readonly categorias: LinhaDeCategoria[];
   readonly pratos: LinhaDePrato[];
+  readonly midias: DadosDoCardapioPublico['midias'];
 }
 
 interface LinhaEncontrada extends LinhaDePrato {
   readonly categoria: string;
+  readonly derivados: PratoEncontradoNoBanco['derivados'];
 }
 
 const CONSULTA_DO_CARDAPIO = sql`
@@ -50,7 +52,10 @@ const CONSULTA_DO_CARDAPIO = sql`
         'id', p.id, 'categoria_id', p.categoria_id, 'nome', p.nome, 'descricao', p.descricao,
         'preco_centavos', p.preco_centavos, 'disponivel', p.disponivel, 'destaque', p.destaque,
         'ordem', p.ordem, 'versao', p.versao) ORDER BY p.ordem, p.id), '[]'::json)
-       FROM pratos p WHERE p.removido_em IS NULL) AS pratos
+       FROM pratos p WHERE p.removido_em IS NULL) AS pratos,
+    (SELECT coalesce(json_object_agg(m.prato_id, m.derivados), '{}'::json)
+       FROM pratos p JOIN midias m ON m.restaurante_id = p.restaurante_id AND m.id = p.midia_id
+      WHERE p.removido_em IS NULL AND m.situacao = 'pronta' AND m.descartada_em IS NULL) AS midias
   FROM restaurantes r WHERE r.id = app.restaurante_atual()`;
 
 const VETOR_COM_CATEGORIA = sql`(p.busca || setweight(to_tsvector('portuguese', app.sem_acento(c.nome)), 'C'))`;
@@ -81,6 +86,7 @@ function paraDados(linha: LinhaDoCardapio): DadosDoCardapioPublico {
     horarios: linha.horarios,
     categorias: linha.categorias.map(paraCategoria),
     pratos: linha.pratos.map(paraPrato),
+    midias: linha.midias,
   };
 }
 
@@ -93,6 +99,7 @@ function paraEncontrado(linha: LinhaEncontrada): PratoEncontradoNoBanco {
     disponivel: linha.disponivel,
     destaque: linha.destaque,
     categoria: linha.categoria,
+    derivados: linha.derivados,
   };
 }
 
@@ -127,9 +134,11 @@ export function criarFonteDoCardapioPublico(banco: AcessoAoBanco): FonteDoCardap
         const { rows } = await transacao.execute<LinhaEncontrada>(sql`
           WITH q AS (SELECT to_tsquery('portuguese', ${consultaDePrefixos(termos)}) AS consulta)
           SELECT p.id, p.categoria_id, p.nome, p.descricao, p.preco_centavos, p.disponivel, p.destaque,
-                 p.ordem, p.versao, c.nome AS categoria
+                 p.ordem, p.versao, c.nome AS categoria, m.derivados
             FROM pratos p
             JOIN categorias c ON c.restaurante_id = p.restaurante_id AND c.id = p.categoria_id
+            LEFT JOIN midias m ON m.restaurante_id = p.restaurante_id AND m.id = p.midia_id
+                              AND m.situacao = 'pronta' AND m.descartada_em IS NULL
             CROSS JOIN q
            WHERE p.removido_em IS NULL AND c.removida_em IS NULL AND ${VETOR_COM_CATEGORIA} @@ q.consulta
            ORDER BY ts_rank(${VETOR_COM_CATEGORIA}, q.consulta) DESC, c.ordem, p.ordem

@@ -9,7 +9,27 @@ const caminhoDoChromium = process.env.CAMINHO_CHROMIUM;
 const urlDoBanco = (usuario: string, senha: string) =>
   `postgres://${usuario}:${senha}@127.0.0.1:5432/${process.env.BANCO_E2E ?? 'cardapio'}`;
 
+const ARMAZENAMENTO = {
+  URL_ARMAZENAMENTO: 'http://127.0.0.1:3900',
+  REGIAO_ARMAZENAMENTO: 'garage',
+  CHAVE_ARMAZENAMENTO: process.env.CHAVE_ARMAZENAMENTO ?? 'GKabababababababababababab',
+  SEGREDO_ARMAZENAMENTO: process.env.SEGREDO_ARMAZENAMENTO ?? 'cd'.repeat(32),
+  BUCKET_ORIGINAIS: 'midia-originais',
+  BUCKET_PUBLICO: 'midia-publica',
+  URL_PUBLICA_MIDIA: 'http://midia-publica.web.localhost:3902',
+};
+
+const AMBIENTE_DO_WORKER = {
+  NODE_ENV: 'development',
+  APP_ENV: 'local',
+  URL_BANCO_WORKER: urlDoBanco('cardapio_worker', process.env.SENHA_BANCO_WORKER ?? 'worker_local'),
+  URL_REDIS: URL_DO_REDIS_E2E,
+  SENTRY_DSN_BACKEND: '',
+  ...ARMAZENAMENTO,
+};
+
 const AMBIENTE_DA_API = {
+  ...ARMAZENAMENTO,
   NODE_ENV: 'development',
   APP_ENV: 'local',
   PORTA_API: String(PORTAS.api),
@@ -52,6 +72,15 @@ export default defineConfig({
       cwd: '../..',
       env: AMBIENTE_DA_API,
       url: `http://127.0.0.1:${String(PORTAS.api)}/saude/pronto`,
+      reuseExistingServer: false,
+      timeout: 60_000,
+    },
+    {
+      command: 'pnpm --filter @cardapio/worker iniciar',
+      cwd: '../..',
+      env: AMBIENTE_DO_WORKER,
+      wait: { stdout: /worker pronto/ },
+      stdout: 'pipe',
       reuseExistingServer: false,
       timeout: 60_000,
     },

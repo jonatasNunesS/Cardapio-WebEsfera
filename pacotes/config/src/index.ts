@@ -1,5 +1,6 @@
 export {
   carregarAmbiente,
+  camposDoArmazenamento,
   esquemaAmbienteBase,
   formatarProblemasAmbiente,
   validarAmbiente,

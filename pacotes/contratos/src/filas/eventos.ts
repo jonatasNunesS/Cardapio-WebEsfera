@@ -6,6 +6,15 @@ export const EVENTOS = {
     sessaoMesaId: z.uuid(),
     mesaId: z.uuid(),
   }),
+  MidiaEnviada: z.strictObject({
+    versao: z.literal(1),
+    midiaId: z.uuid(),
+    tentativa: z.number().int().positive(),
+  }),
+  MidiaDescartada: z.strictObject({
+    versao: z.literal(1),
+    midiaId: z.uuid(),
+  }),
 } as const;
 
 export type TipoDeEvento = keyof typeof EVENTOS;

@@ -4,3 +4,4 @@ export * from './identidade/esquemas.ts';
 export * from './filas/eventos.ts';
 export * from './filas/jobs.ts';
 export * from './cardapio/esquemas.ts';
+export * from './midia/esquemas.ts';

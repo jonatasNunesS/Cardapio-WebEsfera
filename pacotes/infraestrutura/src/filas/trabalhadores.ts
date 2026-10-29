@@ -10,6 +10,15 @@ const PADRAO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}
 const CODIGOS_DEFINITIVOS: ReadonlySet<string> = new Set([
   CODIGOS.FILA_JOB_DESCONHECIDO,
   CODIGOS.FILA_JOB_PAYLOAD_INVALIDO,
+  CODIGOS.MIDIA_PROCESSAR_FERRAMENTA_FALHOU,
+  CODIGOS.MIDIA_PROCESSAR_TEMPO_ESGOTADO,
+]);
+
+// Job que chama serviço externo demorado abre as próprias transações curtas: docs/adr/0011-midia-e-video.md
+export const JOBS_EM_TRANSACOES_CURTAS: ReadonlySet<NomeDoJob> = new Set([
+  'processar-midia',
+  'descartar-midia',
+  'apagar-original-midia',
 ]);
 
 export interface JobNaFila {
@@ -44,6 +53,7 @@ export interface OpcoesDosTrabalhadores {
   readonly relator: RelatorDeErros;
   readonly processadores: Readonly<Partial<Record<NomeDoJob, Processador>>>;
   readonly executarTarefa: ExecutorDeTarefa;
+  readonly aoEsgotarTentativas?: ((nome: string, dados: unknown) => Promise<void>) | undefined;
   readonly filas?: readonly NomeDaFila[] | undefined;
   readonly prefixo?: string | undefined;
 }
@@ -91,7 +101,7 @@ function processarValidado(opcoes: OpcoesDosTrabalhadores, fila: NomeDaFila, job
   }
   const processador = exigirProcessador(opcoes, valido.nome);
   const { restauranteId } = valido.dados;
-  if (typeof restauranteId !== 'string') {
+  if (typeof restauranteId !== 'string' || JOBS_EM_TRANSACOES_CURTAS.has(valido.nome)) {
     return processador({ nome: valido.nome, dados: valido.dados });
   }
   return opcoes.banco.comRestaurante(restauranteId, (transacao) =>
@@ -115,6 +125,12 @@ function criarProcessadorDaFila(opcoes: OpcoesDosTrabalhadores, fila: NomeDaFila
   };
 }
 
+async function avisarEsgotamento(opcoes: OpcoesDosTrabalhadores, job: Job): Promise<void> {
+  await Promise.resolve(opcoes.aoEsgotarTentativas?.(job.name, job.data)).catch((erro: unknown) => {
+    opcoes.relator.reportar(erro, { tarefa: 'aoEsgotarTentativas', job: job.name });
+  });
+}
+
 function processarComEnvelope(opcoes: OpcoesDosTrabalhadores, fila: NomeDaFila) {
   return async (job: Job) => {
     const tentativa = job.attemptsMade + 1;
@@ -128,6 +144,9 @@ function processarComEnvelope(opcoes: OpcoesDosTrabalhadores, fila: NomeDaFila) 
         { job: emExecucao, reportarFalha: (erro) => ultima || ehFalhaDefinitiva(erro) },
       );
     } catch (erro) {
+      if (ultima || ehFalhaDefinitiva(erro)) {
+        await avisarEsgotamento(opcoes, job);
+      }
       if (!ehFalhaDefinitiva(erro)) {
         throw erro;
       }

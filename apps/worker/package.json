@@ -12,6 +12,7 @@
   "dependencies": {
     "@cardapio/aplicacao": "workspace:*",
     "@cardapio/config": "workspace:*",
+    "@cardapio/contratos": "workspace:*",
     "@cardapio/infraestrutura": "workspace:*",
     "@cardapio/observabilidade": "workspace:*",
     "zod": "4.6.7"
