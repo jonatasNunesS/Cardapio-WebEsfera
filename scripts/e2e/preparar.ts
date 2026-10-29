@@ -7,7 +7,7 @@ import { URL_DO_REDIS_E2E } from './playwright.config.ts';
 
 export const SENHA_TEMPORARIA_DO_ADMIN = 'temporaria-e2e-123';
 
-async function zerarLimitesDeTaxa(): Promise<void> {
+export async function zerarLimitesDeTaxa(): Promise<void> {
   const redis = criarRedis(URL_DO_REDIS_E2E, { reportar: () => '', registrarPasso: () => undefined });
   const chaves = await redis.keys('limite:api:*');
   if (chaves.length > 0) {

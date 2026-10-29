@@ -1,8 +1,9 @@
 import { defineConfig } from '@playwright/test';
 
-export const PORTAS = { api: 3100, painel: 5173, admin: 5174 } as const;
+export const PORTAS = { api: 3100, painel: 5173, admin: 5174, cardapio: 5175 } as const;
 export const URL_DO_PAINEL = `http://painel.localhost:${String(PORTAS.painel)}`;
 export const URL_DO_ADMIN = `http://admin.localhost:${String(PORTAS.admin)}`;
+export const URL_DO_CARDAPIO = `http://cardapio.localhost:${String(PORTAS.cardapio)}`;
 export const URL_DO_REDIS_E2E = process.env.URL_REDIS_E2E ?? 'redis://127.0.0.1:6379/15';
 
 const caminhoDoChromium = process.env.CAMINHO_CHROMIUM;
@@ -49,6 +50,7 @@ const AMBIENTE_DO_VITE = { URL_API_LOCAL: `http://127.0.0.1:${String(PORTAS.api)
 export default defineConfig({
   testDir: '.',
   testMatch: '*.e2e.ts',
+  ...(process.env.DESEMPENHO === '1' ? { grep: /@desempenho/u } : { grepInvert: /@desempenho/u }),
   globalSetup: './preparar.ts',
   fullyParallel: false,
   workers: 1,
@@ -98,6 +100,14 @@ export default defineConfig({
       env: AMBIENTE_DO_VITE,
       url: `http://127.0.0.1:${String(PORTAS.admin)}`,
       reuseExistingServer: false,
+    },
+    {
+      command: 'pnpm --filter @cardapio/cardapio build && pnpm --filter @cardapio/cardapio exec vite preview',
+      cwd: '../..',
+      env: AMBIENTE_DO_VITE,
+      url: `http://127.0.0.1:${String(PORTAS.cardapio)}`,
+      reuseExistingServer: false,
+      timeout: 120_000,
     },
   ],
 });
