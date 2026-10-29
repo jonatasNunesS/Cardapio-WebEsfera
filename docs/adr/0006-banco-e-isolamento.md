@@ -211,12 +211,14 @@ EXECUTE` só ao papel que precisa. Devolvem só ids e situação.
 - Lista oficial em `banco/funcoes-privilegiadas.ts`. O teste 5 falha se surgir
   função `SECURITY DEFINER` fora da lista, se uma sumir, se o `search_path`
   não for fixo ou se outro papel puder executar.
-- A primeira foi `app.resolver_mesa(p_slug, p_numero, p_codigo)`, que devolve
-  `valida`, `redirecionar` ou `invalida`. No caso `invalida` com código
-  existente, devolve `codigo_reconhecido = true`, sem ids, para o caso de uso
-  do M08 registrar o alerta `MESA_RESOLUCAO_CODIGO_DIVERGENTE`. O M04 somou
-  as funções de identidade, e o M06 somou `app.resolver_cardapio(p_slug)`,
-  que resolve o slug público do cardápio (ADR 0010).
+- A primeira foi `app.resolver_mesa(p_slug, p_numero, p_codigo)`. O M08 a
+  refez (ADR 0012): ela acha a mesa só pelo código e devolve `situacao` entre
+  `valida`, `redirecionar`, `inativa`, `cancelado` e `desconhecido`, com
+  `slug_atual` e `numero_atual` para o redirecionamento. O M04 somou as
+  funções de identidade, o M06 somou `app.resolver_cardapio(p_slug)`, que
+  resolve o slug público do cardápio (ADR 0010), e o M08 somou
+  `app.admin_listar_mesas(p_administrador_id, p_slug)`, a leitura somente
+  leitura das mesas pelo admin, que grava a consulta na auditoria.
 
 Processo para criar uma função privilegiada nova:
 
