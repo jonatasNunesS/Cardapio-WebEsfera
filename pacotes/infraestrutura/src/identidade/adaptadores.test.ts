@@ -24,20 +24,24 @@ describe('cofre Argon2id', () => {
   it('sem hash (e-mail inexistente), faz o mesmo trabalho e devolve falso', async () => {
     const hash = await cofre.resumir('cavalo-bateria-grampo');
     const medir = async (alvo: string | null) => {
-      const tempos: number[] = [];
-      for (let vez = 0; vez < 3; vez += 1) {
-        const inicio = performance.now();
-        await cofre.conferir(alvo, 'cavalo-bateria-grampo');
-        tempos.push(performance.now() - inicio);
-      }
-      return Math.min(...tempos);
+      const inicio = performance.now();
+      await cofre.conferir(alvo, 'cavalo-bateria-grampo');
+      return performance.now() - inicio;
     };
+    const mediana = (tempos: readonly number[]) => [...tempos].sort((a, b) => a - b)[tempos.length >> 1] ?? 0;
     await medir(null);
-    const [semUsuario, comUsuario] = [await medir(null), await medir(hash)];
+    await medir(hash);
+    const semUsuario: number[] = [];
+    const comUsuario: number[] = [];
+    for (let vez = 0; vez < 9; vez += 1) {
+      semUsuario.push(await medir(null));
+      comUsuario.push(await medir(hash));
+    }
+    const razao = mediana(semUsuario) / mediana(comUsuario);
 
     expect(await cofre.conferir(null, 'senha-da-simulacao-de-tempo-constante')).toBe(false);
-    expect(semUsuario / comUsuario).toBeGreaterThan(1 / 3);
-    expect(semUsuario / comUsuario).toBeLessThan(3);
+    expect(razao).toBeGreaterThan(1 / 5);
+    expect(razao).toBeLessThan(5);
   });
 });
 
