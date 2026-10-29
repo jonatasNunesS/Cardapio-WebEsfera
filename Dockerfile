@@ -12,6 +12,7 @@ USER node
 CMD ["node", "scripts/banco-migrar.ts"]
 
 FROM base AS api
+RUN apk add --no-cache font-dejavu
 USER node
 CMD ["node", "--import", "./apps/api/dist/instrumentacao.js", "apps/api/dist/principal.js"]
 
