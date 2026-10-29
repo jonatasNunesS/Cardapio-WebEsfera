@@ -24,7 +24,7 @@ test('desempenho do cardápio no 4G simulado: LCP e JavaScript dentro do orçame
   });
   const { stdout, stderr } = await executar(
     'pnpm',
-    ['exec', 'lhci', 'autorun', `--collect.url=${URL_DO_CARDAPIO}${restaurante.caminho}`],
+    ['dlx', '@lhci/cli@0.15.1', 'autorun', `--collect.url=${URL_DO_CARDAPIO}${restaurante.caminho}`],
     {
       env: { ...process.env, CHROME_PATH: process.env.CAMINHO_CHROMIUM ?? chromium.executablePath() },
       maxBuffer: 20 * 1024 * 1024,

@@ -113,6 +113,10 @@ numa função pura testada (`regras.ts`):
 
 ### Lighthouse CI
 
+- O `@lhci/cli` não é dependência do projeto: o teste o roda com
+  `pnpm dlx @lhci/cli@0.15.1`. Como dependência, ele trazia 7 alertas do
+  `pnpm audit` (5 altos, um sem correção em `extract-zip`) em código que só
+  roda no CI; fora do lockfile, a auditoria do produto fica limpa.
 - `lighthouserc.json`: perfil móvel padrão do Lighthouse com throttling
   simulado (4G lento), 3 execuções, mediana; erro se LCP passar de 2.500 ms ou
   se o JavaScript transferido passar de 170.000 bytes.
