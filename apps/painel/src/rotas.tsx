@@ -6,6 +6,7 @@ import { Entrar } from './telas/Entrar.tsx';
 import { EditarPrato } from './telas/EditarPrato.tsx';
 import { EsqueciASenha } from './telas/EsqueciASenha.tsx';
 import { ComRestaurante, SemRestaurante } from './telas/ExigeSessao.tsx';
+import { Mesas } from './telas/Mesas.tsx';
 import { Personalizacao } from './telas/Personalizacao.tsx';
 import { RedefinirSenha } from './telas/RedefinirSenha.tsx';
 
@@ -31,6 +32,10 @@ export function criarRotas() {
     {
       path: '/cardapio/pratos/:id',
       element: <ComRestaurante>{() => <EditarPrato />}</ComRestaurante>,
+    },
+    {
+      path: '/mesas',
+      element: <ComRestaurante>{() => <Mesas />}</ComRestaurante>,
     },
     {
       path: '/personalizacao',

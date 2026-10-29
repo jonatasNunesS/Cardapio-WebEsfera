@@ -55,6 +55,7 @@ export function ComRestaurante({
         <p className={estilos.restaurante}>{restaurante.nome}</p>
         <nav aria-label="Seções do painel" className={estilos.navegacao}>
           <Link to="/cardapio">Cardápio</Link>
+          <Link to="/mesas">Mesas e QR Codes</Link>
           <Link to="/personalizacao">Personalização</Link>
         </nav>
         <BotaoSair />
