@@ -9,7 +9,10 @@ export const SENHA_TEMPORARIA_DO_ADMIN = 'temporaria-e2e-123';
 
 async function zerarLimitesDeTaxa(): Promise<void> {
   const redis = criarRedis(URL_DO_REDIS_E2E, { reportar: () => '', registrarPasso: () => undefined });
-  await redis.flushdb();
+  const chaves = await redis.keys('limite:api:*');
+  if (chaves.length > 0) {
+    await redis.del(...chaves);
+  }
   redis.disconnect();
 }
 
