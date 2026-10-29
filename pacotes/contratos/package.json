@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./cliente": "./src/cliente/cliente-da-api.ts"
+    "./cliente": "./src/cliente/cliente-da-api.ts",
+    "./publico": "./src/publico.ts"
   },
   "scripts": {
     "tipos": "tsc --noEmit -p ."
