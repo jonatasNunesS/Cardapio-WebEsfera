@@ -3,24 +3,27 @@ import { sql } from 'drizzle-orm';
 import type { AcessoAoBanco } from '../banco.ts';
 
 interface LinhaDeResolucao extends Record<string, unknown> {
-  readonly situacao: 'valida' | 'redirecionar' | 'invalida';
+  readonly situacao: 'valida' | 'redirecionar' | 'inativa' | 'cancelado' | 'desconhecido';
   readonly restaurante_id: string | null;
   readonly mesa_id: string | null;
   readonly slug_atual: string | null;
   readonly numero_atual: number | null;
-  readonly codigo_reconhecido: boolean;
 }
 
 function paraResolucao(linha: LinhaDeResolucao | undefined): ResolucaoDeMesa {
+  if (linha === undefined) {
+    return { situacao: 'desconhecido' };
+  }
+  if (linha.situacao !== 'valida' && linha.situacao !== 'redirecionar') {
+    return { situacao: linha.situacao };
+  }
   if (
-    linha === undefined ||
-    linha.situacao === 'invalida' ||
     linha.restaurante_id === null ||
     linha.mesa_id === null ||
     linha.slug_atual === null ||
     linha.numero_atual === null
   ) {
-    return { situacao: 'invalida', codigoReconhecido: linha?.codigo_reconhecido ?? false };
+    return { situacao: 'desconhecido' };
   }
   return {
     situacao: linha.situacao,
