@@ -1,4 +1,4 @@
-import { esquemaAmbienteBase } from '@cardapio/config';
+import { camposDoArmazenamento, esquemaAmbienteBase } from '@cardapio/config';
 import { z } from 'zod';
 
 export const esquemaAmbienteApi = esquemaAmbienteBase.extend({
@@ -11,6 +11,7 @@ export const esquemaAmbienteApi = esquemaAmbienteBase.extend({
   URL_PAINEL: z.url(),
   CHAVE_CIFRA_TOTP: z.base64().length(44),
   PROXIES_CONFIAVEIS: z.string().optional(),
+  ...camposDoArmazenamento,
 });
 
 export type AmbienteApi = z.output<typeof esquemaAmbienteApi>;

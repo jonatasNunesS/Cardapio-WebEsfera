@@ -1,4 +1,4 @@
-import { criarBanco, criarRedis } from '@cardapio/infraestrutura';
+import { armazenamentoDoAmbiente, criarBanco, criarRedis } from '@cardapio/infraestrutura';
 import {
   criarLogger,
   definirLoggerPadrao,
@@ -11,6 +11,7 @@ import { construirServidor } from '../servidor.ts';
 import { comporCardapio } from './cardapio.ts';
 import { comporPainelDeFilas } from './filas.ts';
 import { comporIdentidade } from './identidade.ts';
+import { comporMidia } from './midia.ts';
 
 export function comporApi(ambiente: AmbienteApi): FastifyInstance {
   const logger = criarLogger({ app: 'api', nivel: ambiente.NODE_ENV === 'test' ? 'silent' : 'info' });
@@ -22,6 +23,7 @@ export function comporApi(ambiente: AmbienteApi): FastifyInstance {
   });
   const redis = criarRedis(ambiente.URL_REDIS, relatorDeErrosSentry);
   const painelDeFilas = comporPainelDeFilas(ambiente.URL_REDIS, relatorDeErrosSentry);
+  const armazenamento = armazenamentoDoAmbiente(ambiente);
   const servidor = construirServidor({
     logger,
     ambiente: ambiente.APP_ENV,
@@ -35,11 +37,16 @@ export function comporApi(ambiente: AmbienteApi): FastifyInstance {
       hosts: { painel: ambiente.DOMINIO_PAINEL, admin: ambiente.DOMINIO_ADMIN },
       armazenamentoDeLimites: redis,
       painelDeFilas: painelDeFilas.opcoes,
-      cardapio: { dependencias: comporCardapio(banco, redis), hostPublico: ambiente.DOMINIO_CARDAPIO },
+      cardapio: {
+        dependencias: comporCardapio(banco, redis, armazenamento),
+        midia: comporMidia(banco, armazenamento),
+        hostPublico: ambiente.DOMINIO_CARDAPIO,
+      },
     },
   });
   servidor.addHook('onClose', async () => {
     redis.disconnect();
+    armazenamento.encerrar();
     await painelDeFilas.encerrar();
     await banco.encerrar();
   });

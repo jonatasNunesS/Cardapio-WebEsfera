@@ -16,6 +16,17 @@ export const esquemaAmbienteBase = z.object({
   APP_ENV: z.enum(['local', 'preview', 'homologacao', 'producao']),
 });
 
+export const camposDoArmazenamento = {
+  URL_ARMAZENAMENTO: z.url(),
+  URL_ENVIO_ARMAZENAMENTO: z.url().optional(),
+  REGIAO_ARMAZENAMENTO: z.string().min(1),
+  CHAVE_ARMAZENAMENTO: z.string().min(1),
+  SEGREDO_ARMAZENAMENTO: z.string().min(1),
+  BUCKET_ORIGINAIS: z.string().min(1),
+  BUCKET_PUBLICO: z.string().min(1),
+  URL_PUBLICA_MIDIA: z.url(),
+};
+
 function listarProblemas(issues: readonly z.core.$ZodIssue[], fonte: FonteAmbiente): ProblemaAmbiente[] {
   const variaveis = [...new Set(issues.map((issue) => issue.path.map(String).join('.')))];
   return variaveis.map((variavel) => ({
