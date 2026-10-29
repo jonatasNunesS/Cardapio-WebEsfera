@@ -76,7 +76,7 @@ export function acessoDa(requisicao: FastifyRequest, resposta: FastifyReply): Ac
     enviarFalhaDeNegocio(requisicao, resposta, SEM_VINCULO, STATUS_DAS_FALHAS);
     return null;
   }
-  return { restauranteId: sessao.restauranteId, papel: sessao.papel };
+  return { restauranteId: sessao.restauranteId, papel: sessao.papel, usuarioId: sessao.titularId };
 }
 
 export function apenasNoHost(host: string) {
