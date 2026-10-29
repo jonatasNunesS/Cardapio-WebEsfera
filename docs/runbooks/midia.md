@@ -30,8 +30,13 @@ local e aplica o CORS. Rodar de novo não muda nada. O worker precisa de
    `CHAVE_ARMAZENAMENTO`, `SEGREDO_ARMAZENAMENTO`, `BUCKET_ORIGINAIS`,
    `BUCKET_PUBLICO` e `URL_PUBLICA_MIDIA` (o domínio próprio). Deixar
    `URL_ENVIO_ARMAZENAMENTO` vazio.
-7. Recomendado: regra de ciclo de vida no `midia-originais` apagando objetos
-   com mais de 8 dias (cobre envios abandonados e falha da limpeza).
+7. Obrigatório antes do piloto: regra de ciclo de vida no `midia-originais`
+   apagando objetos com mais de 8 dias.
+
+> Lembrete: sem essa regra, envios abandonados (URL emitida e arquivo enviado,
+> mas sem confirmação) ficam órfãos no bucket privado para sempre. A aplicação
+> só apaga originais de mídias que conhece: as descartadas e as prontas há 7
+> dias. Responsável pela configuração: John.
 
 ## Mídia parada em "Processando"
 
