@@ -6,6 +6,10 @@ import estilos from './CartaoPrato.module.css';
 export interface ImagemPrato {
   readonly src: string;
   readonly alt: string;
+  readonly avif?: string | undefined;
+  readonly webp?: string | undefined;
+  readonly largura?: number | undefined;
+  readonly altura?: number | undefined;
 }
 
 export interface PropriedadesCartaoPrato {
@@ -27,7 +31,21 @@ function Midia({ imagem, video }: Pick<PropriedadesCartaoPrato, 'imagem' | 'vide
     return <VideoPrato {...video} />;
   }
   if (imagem !== undefined) {
-    return <img className={estilos.imagem} src={imagem.src} alt={imagem.alt} loading="lazy" />;
+    return (
+      <picture>
+        {imagem.avif !== undefined && <source srcSet={imagem.avif} type="image/avif" />}
+        {imagem.webp !== undefined && <source srcSet={imagem.webp} type="image/webp" />}
+        <img
+          className={estilos.imagem}
+          src={imagem.src}
+          alt={imagem.alt}
+          width={imagem.largura}
+          height={imagem.altura}
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
+    );
   }
   return null;
 }

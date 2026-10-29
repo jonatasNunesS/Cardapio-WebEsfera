@@ -16,6 +16,30 @@ describe('CartaoPrato', () => {
     expect(screen.getByRole('heading', { level: 3, name: 'Pão de fermentação natural' })).toBeDefined();
   });
 
+  it('imagem com AVIF e WebP: picture com as fontes por tipo e dimensões no img', () => {
+    const { container } = render(
+      <CartaoPrato
+        {...BASE}
+        imagem={{ src: '/p.jpg', alt: 'Pão', avif: '/p.avif', webp: '/p.webp', largura: 800, altura: 600 }}
+      />,
+    );
+    const fontes = [...container.querySelectorAll('picture source')].map((fonte) => [
+      fonte.getAttribute('type'),
+      fonte.getAttribute('srcset'),
+    ]);
+    const imagem = screen.getByRole('img', { name: 'Pão' });
+
+    expect(fontes).toEqual([
+      ['image/avif', '/p.avif'],
+      ['image/webp', '/p.webp'],
+    ]);
+    expect([
+      imagem.getAttribute('width'),
+      imagem.getAttribute('height'),
+      imagem.getAttribute('loading'),
+    ]).toEqual(['800', '600', 'lazy']);
+  });
+
   it('destaque: mostra o rótulo e o vídeo', () => {
     render(
       <CartaoPrato
