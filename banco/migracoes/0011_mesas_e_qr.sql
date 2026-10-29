@@ -92,8 +92,8 @@ BEGIN
 
   RETURN QUERY
     SELECT restaurante.id, restaurante.nome, restaurante.slug, m.id, m.numero, m.nome, m.area, m.codigo, m.ativa
-      FROM public.mesas m
-     WHERE m.restaurante_id = restaurante.id
+      FROM (SELECT 1) AS sempre
+      LEFT JOIN public.mesas m ON m.restaurante_id = restaurante.id
      ORDER BY m.numero;
 END
 $$;
