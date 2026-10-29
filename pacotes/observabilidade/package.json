@@ -7,6 +7,8 @@
     ".": "./src/index.ts",
     "./node": "./src/node/index.ts",
     "./web": "./src/web/index.ts",
+    "./web/tardio": "./src/web/tardio.ts",
+    "./web/configuracao": "./src/web/configuracao-do-build.ts",
     "./teste": "./src/teste/index.ts"
   },
   "scripts": {

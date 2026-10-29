@@ -56,7 +56,7 @@ const politicasDeFronteira = [
     from: { element: { type: 'app-web' } },
     allow: {
       to: { element: { type: 'observabilidade' } },
-      dependency: { source: '@cardapio/observabilidade/web' },
+      dependency: { source: ['@cardapio/observabilidade/web', '@cardapio/observabilidade/web/*'] },
     },
   },
   permitir('ferramentas', ['config', 'infraestrutura'], true),

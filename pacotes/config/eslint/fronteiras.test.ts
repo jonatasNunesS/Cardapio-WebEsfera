@@ -57,6 +57,17 @@ describe('fronteiras entre camadas', () => {
     expect(violacoes).toEqual([]);
   });
 
+  it.each(['@cardapio/observabilidade/web/tardio', '@cardapio/observabilidade/web/configuracao'])(
+    'aceita app React importando a entrada web %s',
+    async (modulo) => {
+      const violacoes = await violacoesDeFronteira(
+        'apps/cardapio/src/fixture-fronteira.tsx',
+        `export * from '${modulo}';\n`,
+      );
+      expect(violacoes).toEqual([]);
+    },
+  );
+
   it.each(['@cardapio/observabilidade/node', '@cardapio/observabilidade', '@cardapio/observabilidade/teste'])(
     'recusa app React importando %s',
     async (modulo) => {

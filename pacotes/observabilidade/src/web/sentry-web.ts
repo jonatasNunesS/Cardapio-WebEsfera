@@ -4,6 +4,7 @@ import { opcoesComunsDoSentry, temDsn, type OpcoesSentryBase } from '../opcoes-s
 
 export interface OpcoesSentryWeb extends OpcoesSentryBase {
   readonly transporte?: Sentry.BrowserOptions['transport'];
+  readonly medirDesempenho?: boolean | undefined;
 }
 
 export function iniciarSentryWeb(opcoes: OpcoesSentryWeb): boolean {
@@ -13,6 +14,7 @@ export function iniciarSentryWeb(opcoes: OpcoesSentryWeb): boolean {
   Sentry.init({
     ...opcoesComunsDoSentry(opcoes),
     ...(opcoes.transporte === undefined ? {} : { transport: opcoes.transporte }),
+    ...(opcoes.medirDesempenho === true ? { integrations: [Sentry.browserTracingIntegration()] } : {}),
   });
   return true;
 }
