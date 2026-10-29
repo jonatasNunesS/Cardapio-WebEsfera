@@ -11,6 +11,7 @@ import { construirServidor } from '../servidor.ts';
 import { comporCardapio } from './cardapio.ts';
 import { comporPainelDeFilas } from './filas.ts';
 import { comporIdentidade } from './identidade.ts';
+import { comporMesas } from './mesas.ts';
 import { comporMidia } from './midia.ts';
 
 export function comporApi(ambiente: AmbienteApi): FastifyInstance {
@@ -42,6 +43,7 @@ export function comporApi(ambiente: AmbienteApi): FastifyInstance {
         midia: comporMidia(banco, armazenamento),
         hostPublico: ambiente.DOMINIO_CARDAPIO,
       },
+      mesas: comporMesas(ambiente, banco, redis, relatorDeErrosSentry),
     },
   });
   servidor.addHook('onClose', async () => {

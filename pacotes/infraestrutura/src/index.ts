@@ -5,3 +5,4 @@ export { criarCacheDoCardapio, VALIDADE_DO_CARDAPIO_EM_SEGUNDOS } from './redis/
 export { criarRedis } from './redis/conexao-redis.ts';
 export * from './filas/index.ts';
 export * from './midia/index.ts';
+export * from './mesas/index.ts';

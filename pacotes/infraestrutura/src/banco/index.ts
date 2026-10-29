@@ -18,3 +18,6 @@ export { criarSessoesMesaVencidas } from './filas/sessoes-mesa-vencidas.ts';
 export { criarFonteDoCardapioPublico } from './cardapio/fonte-do-cardapio-publico.ts';
 export { criarRepositorioDoCardapio } from './cardapio/repositorio-do-cardapio.ts';
 export { criarRepositorioDeMidias } from './midia/repositorio-de-midias.ts';
+export { criarRepositorioDeMesas } from './mesas/repositorio-de-mesas.ts';
+export { criarSessoesDeMesa } from './mesas/sessoes-de-mesa.ts';
+export { criarLeituraDeMesasDoAdmin } from './mesas/leitura-do-admin.ts';

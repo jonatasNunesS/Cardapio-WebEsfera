@@ -11,8 +11,9 @@ export const FUNCOES_PRIVILEGIADAS: readonly FuncaoPrivilegiada[] = [
     nome: 'app.resolver_mesa',
     argumentos: 'p_slug text, p_numero integer, p_codigo text',
     papel: 'app_runtime',
-    motivo: 'Resolver o QR Code da mesa antes de existir restaurante no contexto; devolve só ids e situação.',
-    adr: 'docs/adr/0006-banco-e-isolamento.md',
+    motivo:
+      'Resolver o QR Code da mesa pelo código antes de existir restaurante no contexto; devolve só ids, o link atual e o motivo da recusa.',
+    adr: 'docs/adr/0012-mesas-e-qr.md',
   },
   {
     nome: 'app.resolver_cardapio',
@@ -164,5 +165,13 @@ export const FUNCOES_PRIVILEGIADAS: readonly FuncaoPrivilegiada[] = [
     papel: 'app_runtime',
     motivo: 'Zerar as falhas do e-mail depois de um login certo.',
     adr: 'docs/adr/0006-banco-e-isolamento.md',
+  },
+  {
+    nome: 'app.admin_listar_mesas',
+    argumentos: 'p_administrador_id uuid, p_slug text',
+    papel: 'app_runtime',
+    motivo:
+      'Admin lê as mesas e os links de um restaurante, só leitura; confere o admin ativo com segundo fator e grava a consulta na auditoria.',
+    adr: 'docs/adr/0012-mesas-e-qr.md',
   },
 ];

@@ -6,4 +6,6 @@ export const LIMITES = {
   cardapioPublico: { max: 120, timeWindow: '1 minute' },
   buscaPublica: { max: 60, timeWindow: '1 minute' },
   envioDeMidia: { max: 30, timeWindow: '1 minute' },
+  abrirMesa: { max: 30, timeWindow: '1 minute' },
+  cartoesDeQr: { max: 10, timeWindow: '1 minute' },
 } as const;

@@ -5,3 +5,4 @@ export * from './filas/eventos.ts';
 export * from './filas/jobs.ts';
 export * from './cardapio/esquemas.ts';
 export * from './midia/esquemas.ts';
+export * from './mesas/esquemas.ts';

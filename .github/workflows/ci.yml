@@ -260,6 +260,9 @@ jobs:
       - name: FFmpeg e prlimit na imagem do worker
         run: docker compose exec -T worker sh -c 'ffmpeg -version | head -1 && ffprobe -version | head -1 && prlimit --version'
 
+      - name: Fonte do cartão de QR na imagem da API
+        run: docker compose exec -T api sh -c 'ls /usr/share/fonts/dejavu/DejaVuSans.ttf'
+
       - name: Migrações aplicadas e idempotentes
         run: |
           docker compose exec -T postgres psql -U cardapio -d cardapio -At \

@@ -51,10 +51,8 @@ describe('11. resolver_mesa', () => {
     });
   });
 
-  it('devolve invalida para código inexistente, mesa inativa, restaurante cancelado e número de outra mesa', async () => {
+  it('diz o motivo da recusa: código inexistente, mesa inativa e restaurante cancelado', async () => {
     const restaurante = await criarRestauranteDeTeste(banco);
-    const mesa = await criarMesaDeTeste(restaurante.id, 1);
-    await criarMesaDeTeste(restaurante.id, 2);
     const inativa = await criarMesaDeTeste(restaurante.id, 3);
     await banco.comRestaurante(restaurante.id, (transacao) =>
       transacao.update(mesas).set({ ativa: false }).where(eq(mesas.id, inativa.id)),
@@ -63,30 +61,34 @@ describe('11. resolver_mesa', () => {
     const mesaDoCancelado = await criarMesaDeTeste(cancelado.id, 1);
 
     await expect(repositorio().resolverMesa(restaurante.slug, 1, gerarCodigoDeMesa())).resolves.toEqual({
-      situacao: 'invalida',
-      codigoReconhecido: false,
+      situacao: 'desconhecido',
     });
-    for (const [slug, numero, codigo] of [
-      [restaurante.slug, 3, inativa.codigo],
-      [cancelado.slug, 1, mesaDoCancelado.codigo],
-      [restaurante.slug, 2, mesa.codigo],
-    ] as const) {
-      await expect(repositorio().resolverMesa(slug, numero, codigo)).resolves.toEqual({
-        situacao: 'invalida',
-        codigoReconhecido: true,
-      });
-    }
+    await expect(repositorio().resolverMesa(restaurante.slug, 3, inativa.codigo)).resolves.toEqual({
+      situacao: 'inativa',
+    });
+    await expect(repositorio().resolverMesa(cancelado.slug, 1, mesaDoCancelado.codigo)).resolves.toEqual({
+      situacao: 'cancelado',
+    });
   });
 
-  it('devolve invalida para o código de A com o slug de B', async () => {
+  it('o código acha a mesa: slug de outro restaurante ou número de outra mesa redireciona para o link atual', async () => {
     const restauranteA = await criarRestauranteDeTeste(banco);
     const restauranteB = await criarRestauranteDeTeste(banco);
     const mesa = await criarMesaDeTeste(restauranteA.id, 5);
+    await criarMesaDeTeste(restauranteA.id, 6);
 
-    await expect(repositorio().resolverMesa(restauranteB.slug, 5, mesa.codigo)).resolves.toEqual({
-      situacao: 'invalida',
-      codigoReconhecido: true,
-    });
+    for (const [slug, numero] of [
+      [restauranteB.slug, 5],
+      [restauranteA.slug, 6],
+    ] as const) {
+      await expect(repositorio().resolverMesa(slug, numero, mesa.codigo)).resolves.toEqual({
+        situacao: 'redirecionar',
+        restauranteId: restauranteA.id,
+        mesaId: mesa.id,
+        slugAtual: restauranteA.slug,
+        numeroAtual: 5,
+      });
+    }
   });
 
   it('devolve redirecionar depois de renumerar a mesa e depois de trocar o slug', async () => {

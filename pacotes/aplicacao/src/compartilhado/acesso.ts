@@ -3,6 +3,7 @@ export type PapelDeAcesso = 'dono' | 'gerente' | 'garcom' | 'cozinha';
 export interface AcessoAoRestaurante {
   readonly restauranteId: string;
   readonly papel: PapelDeAcesso;
+  readonly usuarioId?: string | undefined;
 }
 
 export const PAPEIS_DE_GESTAO: readonly PapelDeAcesso[] = ['dono', 'gerente'];

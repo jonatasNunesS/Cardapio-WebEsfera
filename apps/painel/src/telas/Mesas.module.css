@@ -1,0 +1,42 @@
+.formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: flex-end;
+  margin: 0 0 var(--espaco-5);
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 var(--espaco-3);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  align-items: flex-end;
+}
+
+.renumerar {
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: flex-end;
+}
+
+.link {
+  word-break: break-all;
+}
+
+.somenteLeitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

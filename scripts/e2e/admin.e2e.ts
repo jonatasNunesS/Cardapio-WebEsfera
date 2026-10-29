@@ -2,11 +2,15 @@ import { expect, test } from '@playwright/test';
 import { generate } from 'otplib';
 import { demonstrar, semViolacoesDeAcessibilidade } from './acessibilidade.ts';
 import { URL_DO_ADMIN } from './playwright.config.ts';
+import { donoComMesas } from './mesas-apoio.ts';
 import { SENHA_TEMPORARIA_DO_ADMIN } from './preparar.ts';
 
 const SENHA_DEFINITIVA = 'senha-definitiva-do-admin';
 
-test('admin: primeiro acesso cadastra o TOTP; depois entra com senha e código', async ({ page: pagina }) => {
+test('admin: primeiro acesso cadastra o TOTP; depois entra com senha e código', async ({
+  page: pagina,
+  browser: navegador,
+}) => {
   const email = process.env.EMAIL_DO_ADMIN_E2E ?? '';
   const agora = () => Math.floor(Date.now() / 1000);
 
@@ -61,4 +65,17 @@ test('admin: primeiro acesso cadastra o TOTP; depois entra com senha e código',
     secure: true,
     domain: 'admin.localhost',
   });
+
+  const contextoDoDono = await navegador.newContext();
+  const slug = await donoComMesas(await contextoDoDono.newPage(), [4, 7]);
+  await contextoDoDono.close();
+  await pagina.getByRole('link', { name: 'Mesas de um restaurante' }).click();
+  await pagina.getByLabel('Endereço do restaurante (slug)').fill(slug);
+  await pagina.getByRole('button', { name: 'Ver mesas' }).click();
+  const tabela = pagina.getByRole('table');
+  await expect(tabela.getByRole('row')).toHaveCount(3);
+  await expect(tabela.getByRole('button')).toHaveCount(0);
+  await expect(tabela.getByRole('textbox')).toHaveCount(0);
+  await semViolacoesDeAcessibilidade(pagina);
+  await demonstrar(pagina, '03-mesas-no-admin', 'm08');
 });

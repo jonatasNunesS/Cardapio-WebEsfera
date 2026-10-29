@@ -1,3 +1,4 @@
+import { MesasDoRestaurante } from './telas/MesasDoRestaurante.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router';
@@ -10,6 +11,7 @@ function criarRotas() {
   return createBrowserRouter([
     { path: '/', Component: Inicio },
     { path: '/entrar', Component: Entrar },
+    { path: '/mesas', Component: MesasDoRestaurante },
     { path: '/segundo-fator', Component: SegundoFator },
     { path: '/primeiro-acesso', Component: PrimeiroAcesso },
   ]);
