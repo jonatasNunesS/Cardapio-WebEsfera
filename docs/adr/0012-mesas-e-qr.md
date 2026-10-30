@@ -74,6 +74,8 @@ código antigo não vai para histórico nenhum.
 - Trocar `CHAVE_SESSAO_MESA` invalida os cookies de mesa já emitidos.
 - Desde o M11 (ADR 0015), o valor assinado é `restauranteId:sessaoId`, para
   o pedido abrir `comRestaurante()` sem função privilegiada nova.
+- Desde o M12 (ADR 0016), toda sessão fechada tem `motivo_fechamento`:
+  `expirada` (tempo) ou `encerrada` (equipe, a partir do M13).
 
 ### Limite de mesas pelo plano
 

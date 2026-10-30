@@ -129,6 +129,7 @@ export interface PersonalizacaoPublica {
   readonly capaUrl: string | null;
   readonly frase: string;
   readonly linkAvaliacaoGoogle: string | null;
+  readonly linkInstagram: string | null;
   readonly textos: {
     readonly boasVindas: string;
     readonly aoChamarGarcom: string;

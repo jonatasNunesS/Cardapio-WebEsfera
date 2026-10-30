@@ -1,0 +1,10 @@
+export type { ChamadoAberto } from './abrir-chamado.ts';
+export { cancelarChamado } from './casos-de-uso/cancelar-chamado.ts';
+export { chamarGarcom } from './casos-de-uso/chamar-garcom.ts';
+export { obterChamado } from './casos-de-uso/obter-chamado.ts';
+export { obterResumoDaConta } from './casos-de-uso/obter-resumo-da-conta.ts';
+export type { ContaDaMesa } from './casos-de-uso/obter-resumo-da-conta.ts';
+export { obterSituacaoDaSessao } from './casos-de-uso/obter-situacao-da-sessao.ts';
+export { pedirConta } from './casos-de-uso/pedir-conta.ts';
+export type { DependenciasDoAtendimento } from './dependencias.ts';
+export type * from './portas/repositorio-de-atendimento.ts';

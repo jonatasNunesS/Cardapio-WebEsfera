@@ -8,6 +8,7 @@ import {
   criarSessoesDeMesa,
   geradorDeCodigoDeMesa,
   criarRepositorioDeAssinaturas,
+  criarRepositorioDeAtendimento,
   criarRepositorioDePedidos,
   geradorDeSegredos,
   type AcessoAoBanco,
@@ -51,6 +52,7 @@ export function comporMesas(
       resumidor: geradorDeSegredos,
       relogio: { agora: () => new Date() },
     },
+    atendimento: { atendimento: criarRepositorioDeAtendimento(banco), relogio: { agora: () => new Date() } },
     hostPublico: ambiente.DOMINIO_CARDAPIO,
     chaveDaSessaoDeMesa: ambiente.CHAVE_SESSAO_MESA,
   };

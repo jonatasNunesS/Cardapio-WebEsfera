@@ -29,6 +29,18 @@ export const EVENTOS = {
     numero: z.number().int().positive(),
     mesaId: z.uuid(),
   }),
+  ChamadoCriado: z.strictObject({
+    versao: z.literal(1),
+    chamadoId: z.uuid(),
+    tipo: z.enum(['garcom', 'conta']),
+    mesaId: z.uuid(),
+  }),
+  ChamadoCancelado: z.strictObject({
+    versao: z.literal(1),
+    chamadoId: z.uuid(),
+    tipo: z.enum(['garcom', 'conta']),
+    mesaId: z.uuid(),
+  }),
   AssinaturaAlterada: z.strictObject({
     versao: z.literal(1),
     assinaturaId: z.uuid(),

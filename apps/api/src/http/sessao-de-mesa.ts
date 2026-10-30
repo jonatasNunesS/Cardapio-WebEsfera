@@ -1,6 +1,8 @@
-import type { SessaoDoCliente } from '@cardapio/aplicacao';
+import { CODIGOS, criarErroDeNegocio, type SessaoDoCliente } from '@cardapio/aplicacao';
 import { COOKIE_DA_SESSAO_DE_MESA } from '@cardapio/contratos';
-import type { FastifyRequest } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import { STATUS_DAS_FALHAS } from '../identidade/falhas.ts';
+import { enviarFalhaDeNegocio } from './problema.ts';
 
 const PADRAO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -22,4 +24,22 @@ export function sessaoDeMesaDa(requisicao: FastifyRequest): SessaoDoCliente | nu
   return PADRAO_UUID.test(restauranteId) && PADRAO_UUID.test(sessaoMesaId)
     ? { restauranteId, sessaoMesaId }
     : null;
+}
+
+const SEM_SESSAO = criarErroDeNegocio(
+  CODIGOS.PEDIDO_SESSAO_MESA_EXPIRADA,
+  'Sua sessão nesta mesa acabou. Escaneie o QR Code da mesa de novo.',
+);
+
+export function comSessaoDeMesa(
+  requisicao: FastifyRequest,
+  resposta: FastifyReply,
+  acao: (sessao: SessaoDoCliente) => Promise<unknown>,
+): Promise<unknown> {
+  const sessao = sessaoDeMesaDa(requisicao);
+  if (sessao === null) {
+    return Promise.resolve(enviarFalhaDeNegocio(requisicao, resposta, SEM_SESSAO, STATUS_DAS_FALHAS));
+  }
+  resposta.header('cache-control', 'no-store');
+  return acao(sessao);
 }

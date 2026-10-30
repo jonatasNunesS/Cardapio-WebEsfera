@@ -34,7 +34,7 @@ export function criarSessoesDeMesa(banco: AcessoAoBanco): SessoesDeMesa {
         }
         if (aberta !== undefined) {
           await transacao.execute(
-            sql`UPDATE sessoes_mesa SET fechada_em = ${agora.toISOString()}::timestamptz WHERE id = ${aberta.id}`,
+            sql`UPDATE sessoes_mesa SET fechada_em = ${agora.toISOString()}::timestamptz, motivo_fechamento = 'expirada' WHERE id = ${aberta.id}`,
           );
         }
         const { rows } = await transacao.execute<LinhaDeSessao>(sql`

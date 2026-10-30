@@ -1,4 +1,5 @@
 import { request } from 'node:http';
+import { consultarComUrl } from '../../pacotes/infraestrutura/src/testes.ts';
 import { PORTAS } from './playwright.config.ts';
 import { zerarLimitesDeTaxa } from './preparar.ts';
 
@@ -97,6 +98,8 @@ export interface OpcoesDoRestaurante {
   readonly pratos: readonly PratoSemeado[];
   readonly fechado?: boolean;
   readonly corMarca?: string;
+  readonly linkAvaliacaoGoogle?: string;
+  readonly linkInstagram?: string;
 }
 
 export async function semearRestaurante(
@@ -105,13 +108,14 @@ export async function semearRestaurante(
   await zerarLimitesDeTaxa();
   const painel = new ClienteDoPainel();
   const slug = await painel.entrar(opcoes.nome);
-  if (opcoes.corMarca !== undefined) {
+  if (opcoes.corMarca !== undefined || opcoes.linkAvaliacaoGoogle !== undefined) {
     await painel.exigir('PUT', '/api/v1/restaurante/personalizacao', {
-      corMarca: opcoes.corMarca,
+      corMarca: opcoes.corMarca ?? '#B4441F',
       logoUrl: null,
       capaUrl: null,
       frase: 'Cozinha de fogo e pão de fermentação natural',
-      linkAvaliacaoGoogle: null,
+      linkAvaliacaoGoogle: opcoes.linkAvaliacaoGoogle ?? null,
+      linkInstagram: opcoes.linkInstagram ?? null,
       textos: { boasVindas: 'Boa noite! Fique à vontade.', aoChamarGarcom: '', restauranteFechado: '' },
     });
   }
@@ -160,4 +164,17 @@ export async function esgotarPrato(painel: ClienteDoPainel, nome: string): Promi
     versao: prato?.versao,
     disponivel: false,
   });
+}
+
+export async function encerrarSessoesDaMesa(slug: string): Promise<void> {
+  const url = new URL(
+    process.env.URL_BANCO_TESTE_ADMIN ?? 'postgres://cardapio:cardapio_local@127.0.0.1:5432/postgres',
+  );
+  url.pathname = `/${process.env.BANCO_E2E ?? 'cardapio'}`;
+  await consultarComUrl(
+    url.toString(),
+    `UPDATE sessoes_mesa SET fechada_em = now(), motivo_fechamento = 'encerrada'
+      WHERE fechada_em IS NULL AND restaurante_id = (SELECT id FROM restaurantes WHERE slug = $1)`,
+    [slug],
+  );
 }

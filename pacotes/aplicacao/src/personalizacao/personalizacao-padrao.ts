@@ -13,6 +13,7 @@ export function personalizacaoPadrao(): PersonalizacaoPublicada {
     capaUrl: null,
     frase: '',
     linkAvaliacaoGoogle: null,
+    linkInstagram: null,
     textos: {
       boasVindas: 'Peça pelo celular quando quiser. Se preferir, chamamos alguém da equipe.',
       aoChamarGarcom: 'Já avisamos a equipe. Alguém vem até a sua mesa.',

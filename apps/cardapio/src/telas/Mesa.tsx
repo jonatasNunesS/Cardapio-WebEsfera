@@ -1,11 +1,12 @@
 import { aplicarTemaRestaurante, Aviso, ProvedorDeVideos, type ReportarErro } from '@cardapio/ui';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import type { MesaCarregada } from '../dados/carregar-mesa.ts';
-import type { MesaPronta } from '../dados/contexto.ts';
 import { lembranca } from '../dados/rota-da-mesa.ts';
 import { configuracao, sentry } from '../observabilidade.ts';
 import { aquecerCache } from '../offline/aquecer.ts';
+import { useAoEncerrar } from '../atendimento/sessao-encerrada.ts';
+import { caminhoDaMesa, type MesaPronta } from '../dados/contexto.ts';
 import { BarraDoPedido } from '../pedido/BarraDoPedido.tsx';
 import { Abertura } from './Abertura.tsx';
 import estilos from './Mesa.module.css';
@@ -101,6 +102,14 @@ function MesaAberta({ carregada, codigo }: { readonly carregada: Pronta; readonl
   const [abertura, setAbertura] = useState(() => !lembranca.aberturaVista(mesa));
   useTema(cardapio.personalizacao);
   useLinksDoApp();
+  const navegar = useNavigate();
+  const [encerrada, setEncerrada] = useState(false);
+  useAoEncerrar(
+    useCallback(() => {
+      setEncerrada(true);
+      void navegar(caminhoDaMesa(mesa, codigo, '/obrigado'));
+    }, [navegar, mesa, codigo]),
+  );
   useEffect(() => {
     if (!carregada.offline) {
       aquecerCache(cardapio, configuracao.release).then(
@@ -112,7 +121,7 @@ function MesaAberta({ carregada, codigo }: { readonly carregada: Pronta; readonl
     }
   }, [cardapio, carregada.offline]);
 
-  if (expirada) {
+  if (expirada && !encerrada) {
     return <TelaNeutra motivo="expirada" />;
   }
   if (abertura) {

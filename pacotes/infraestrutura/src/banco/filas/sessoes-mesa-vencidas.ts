@@ -22,7 +22,7 @@ export function criarSessoesMesaVencidas(banco: AcessoAoBanco): SessoesMesaVenci
       banco.comRestaurante(restauranteId, async (transacao) => {
         const resultado = await transacao.execute(sql`
           WITH fechadas AS (
-            UPDATE sessoes_mesa SET fechada_em = ${agora.toISOString()}::timestamptz
+            UPDATE sessoes_mesa SET fechada_em = ${agora.toISOString()}::timestamptz, motivo_fechamento = 'expirada'
             WHERE restaurante_id = ${restauranteId}
               AND id = ANY(${sql.param([...sessoesMesaIds])}::uuid[])
               AND fechada_em IS NULL

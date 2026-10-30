@@ -16,6 +16,7 @@ function cardapio(versao: number): CardapioPublicado {
       capaUrl: null,
       frase: '',
       linkAvaliacaoGoogle: null,
+      linkInstagram: null,
       textos: { boasVindas: '', aoChamarGarcom: '', restauranteFechado: '' },
     },
     horarios: [],

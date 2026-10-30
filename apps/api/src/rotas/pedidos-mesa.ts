@@ -1,7 +1,5 @@
 import {
   cancelarPedido,
-  CODIGOS,
-  criarErroDeNegocio,
   criarPedido,
   obterPedido,
   type DependenciasDosPedidos,
@@ -15,19 +13,12 @@ import {
   ROTAS_DO_PEDIDO as ROTAS,
   type RespostaPedido,
 } from '@cardapio/contratos';
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { enviarFalhaDeNegocio } from '../http/problema.ts';
-import { sessaoDeMesaDa } from '../http/sessao-de-mesa.ts';
+import { comSessaoDeMesa } from '../http/sessao-de-mesa.ts';
 import { STATUS_DAS_FALHAS } from '../identidade/falhas.ts';
 import { LIMITES } from '../identidade/limites.ts';
 import { apenasNoHost } from '../identidade/sessao.ts';
-
-type Sessao = NonNullable<ReturnType<typeof sessaoDeMesaDa>>;
-
-const SEM_SESSAO = criarErroDeNegocio(
-  CODIGOS.PEDIDO_SESSAO_MESA_EXPIRADA,
-  'Sua sessão nesta mesa acabou. Escaneie o QR Code da mesa de novo.',
-);
 
 function paraResposta(pedido: PedidoGuardado): RespostaPedido {
   return {
@@ -46,19 +37,6 @@ function paraResposta(pedido: PedidoGuardado): RespostaPedido {
   };
 }
 
-function comSessao(
-  requisicao: FastifyRequest,
-  resposta: FastifyReply,
-  acao: (sessao: Sessao) => Promise<unknown>,
-): Promise<unknown> {
-  const sessao = sessaoDeMesaDa(requisicao);
-  if (sessao === null) {
-    return Promise.resolve(enviarFalhaDeNegocio(requisicao, resposta, SEM_SESSAO, STATUS_DAS_FALHAS));
-  }
-  resposta.header('cache-control', 'no-store');
-  return acao(sessao);
-}
-
 export function registrarPedidosDaMesa(
   servidor: FastifyInstance,
   dependencias: DependenciasDosPedidos,
@@ -67,7 +45,7 @@ export function registrarPedidosDaMesa(
   void servidor.register((publico, _opcoes, pronto) => {
     publico.addHook('onRequest', apenasNoHost(host));
     publico.post(ROTAS.pedidos, { config: { rateLimit: LIMITES.criarPedido } }, (requisicao, resposta) =>
-      comSessao(requisicao, resposta, async (sessao) => {
+      comSessaoDeMesa(requisicao, resposta, async (sessao) => {
         const chave = esquemaChaveDoPedido.parse(requisicao.headers[CABECALHO_DA_CHAVE_DE_IDEMPOTENCIA]);
         const { itens } = esquemaPedidoDoCliente.parse(requisicao.body);
         const resultado = await criarPedido(dependencias, sessao, { chave, itens });
@@ -78,7 +56,7 @@ export function registrarPedidosDaMesa(
       }),
     );
     publico.get(ROTAS.pedido, { config: { rateLimit: LIMITES.consultarPedido } }, (requisicao, resposta) =>
-      comSessao(requisicao, resposta, async (sessao) => {
+      comSessaoDeMesa(requisicao, resposta, async (sessao) => {
         const resultado = await obterPedido(
           dependencias,
           sessao,
@@ -90,7 +68,7 @@ export function registrarPedidosDaMesa(
       }),
     );
     publico.post(ROTAS.cancelamento, { config: { rateLimit: LIMITES.criarPedido } }, (requisicao, resposta) =>
-      comSessao(requisicao, resposta, async (sessao) => {
+      comSessaoDeMesa(requisicao, resposta, async (sessao) => {
         const resultado = await cancelarPedido(
           dependencias,
           sessao,

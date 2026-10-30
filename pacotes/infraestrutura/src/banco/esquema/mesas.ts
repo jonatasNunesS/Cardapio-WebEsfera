@@ -39,6 +39,7 @@ export const sessoesMesa = pgTable(
     abertaEm: momento('aberta_em').notNull().defaultNow(),
     expiraEm: momento('expira_em').notNull(),
     fechadaEm: momento('fechada_em'),
+    motivoFechamento: text('motivo_fechamento', { enum: ['expirada', 'encerrada'] }),
   },
   (tabela) => [primaryKey({ columns: [tabela.restauranteId, tabela.id] })],
 );

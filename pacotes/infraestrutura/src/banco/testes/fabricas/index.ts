@@ -5,6 +5,7 @@ import {
   assinaturas,
   auditoria,
   caixaSaida,
+  chamados,
   categorias,
   cobrancas,
   contadoresPedido,
@@ -289,6 +290,20 @@ export const FABRICAS: readonly Fabrica[] = [
         precoNoMomentoCentavos: 1000,
         quantidade: 1,
       });
+    },
+  },
+  {
+    tabela: 'chamados',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      const mesaId = await criarMesa(transacao, restauranteId);
+      const sessaoMesaId = uuidv7();
+      await transacao
+        .insert(sessoesMesa)
+        .values({ id: sessaoMesaId, restauranteId, mesaId, expiraEm: new Date(Date.now() + 4 * 3600_000) });
+      await transacao
+        .insert(chamados)
+        .values({ restauranteId, sessaoMesaId, mesaId, tipo: 'garcom', chaveIdempotencia: uuidv7() });
     },
   },
 ];

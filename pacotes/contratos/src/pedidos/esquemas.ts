@@ -1,6 +1,12 @@
 import { z } from 'zod';
 export {
   CABECALHO_DA_CHAVE_DE_IDEMPOTENCIA,
+  ROTAS_DO_ATENDIMENTO,
+  type RespostaChamado,
+  type RespostaConta,
+  type RespostaSessaoDaMesa,
+  type SituacaoDoChamadoNaApi,
+  type TipoDeChamadoNaApi,
   gerarUuidV7,
   ROTAS_DO_PEDIDO,
   type ItemDoPedidoNaApi,

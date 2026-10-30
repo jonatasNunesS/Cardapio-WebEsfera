@@ -48,6 +48,7 @@ const PERSONALIZACAO = {
   capaUrl: null,
   frase: '',
   linkAvaliacaoGoogle: null,
+  linkInstagram: null,
   textos: { boasVindas: 'a', aoChamarGarcom: 'b', restauranteFechado: 'c' },
 };
 

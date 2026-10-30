@@ -22,6 +22,7 @@ async function criarSessao(banco: AcessoAoBanco, restauranteId: string, expiraEm
       abertaEm: new Date(expiraEm.getTime() - 4 * HORA_MS),
       expiraEm,
       fechadaEm: fechadaEm ?? null,
+      motivoFechamento: fechadaEm === undefined ? null : 'expirada',
     });
   });
   return { id, mesaId };
