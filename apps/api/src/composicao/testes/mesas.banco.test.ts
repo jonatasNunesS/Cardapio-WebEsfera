@@ -91,7 +91,9 @@ describe('mesas pela API', () => {
     expect(resposta.statusCode).toBe(200);
     expect(cookie).toMatchObject({ path: '/', httpOnly: true, secure: true, sameSite: 'Lax' });
     expect(cookie?.domain).toBeUndefined();
-    expect(cookie?.value).toMatch(/^[0-9a-f-]{36}\.[A-Za-z0-9+/_-]+$/);
+    expect(decodeURIComponent(cookie?.value ?? '')).toMatch(
+      /^[0-9a-f-]{36}:[0-9a-f-]{36}\.[A-Za-z0-9+/_-]+$/,
+    );
     const duracao = (cookie?.expires?.getTime() ?? 0) - Date.now();
     expect(duracao).toBeGreaterThan(4 * 60 * 60 * 1000 - 60_000);
     expect(duracao).toBeLessThanOrEqual(4 * 60 * 60 * 1000);
@@ -155,16 +157,17 @@ describe('mesas pela API', () => {
     expect((await cliente.pedir('GET', PAINEL.mesas)).statusCode).toBe(404);
   });
 
-  it('o cookie de mesa é o id da sessão assinado com HMAC-SHA256 da chave do ambiente', async () => {
+  it('o cookie de mesa é restaurante e sessão assinados com HMAC-SHA256 da chave do ambiente', async () => {
     const { lista } = await donoComMesas('Mesas Assinatura', [1]);
     const cliente = new Navegador(servidor, HOSTS.cardapio, ipUnico());
     await cliente.pedir('GET', caminhoDo(lista.mesas[0]?.link ?? ''));
-    const valor = cliente.cookies.get(COOKIE_DA_SESSAO_DE_MESA) ?? '';
-    const sessaoId = valor.split('.')[0] ?? '';
+    const valor = decodeURIComponent(cliente.cookies.get(COOKIE_DA_SESSAO_DE_MESA) ?? '');
+    const conteudo = valor.slice(0, valor.lastIndexOf('.'));
 
-    const hmac = createHmac('sha256', CHAVE).update(sessaoId).digest('base64').replace(/=+$/, '');
+    const hmac = createHmac('sha256', CHAVE).update(conteudo).digest('base64').replace(/=+$/, '');
 
-    expect(valor).toBe(`${sessaoId}.${hmac}`);
+    expect(conteudo).toMatch(/^[0-9a-f-]{36}:[0-9a-f-]{36}$/);
+    expect(valor).toBe(`${conteudo}.${hmac}`);
   });
 
   it('isolamento: outro restaurante não lê, não edita nem baixa o QR das mesas de A', async () => {

@@ -10,6 +10,7 @@ import {
 import type { FastifyInstance } from 'fastify';
 import { OPCOES_DE_COOKIE } from '../http/cookies.ts';
 import { mascararIp } from '../http/ip.ts';
+import { valorDaSessaoDeMesa } from '../http/sessao-de-mesa.ts';
 import { enviarFalhaDeNegocio } from '../http/problema.ts';
 import { STATUS_DAS_FALHAS } from '../identidade/falhas.ts';
 import { LIMITES } from '../identidade/limites.ts';
@@ -43,7 +44,7 @@ export function registrarMesaPublica(
         const rota = rotaCom(ROTAS.abrir, { slug: mesa.slug, numero: String(mesa.numero) });
         return resposta.redirect(`${rota}?c=${encodeURIComponent(mesa.codigo)}`, 301);
       }
-      resposta.setCookie(COOKIE_DA_SESSAO_DE_MESA, mesa.sessaoId, {
+      resposta.setCookie(COOKIE_DA_SESSAO_DE_MESA, valorDaSessaoDeMesa(mesa.restauranteId, mesa.sessaoId), {
         ...OPCOES_DE_COOKIE,
         expires: mesa.expiraEm,
         signed: true,
