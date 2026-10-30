@@ -28,6 +28,7 @@ import {
 } from '@cardapio/observabilidade/node';
 import type { AmbienteWorker } from '../ambiente.ts';
 import { executarTarefa } from '../execucao/executar-tarefa.ts';
+import { comporCobranca } from './cobranca.ts';
 import { comporMidia, ROTEAMENTO_DA_MIDIA } from './midia.ts';
 
 export const LIMITE_DE_ENCERRAMENTO_MS = 30_000;
@@ -64,9 +65,11 @@ export function comporFilas(
     roteamento: ROTEAMENTO_DE_EVENTOS,
   };
   const midia = comporMidia(ambiente, banco, filas);
+  const cobranca = comporCobranca(ambiente, banco, filas, relator);
   const pulsarPublicador = criarPulsoDeRotina('caixa-saida-publicador', MONITOR_DO_PUBLICADOR);
   const processadores: Record<string, Processador> = {
     ...midia.processadores,
+    ...cobranca.processadores,
     'publicar-caixa-saida': async () => {
       const resumo = await trava.comTrava('publicar-caixa-saida', DURACAO_DA_TRAVA_DO_PUBLICADOR_MS, () =>
         publicarCaixaDeSaida(dependenciasDaCaixa),
@@ -92,7 +95,10 @@ export function comporFilas(
         relator,
         processadores,
         executarTarefa,
-        aoEsgotarTentativas: (nome, dados) => midia.aoEsgotarTentativas(nome, dados),
+        aoEsgotarTentativas: async (nome, dados) => {
+          await midia.aoEsgotarTentativas(nome, dados);
+          await cobranca.aoEsgotarTentativas(nome, dados);
+        },
       });
       registrarAgendamentos(conexoes.consumidora, relator).catch((erro: unknown) => {
         reportarErro(erro, { tarefa: 'registrarAgendamentos' });

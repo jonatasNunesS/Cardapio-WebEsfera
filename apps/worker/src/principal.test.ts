@@ -25,6 +25,7 @@ describe('worker', () => {
           BUCKET_ORIGINAIS: 'midia-originais',
           BUCKET_PUBLICO: 'midia-publica',
           URL_PUBLICA_MIDIA: 'http://midia-publica.web.localhost:3902',
+          MP_ACCESS_TOKEN: 'TEST-token',
         },
         stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
       });

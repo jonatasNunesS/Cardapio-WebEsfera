@@ -1,4 +1,4 @@
-import type { RelatorDeErros } from '@cardapio/aplicacao';
+import { obterLimiteDeMesas, type RelatorDeErros } from '@cardapio/aplicacao';
 import {
   cartoesDeQr,
   criarContadorDeTentativas,
@@ -7,7 +7,7 @@ import {
   criarRepositorioMesas,
   criarSessoesDeMesa,
   geradorDeCodigoDeMesa,
-  limiteDeMesasDoTeste,
+  criarRepositorioDeAssinaturas,
   type AcessoAoBanco,
   type criarRedis,
 } from '@cardapio/infraestrutura';
@@ -28,7 +28,10 @@ export function comporMesas(
   return {
     painel: {
       mesas: criarRepositorioDeMesas(banco),
-      limite: limiteDeMesasDoTeste,
+      limite: {
+        limite: (restauranteId) =>
+          obterLimiteDeMesas({ assinaturas: criarRepositorioDeAssinaturas(banco) }, restauranteId),
+      },
       codigos: geradorDeCodigoDeMesa,
       cartoes: cartoesDeQr,
       urlDoCardapio,

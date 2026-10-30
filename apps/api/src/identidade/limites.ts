@@ -8,4 +8,6 @@ export const LIMITES = {
   envioDeMidia: { max: 30, timeWindow: '1 minute' },
   abrirMesa: { max: 30, timeWindow: '1 minute' },
   cartoesDeQr: { max: 10, timeWindow: '1 minute' },
+  avisoDePagamento: { max: 120, timeWindow: '1 minute' },
+  escolherPlano: { max: 10, timeWindow: '1 minute' },
 } as const;

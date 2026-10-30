@@ -1,6 +1,7 @@
 import {
   CODIGOS,
   criarErroDeNegocio,
+  DIA_DA_INADIMPLENCIA,
   diaDeAtraso,
   Resultado,
   vencimentoDoAcesso,
@@ -20,6 +21,7 @@ export interface PlanoECobranca {
   readonly testeTerminaEm: Date;
   readonly vencimento: Date;
   readonly diaDeAtraso: number;
+  readonly diaDaInadimplencia: number;
   readonly planos: readonly PlanoOferecido[];
   readonly assinatura: AssinaturaGuardada | null;
   readonly cobrancas: readonly CobrancaGuardada[];
@@ -47,6 +49,7 @@ export async function consultarPlanoECobranca(
     testeTerminaEm: estado.testeTerminaEm,
     vencimento,
     diaDeAtraso: diaDeAtraso(vencimento, dependencias.relogio.agora(), estado.fusoHorario),
+    diaDaInadimplencia: DIA_DA_INADIMPLENCIA,
     planos,
     assinatura,
     cobrancas,
