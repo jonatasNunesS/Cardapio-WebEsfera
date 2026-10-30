@@ -1,0 +1,7 @@
+.faixa {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  padding: var(--espaco-2) var(--espaco-4);
+  background: var(--cor-fundo);
+}

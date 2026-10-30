@@ -1,4 +1,5 @@
 import { z } from 'zod';
+export { ROTAS_DA_MESA_PUBLICA } from '../publico.ts';
 
 export const LIMITES_DA_MESA_NA_API = {
   numeroMinimo: 1,
@@ -15,10 +16,6 @@ export const ROTAS_DAS_MESAS_NO_PAINEL = {
   codigo: '/api/v1/mesas/:id/codigo',
   cartao: '/api/v1/mesas/:id/qr.png',
   cartoes: '/api/v1/mesas/qr.zip',
-} as const;
-
-export const ROTAS_DA_MESA_PUBLICA = {
-  abrir: '/api/v1/cardapios/:slug/mesa/:numero',
 } as const;
 
 export const ROTAS_DAS_MESAS_NO_ADMIN = {

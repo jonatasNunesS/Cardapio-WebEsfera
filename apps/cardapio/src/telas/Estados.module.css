@@ -1,0 +1,16 @@
+.carregando {
+  display: grid;
+  gap: var(--espaco-4);
+  max-width: 32rem;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: var(--espaco-6) var(--espaco-4);
+  align-content: end;
+}
+
+.abrindo {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-6);
+  line-height: 1.15;
+}

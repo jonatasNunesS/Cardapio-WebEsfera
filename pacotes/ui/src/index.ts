@@ -66,3 +66,4 @@ export type {
   ProblemaDoFormulario,
   RespostaDoEnvio,
 } from './formulario/useEnvioDeFormulario.ts';
+export { formatarReais } from './utilitarios/dinheiro.ts';

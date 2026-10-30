@@ -24,6 +24,7 @@
     "storybook": "pnpm --filter @cardapio/ui storybook",
     "storybook:build": "pnpm --filter @cardapio/ui storybook:build",
     "e2e": "playwright test -c scripts/e2e/playwright.config.ts",
+    "e2e:desempenho": "DESEMPENHO=1 playwright test -c scripts/e2e/playwright.config.ts",
     "visual": "node scripts/testes-visuais.ts",
     "visual:atualizar": "node scripts/testes-visuais.ts --atualizar"
   },

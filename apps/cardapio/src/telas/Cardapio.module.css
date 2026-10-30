@@ -1,0 +1,85 @@
+.cabecalho {
+  display: grid;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  border-bottom: var(--borda-fina) solid var(--cor-borda);
+  background: var(--cor-superficie);
+}
+
+.identidade {
+  display: flex;
+  gap: var(--espaco-3);
+  align-items: center;
+}
+
+.logo {
+  border-radius: var(--raio-1);
+  object-fit: cover;
+}
+
+.nomeDoRestaurante {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-4);
+  font-weight: var(--peso-forte);
+}
+
+.mesa {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-2);
+}
+
+.buscar {
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--espaco-3);
+  border: var(--borda-fina) solid var(--cor-borda-campo);
+  border-radius: var(--raio-2);
+  color: var(--cor-texto-secundario);
+  text-decoration: none;
+}
+
+.conteudo {
+  display: grid;
+  gap: var(--espaco-5);
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--espaco-4) var(--espaco-4) var(--espaco-7);
+}
+
+.secao {
+  display: grid;
+  gap: var(--espaco-3);
+  scroll-margin-top: var(--espaco-7);
+}
+
+.tituloDaSecao {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-5);
+}
+
+.lista {
+  display: grid;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vazio {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}
+
+.somenteLeitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

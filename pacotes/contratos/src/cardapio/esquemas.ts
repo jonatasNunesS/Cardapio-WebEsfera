@@ -1,4 +1,5 @@
 import { z } from 'zod';
+export { rotaCom, ROTAS_DO_CARDAPIO_PUBLICO } from '../publico.ts';
 import type { MidiaPublica } from '../midia/esquemas.ts';
 
 export const LIMITES_DO_CARDAPIO_NA_API = {
@@ -19,15 +20,6 @@ export const ROTAS_DO_CARDAPIO_NO_PAINEL = {
   situacaoDoPrato: '/api/v1/cardapio/pratos/:id/situacao',
   posicaoDoPrato: '/api/v1/cardapio/pratos/:id/posicao',
 } as const;
-
-export const ROTAS_DO_CARDAPIO_PUBLICO = {
-  cardapio: '/api/v1/cardapios/:slug',
-  busca: '/api/v1/cardapios/:slug/busca',
-} as const;
-
-export function rotaCom(rota: string, parametros: Readonly<Record<string, string>>): string {
-  return rota.replace(/:([a-z]+)/gi, (_trecho, nome: string) => encodeURIComponent(parametros[nome] ?? ''));
-}
 
 const SEGMENTADOR = new Intl.Segmenter('pt-BR', { granularity: 'grapheme' });
 
