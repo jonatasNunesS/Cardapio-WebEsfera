@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router';
+import { carregarTelasDoAtendimento } from './atendimento/sob-demanda.ts';
 import { carregarTelasDoPedido } from './pedido/sob-demanda.ts';
 import { carregarRotaDaMesa, revalidarMesa } from './dados/rota-da-mesa.ts';
 import { Busca } from './telas/Busca.tsx';
@@ -24,6 +25,18 @@ export function criarRotas() {
         {
           path: 'carrinho',
           lazy: async () => ({ Component: (await carregarTelasDoPedido()).TelaDoCarrinho }),
+        },
+        {
+          path: 'atendimento',
+          lazy: async () => ({ Component: (await carregarTelasDoAtendimento()).TelaDoAtendimento }),
+        },
+        {
+          path: 'conta',
+          lazy: async () => ({ Component: (await carregarTelasDoAtendimento()).TelaDaConta }),
+        },
+        {
+          path: 'obrigado',
+          lazy: async () => ({ Component: (await carregarTelasDoAtendimento()).TelaDeAgradecimento }),
         },
         {
           path: 'pedido/:pedidoId',

@@ -7,7 +7,7 @@ import { useCarrinho } from './usar-carrinho.ts';
 export function BarraDoPedido({ contexto }: { readonly contexto: MesaPronta }) {
   const { mesa, cardapio, codigo } = contexto;
   const caminho = (trecho: string) => caminhoDaMesa(mesa, codigo, trecho);
-  const naTelaDoPedido = /\/(carrinho|pedido\/)/.test(location.pathname);
+  const naTelaDoPedido = /\/(carrinho|pedido\/|obrigado)/.test(location.pathname);
   const { estado } = useCarrinho(mesa.slug, mesa.numero);
   const ultimo = estado.pedidos.at(-1);
   if (naTelaDoPedido) {
@@ -18,15 +18,19 @@ export function BarraDoPedido({ contexto }: { readonly contexto: MesaPronta }) {
     const itens = estado.linhas.reduce((soma, linha) => soma + linha.quantidade, 0);
     const total = estado.linhas.reduce((soma, l) => soma + (precos.get(l.pratoId) ?? 0) * l.quantidade, 0);
     return (
-      <Link className={estilos.barra} to={caminho('/carrinho')}>
-        <Icone nome="carrinho" tamanho={20} />
-        Ver pedido: {itens} {itens === 1 ? 'item' : 'itens'}, {formatarReais(total)}
-      </Link>
+      <nav aria-label="Seu pedido">
+        <Link className={estilos.barra} to={caminho('/carrinho')}>
+          <Icone nome="carrinho" tamanho={20} />
+          Ver pedido: {itens} {itens === 1 ? 'item' : 'itens'}, {formatarReais(total)}
+        </Link>
+      </nav>
     );
   }
   return ultimo === undefined ? null : (
-    <Link className={estilos.barra} to={caminho(`/pedido/${ultimo.id}`)}>
-      Acompanhar o pedido {ultimo.numero}
-    </Link>
+    <nav aria-label="Seu pedido">
+      <Link className={estilos.barra} to={caminho(`/pedido/${ultimo.id}`)}>
+        Acompanhar o pedido {ultimo.numero}
+      </Link>
+    </nav>
   );
 }

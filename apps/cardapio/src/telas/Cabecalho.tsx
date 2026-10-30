@@ -20,6 +20,10 @@ export function Cabecalho() {
         <Icone nome="buscar" tamanho={16} />
         Buscar prato ou ingrediente
       </Link>
+      <Link className={estilos.buscar} to={caminho('/atendimento')}>
+        <Icone nome="chamarGarcom" tamanho={16} />
+        Chamar garçom ou pedir a conta
+      </Link>
     </header>
   );
 }
