@@ -11,3 +11,4 @@ export * from './cobranca/index.ts';
 export * from './pedidos/index.ts';
 export * from './atendimento/index.ts';
 export * from './equipe/index.ts';
+export * from './tempo-real/index.ts';
