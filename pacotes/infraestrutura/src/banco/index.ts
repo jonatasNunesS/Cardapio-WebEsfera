@@ -28,3 +28,4 @@ export {
   criarRestaurantesParaCobranca,
 } from './cobranca/eventos-de-pagamento.ts';
 export { criarRepositorioDePedidos } from './pedidos/repositorio-de-pedidos.ts';
+export { criarRepositorioDeAtendimento } from './atendimento/repositorio-de-atendimento.ts';

@@ -3,6 +3,7 @@ import csrf from '@fastify/csrf-protection';
 import rateLimit, { type RateLimitPluginOptions } from '@fastify/rate-limit';
 import { CABECALHO_CSRF } from '@cardapio/contratos';
 import type {
+  DependenciasDoAtendimento,
   DependenciasDosPedidos,
   DependenciasDaAssinatura,
   DependenciasDoAviso,
@@ -23,6 +24,7 @@ import { registrarCardapioNoPainel } from '../rotas/cardapio-painel.ts';
 import { registrarCardapioPublico } from '../rotas/cardapio-publico.ts';
 import { registrarMesaPublica } from '../rotas/mesa-publica.ts';
 import { registrarPedidosDaMesa } from '../rotas/pedidos-mesa.ts';
+import { registrarAtendimentoDaMesa } from '../rotas/atendimento-mesa.ts';
 import { registrarMesasNoAdmin } from '../rotas/mesas-admin.ts';
 import { registrarMesasNoPainel } from '../rotas/mesas-painel.ts';
 import { registrarMidiaNoPainel } from '../rotas/midia-painel.ts';
@@ -52,6 +54,7 @@ export interface OpcoesDasMesas {
   readonly hostPublico: string;
   readonly chaveDaSessaoDeMesa: string;
   readonly pedidos?: DependenciasDosPedidos;
+  readonly atendimento?: DependenciasDoAtendimento;
 }
 
 export interface OpcoesDoCardapio {
@@ -90,6 +93,9 @@ function registrarMesas(escopo: FastifyInstance, opcoes: OpcoesDeIdentidade, mes
   registrarMesaPublica(escopo, mesas.sessao, mesas.hostPublico);
   if (mesas.pedidos !== undefined) {
     registrarPedidosDaMesa(escopo, mesas.pedidos, mesas.hostPublico);
+  }
+  if (mesas.atendimento !== undefined) {
+    registrarAtendimentoDaMesa(escopo, mesas.atendimento, mesas.hostPublico);
   }
 }
 

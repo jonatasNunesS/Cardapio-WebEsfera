@@ -56,3 +56,39 @@ export function gerarUuidV7(agora: number, aleatorio: Uint8Array): string {
   const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
+
+export const ROTAS_DO_ATENDIMENTO = {
+  garcom: '/api/v1/mesa/chamados/garcom',
+  conta: '/api/v1/mesa/chamados/conta',
+  chamado: '/api/v1/mesa/chamados/:id',
+  cancelamento: '/api/v1/mesa/chamados/:id/cancelamento',
+  resumo: '/api/v1/mesa/conta',
+  sessao: '/api/v1/mesa/sessao',
+} as const;
+
+export type TipoDeChamadoNaApi = 'garcom' | 'conta';
+export type SituacaoDoChamadoNaApi = 'aguardando' | 'em_atendimento' | 'concluido' | 'cancelado';
+
+export interface RespostaChamado {
+  readonly id: string;
+  readonly tipo: TipoDeChamadoNaApi;
+  readonly situacao: SituacaoDoChamadoNaApi;
+  readonly criadoEm: string;
+}
+
+export interface RespostaConta {
+  readonly itens: readonly {
+    readonly nome: string;
+    readonly quantidade: number;
+    readonly precoCentavos: number;
+  }[];
+  readonly subtotalCentavos: number;
+  readonly taxaCentavos: number;
+  readonly totalComTaxaCentavos: number;
+  readonly totalSemTaxaCentavos: number;
+  readonly porPessoa: { readonly comTaxa: readonly number[]; readonly semTaxa: readonly number[] };
+}
+
+export interface RespostaSessaoDaMesa {
+  readonly situacao: 'aberta' | 'encerrada' | 'expirada';
+}

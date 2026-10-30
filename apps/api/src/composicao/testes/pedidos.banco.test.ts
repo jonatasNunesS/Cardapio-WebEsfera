@@ -1,30 +1,16 @@
 import {
   COOKIE_DA_SESSAO_DE_MESA,
-  gerarUuidV7,
   rotaCom,
-  ROTAS_DAS_MESAS_NO_PAINEL as MESAS,
-  ROTAS_DO_CARDAPIO_NO_PAINEL as CARDAPIO,
   ROTAS_DO_CARDAPIO_PUBLICO as PUBLICO,
   ROTAS_DO_PEDIDO as PEDIDO,
-  type CategoriaNoPainel,
-  type PratoNoPainel,
-  type RespostaMesasDoPainel,
   type RespostaPedido,
 } from '@cardapio/contratos';
-import {
-  consultarComUrl,
-  VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE,
-  VARIAVEIS_DO_MERCADO_PAGO_DE_TESTE,
-} from '@cardapio/infraestrutura/testes';
+import { consultarComUrl } from '@cardapio/infraestrutura/testes';
 import type { FastifyInstance } from 'fastify';
-import { randomBytes } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest';
-import { esquemaAmbienteApi } from '../../ambiente.ts';
 import { comporApi } from '../index.ts';
-import { donoComRestaurante, ipUnico, Navegador } from './navegador.ts';
-
-const uuidv7 = () => gerarUuidV7(Date.now(), randomBytes(10));
-const HOSTS = { painel: 'painel.localhost', cardapio: 'cardapio.localhost' };
+import { abrirClienteNaMesa, ambienteDeTeste, enviarComChave, HOSTS, uuidv7 } from './mesa-apoio.ts';
+import { ipUnico, Navegador } from './navegador.ts';
 
 function comoAdmin(texto: string, valores: unknown[]) {
   return consultarComUrl<Record<string, unknown>>(inject('bancoDeTeste').urlAdmin, texto, valores);
@@ -34,23 +20,7 @@ describe('pedido pela API da mesa', () => {
   let servidor: FastifyInstance;
 
   beforeAll(async () => {
-    servidor = comporApi(
-      esquemaAmbienteApi.parse({
-        NODE_ENV: 'test',
-        APP_ENV: 'local',
-        PORTA_API: '3000',
-        URL_BANCO_API: inject('bancoDeTeste').urlApi,
-        URL_REDIS: inject('urlRedisDeTeste'),
-        DOMINIO_CARDAPIO: HOSTS.cardapio,
-        DOMINIO_PAINEL: HOSTS.painel,
-        DOMINIO_ADMIN: 'admin.localhost',
-        URL_PAINEL: 'http://painel.localhost:5173',
-        CHAVE_CIFRA_TOTP: Buffer.alloc(32, 7).toString('base64'),
-        CHAVE_SESSAO_MESA: 'mesa-teste-mesa-teste-mesa-teste-mesa',
-        ...VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE,
-        ...VARIAVEIS_DO_MERCADO_PAGO_DE_TESTE,
-      }),
-    );
+    servidor = comporApi(ambienteDeTeste());
     await servidor.ready();
   });
 
@@ -58,52 +28,10 @@ describe('pedido pela API da mesa', () => {
     await servidor.close();
   });
 
-  async function clienteNaMesa(nome: string) {
-    const dono = await donoComRestaurante(servidor, HOSTS.painel, nome);
-    const categoria = (
-      await dono.navegador.pedir('POST', CARDAPIO.categorias, { nome: 'Principais' })
-    ).json<CategoriaNoPainel>();
-    const novoPrato = async (nomeDoPrato: string, precoCentavos: number) =>
-      (
-        await dono.navegador.pedir('POST', CARDAPIO.pratos, {
-          categoriaId: categoria.id,
-          nome: nomeDoPrato,
-          descricao: '',
-          precoCentavos,
-          disponivel: true,
-          destaque: false,
-        })
-      ).json<PratoNoPainel>();
-    const picanha = await novoPrato('Picanha', 8900);
-    const suco = await novoPrato('Suco', 1200);
-    await dono.navegador.pedir('POST', MESAS.mesas, { numero: 4, nome: null, area: null });
-    const link = new URL(
-      (await dono.navegador.pedir('GET', MESAS.mesas)).json<RespostaMesasDoPainel>().mesas[0]?.link ?? '',
-    );
-    const cliente = new Navegador(servidor, HOSTS.cardapio, ipUnico());
-    await cliente.pedir(
-      'GET',
-      `${link.pathname.replace(/^\/([^/]+)\/mesa\//, '/api/v1/cardapios/$1/mesa/')}${link.search}`,
-    );
-    const itens = [
-      { pratoId: picanha.id, quantidade: 2, observacao: 'ao ponto' },
-      { pratoId: suco.id, quantidade: 1, observacao: '' },
-    ];
-    return { dono, cliente, picanha, suco, itens, slug: dono.slug };
-  }
+  const clienteNaMesa = (nome: string) => abrirClienteNaMesa(servidor, nome);
 
   const enviar = (cliente: Navegador, corpo: object, chave: string | null = uuidv7()) =>
-    servidor.inject({
-      method: 'POST',
-      url: PEDIDO.pedidos,
-      remoteAddress: cliente.ip,
-      headers: {
-        host: HOSTS.cardapio,
-        cookie: [...cliente.cookies].map(([nome, valor]) => `${nome}=${valor}`).join('; '),
-        ...(chave === null ? {} : { 'idempotency-key': chave }),
-      },
-      payload: corpo,
-    });
+    enviarComChave(servidor, cliente, PEDIDO.pedidos, corpo, chave);
 
   it('cria o pedido com preço do servidor; o reenvio com a mesma chave devolve o mesmo pedido', async () => {
     const { cliente, itens } = await clienteNaMesa('Pedido feliz');
