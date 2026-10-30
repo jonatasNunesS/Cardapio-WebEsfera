@@ -1,3 +1,4 @@
+export { assinaturas, cobrancas, eventosPagamento } from './cobranca.ts';
 export { categorias, pratos } from './cardapio.ts';
 export { midias } from './midias.ts';
 export { auditoria, caixaSaida } from './eventos.ts';

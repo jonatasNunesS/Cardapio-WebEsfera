@@ -12,7 +12,9 @@ export const restaurantes = pgTable('restaurantes', {
     .notNull()
     .default('teste'),
   fusoHorario: text('fuso_horario').notNull().default('America/Sao_Paulo'),
-  testeTerminaEm: momento('teste_termina_em'),
+  testeTerminaEm: momento('teste_termina_em')
+    .notNull()
+    .default(sql`now() + interval '10 days'`),
   versaoCardapio: bigint('versao_cardapio', { mode: 'number' }).notNull().default(1),
   criadoEm: momento('criado_em').notNull().defaultNow(),
   atualizadoEm: momento('atualizado_em').notNull().defaultNow(),

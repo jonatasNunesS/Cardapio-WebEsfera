@@ -9,13 +9,22 @@ import type { FastifyInstance } from 'fastify';
 import type { AmbienteApi } from '../ambiente.ts';
 import { construirServidor } from '../servidor.ts';
 import { comporCardapio } from './cardapio.ts';
+import { comporCobranca } from './cobranca.ts';
 import { comporPainelDeFilas } from './filas.ts';
 import { comporIdentidade } from './identidade.ts';
 import { comporMesas } from './mesas.ts';
 import { comporMidia } from './midia.ts';
 
-export function comporApi(ambiente: AmbienteApi): FastifyInstance {
-  const logger = criarLogger({ app: 'api', nivel: ambiente.NODE_ENV === 'test' ? 'silent' : 'info' });
+export interface OpcoesDaComposicao {
+  readonly destinoDoLog?: Parameters<typeof criarLogger>[0]['destino'];
+}
+
+export function comporApi(ambiente: AmbienteApi, opcoes: OpcoesDaComposicao = {}): FastifyInstance {
+  const logger = criarLogger({
+    app: 'api',
+    nivel: ambiente.NODE_ENV === 'test' && opcoes.destinoDoLog === undefined ? 'silent' : 'info',
+    ...(opcoes.destinoDoLog === undefined ? {} : { destino: opcoes.destinoDoLog }),
+  });
   definirLoggerPadrao(logger);
   const banco = criarBanco({
     runtime: { url: ambiente.URL_BANCO_API, nomeAplicacao: 'cardapio-api' },
@@ -25,6 +34,7 @@ export function comporApi(ambiente: AmbienteApi): FastifyInstance {
   const redis = criarRedis(ambiente.URL_REDIS, relatorDeErrosSentry);
   const painelDeFilas = comporPainelDeFilas(ambiente.URL_REDIS, relatorDeErrosSentry);
   const armazenamento = armazenamentoDoAmbiente(ambiente);
+  const cobranca = comporCobranca(ambiente, banco, redis, relatorDeErrosSentry);
   const servidor = construirServidor({
     logger,
     ambiente: ambiente.APP_ENV,
@@ -44,11 +54,13 @@ export function comporApi(ambiente: AmbienteApi): FastifyInstance {
         hostPublico: ambiente.DOMINIO_CARDAPIO,
       },
       mesas: comporMesas(ambiente, banco, redis, relatorDeErrosSentry),
+      cobranca: cobranca.opcoes,
     },
   });
   servidor.addHook('onClose', async () => {
     redis.disconnect();
     armazenamento.encerrar();
+    await cobranca.encerrar();
     await painelDeFilas.encerrar();
     await banco.encerrar();
   });

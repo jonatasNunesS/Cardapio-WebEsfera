@@ -7,7 +7,12 @@ export type RespostaDaApi<T> =
   | { readonly ok: false; readonly status: number; readonly problema: ProblemaDaApi };
 
 export interface ClienteDaApi {
-  pedir<T>(metodo: Metodo, rota: string, corpo?: unknown): Promise<RespostaDaApi<T>>;
+  pedir<T>(
+    metodo: Metodo,
+    rota: string,
+    corpo?: unknown,
+    extras?: Readonly<Record<string, string>>,
+  ): Promise<RespostaDaApi<T>>;
 }
 
 type Buscar = (endereco: string, opcoes: RequestInit) => Promise<Response>;
@@ -34,9 +39,18 @@ export function criarClienteDaApi(
     return token;
   };
 
-  async function enviar(metodo: Metodo, rota: string, corpo: unknown, renovar: boolean): Promise<Response> {
+  async function enviar(
+    metodo: Metodo,
+    rota: string,
+    corpo: unknown,
+    renovar: boolean,
+    extras: Readonly<Record<string, string>>,
+  ): Promise<Response> {
     const escrita = metodo !== 'GET';
-    const cabecalhos: Record<string, string> = escrita ? { [CABECALHO_CSRF]: await obterToken(renovar) } : {};
+    const cabecalhos: Record<string, string> = {
+      ...extras,
+      ...(escrita ? { [CABECALHO_CSRF]: await obterToken(renovar) } : {}),
+    };
     if (corpo !== undefined) {
       cabecalhos['content-type'] = 'application/json';
     }
@@ -49,14 +63,19 @@ export function criarClienteDaApi(
   }
 
   return {
-    async pedir<T>(metodo: Metodo, rota: string, corpo?: unknown): Promise<RespostaDaApi<T>> {
-      let resposta = await enviar(metodo, rota, corpo, false);
+    async pedir<T>(
+      metodo: Metodo,
+      rota: string,
+      corpo?: unknown,
+      extras: Readonly<Record<string, string>> = {},
+    ): Promise<RespostaDaApi<T>> {
+      let resposta = await enviar(metodo, rota, corpo, false, extras);
       let conteudo = await lerCorpo(resposta);
       if (
         resposta.status === 403 &&
         (conteudo as ProblemaDaApi | undefined)?.codigo === CODIGO_DE_CSRF_INVALIDO
       ) {
-        resposta = await enviar(metodo, rota, corpo, true);
+        resposta = await enviar(metodo, rota, corpo, true, extras);
         conteudo = await lerCorpo(resposta);
       }
       return resposta.ok

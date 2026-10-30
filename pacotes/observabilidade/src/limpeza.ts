@@ -15,7 +15,7 @@ const CHAVES_SENSIVEIS: ReadonlySet<string> = new Set([
 ]);
 
 const PADRAO_DE_CHAVE_SENSIVEL =
-  /senha|token|segredo|totp|csrf|cookie|email|verificacao|recuperacao|otpauth/i;
+  /senha|token|segredo|secret|signature|totp|csrf|cookie|email|verificacao|recuperacao|otpauth/i;
 
 function ehChaveSensivel(chave: string): boolean {
   return CHAVES_SENSIVEIS.has(chave.toLowerCase()) || PADRAO_DE_CHAVE_SENSIVEL.test(chave);

@@ -10,9 +10,13 @@ export interface Agendamento {
   readonly aCadaMs: number;
 }
 
+const DIA_EM_MS = 24 * 60 * 60_000;
+
 export const AGENDAMENTOS: readonly Agendamento[] = [
   { nome: 'publicar-caixa-saida', aCadaMs: 1000 },
   { nome: 'expirar-sessoes-mesa', aCadaMs: 5 * 60_000 },
+  { nome: 'conciliar-cobrancas', aCadaMs: DIA_EM_MS },
+  { nome: 'aplicar-inadimplencia', aCadaMs: DIA_EM_MS },
 ];
 
 export interface OpcoesDosAgendamentos {

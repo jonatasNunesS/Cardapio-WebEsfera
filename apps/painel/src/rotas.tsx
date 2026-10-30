@@ -8,6 +8,7 @@ import { EsqueciASenha } from './telas/EsqueciASenha.tsx';
 import { ComRestaurante, SemRestaurante } from './telas/ExigeSessao.tsx';
 import { Mesas } from './telas/Mesas.tsx';
 import { Personalizacao } from './telas/Personalizacao.tsx';
+import { Plano } from './telas/Plano.tsx';
 import { RedefinirSenha } from './telas/RedefinirSenha.tsx';
 
 export function criarRotas() {
@@ -36,6 +37,10 @@ export function criarRotas() {
     {
       path: '/mesas',
       element: <ComRestaurante>{() => <Mesas />}</ComRestaurante>,
+    },
+    {
+      path: '/plano',
+      element: <ComRestaurante>{() => <Plano />}</ComRestaurante>,
     },
     {
       path: '/personalizacao',

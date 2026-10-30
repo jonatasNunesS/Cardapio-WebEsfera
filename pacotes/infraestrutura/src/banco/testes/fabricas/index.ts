@@ -2,9 +2,11 @@ import { sql } from 'drizzle-orm';
 import { v7 as uuidv7 } from 'uuid';
 import type { Transacao } from '../../banco.ts';
 import {
+  assinaturas,
   auditoria,
   caixaSaida,
   categorias,
+  cobrancas,
   historicoNumerosMesa,
   historicoSlugs,
   horarios,
@@ -49,6 +51,26 @@ async function criarPrato(transacao: Transacao, restauranteId: string, categoria
   await transacao
     .insert(pratos)
     .values({ id, restauranteId, categoriaId, nome: 'Prato de fábrica', precoCentavos: 1000, ordem: 1024 });
+  return id;
+}
+
+async function criarPlanoId(transacao: Transacao): Promise<string> {
+  const resultado = await transacao.execute<{ id: string }>(
+    sql`SELECT id FROM planos WHERE codigo = 'basico'`,
+  );
+  return resultado.rows[0]?.id ?? '';
+}
+
+async function criarAssinatura(transacao: Transacao, restauranteId: string): Promise<string> {
+  const id = uuidv7();
+  await transacao.insert(assinaturas).values({
+    id,
+    restauranteId,
+    planoId: await criarPlanoId(transacao),
+    mpAssinaturaId: `fabrica-${sufixoUnico()}`,
+    situacao: 'cancelada',
+    initPoint: 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_id=fabrica',
+  });
   return id;
 }
 
@@ -183,6 +205,28 @@ export const FABRICAS: readonly Fabrica[] = [
         tipoConteudo: 'image/jpeg',
         tamanhoBytes: 1000,
         caminhoOriginal: `r/${restauranteId}/midias/${id}/original`,
+      });
+    },
+  },
+  {
+    tabela: 'assinaturas',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      await criarAssinatura(transacao, restauranteId);
+    },
+  },
+  {
+    tabela: 'cobrancas',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      const assinaturaId = await criarAssinatura(transacao, restauranteId);
+      await transacao.insert(cobrancas).values({
+        restauranteId,
+        assinaturaId,
+        mpCobrancaId: `fabrica-${sufixoUnico()}`,
+        valorCentavos: 9900,
+        situacao: 'agendada',
+        venceEm: new Date(),
       });
     },
   },

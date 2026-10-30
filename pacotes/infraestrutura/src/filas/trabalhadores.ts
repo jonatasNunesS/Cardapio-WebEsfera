@@ -19,6 +19,8 @@ export const JOBS_EM_TRANSACOES_CURTAS: ReadonlySet<NomeDoJob> = new Set([
   'processar-midia',
   'descartar-midia',
   'apagar-original-midia',
+  'processar-evento-pagamento',
+  'conciliar-assinatura',
 ]);
 
 export interface JobNaFila {

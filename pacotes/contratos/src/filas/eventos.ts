@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const SITUACOES_DO_RESTAURANTE = ['teste', 'ativo', 'carencia', 'inadimplente', 'cancelado'] as const;
+
 export const EVENTOS = {
   SessaoMesaExpirada: z.strictObject({
     versao: z.literal(1),
@@ -14,6 +16,16 @@ export const EVENTOS = {
   MidiaDescartada: z.strictObject({
     versao: z.literal(1),
     midiaId: z.uuid(),
+  }),
+  AssinaturaAlterada: z.strictObject({
+    versao: z.literal(1),
+    assinaturaId: z.uuid(),
+    situacao: z.enum(['pendente', 'autorizada', 'pausada', 'cancelada']),
+  }),
+  RestauranteSituacaoAlterada: z.strictObject({
+    versao: z.literal(1),
+    de: z.enum(SITUACOES_DO_RESTAURANTE),
+    para: z.enum(SITUACOES_DO_RESTAURANTE),
   }),
 } as const;
 

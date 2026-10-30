@@ -154,10 +154,11 @@ confere que as permissões são exatamente as da lista, nem uma a mais.
 "para depois" ou que perdeu o uso é revogada por migração, e a lista e o teste
 4b mudam junto. Quem precisar de uma permissão nova justifica no ADR do módulo.
 
-| Tabela         | Permissões                                    | Motivo                                                                                   |
-| -------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `caixa_saida`  | `SELECT`, `UPDATE (publicado_em, tentativas)` | O publicador do outbox lê os pendentes de todos e marca.                                 |
-| `sessoes_mesa` | `SELECT`                                      | A rotina de expiração lista as vencidas de todos; o fechamento é por `comRestaurante()`. |
+| Tabela              | Permissões                                                                              | Motivo                                                                                              |
+| ------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `caixa_saida`       | `SELECT`, `UPDATE (publicado_em, tentativas)`                                           | O publicador do outbox lê os pendentes de todos e marca.                                            |
+| `sessoes_mesa`      | `SELECT`                                                                                | A rotina de expiração lista as vencidas de todos; o fechamento é por `comRestaurante()`.            |
+| `eventos_pagamento` | `SELECT`, `UPDATE (em_processamento_em, processado_em, tentativas, ultimo_erro_codigo)` | O aviso do Mercado Pago chega sem restaurante; o worker lê e marca o processamento (M10, ADR 0014). |
 
 Histórico: o M02 concedeu `UPDATE (fechada_em)` em `sessoes_mesa` para a
 rotina de expiração. No M05 o fechamento e o evento `SessaoMesaExpirada` na
@@ -167,9 +168,12 @@ transação (decisão do John, ADR 0009), e a permissão ficou sem uso. A migra�
 `sessoes_mesa_sistema` continua `FOR ALL`: o teste 1b exige `USING` e
 `WITH CHECK` em toda política, e quem limita o que o papel faz é a permissão.
 
-Próximas, já combinadas: `eventos_pagamento`, `assinaturas` e `cobrancas`
-(M10). Nunca `pedidos`, `itens_pedido`, `chamados` ou cardápio. Para agir num
-restaurante específico, o worker usa `comRestaurante()`.
+O M10 somou só `eventos_pagamento`. `assinaturas` e `cobrancas`, que estavam
+previstas aqui, não foram precisas: a rotina lista ids por
+`app.listar_restaurantes_para_cobranca` e lê cada restaurante com
+`comRestaurante()` (ADR 0014). Nunca `pedidos`, `itens_pedido`, `chamados` ou
+cardápio. Para agir num restaurante específico, o worker usa
+`comRestaurante()`.
 
 ### Padrão das tabelas e políticas
 
@@ -218,7 +222,11 @@ EXECUTE` só ao papel que precisa. Devolvem só ids e situação.
   funções de identidade, o M06 somou `app.resolver_cardapio(p_slug)`, que
   resolve o slug público do cardápio (ADR 0010), e o M08 somou
   `app.admin_listar_mesas(p_administrador_id, p_slug)`, a leitura somente
-  leitura das mesas pelo admin, que grava a consulta na auditoria.
+  leitura das mesas pelo admin, que grava a consulta na auditoria. O M10
+  somou `app.registrar_evento_pagamento` (`app_runtime`: o aviso do Mercado
+  Pago grava o evento antes de existir restaurante) e
+  `app.listar_restaurantes_para_cobranca` (`app_sistema`: só ids, em
+  páginas, para as rotinas diárias), as duas no ADR 0014.
 
 Processo para criar uma função privilegiada nova:
 

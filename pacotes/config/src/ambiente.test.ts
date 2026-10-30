@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
-import { carregarAmbiente } from './ambiente.ts';
+import { carregarAmbiente, exigirMercadoPagoReal, URL_DA_API_DO_MERCADO_PAGO } from './ambiente.ts';
 
 const esquema = z.object({
   URL_BANCO: z.url(),
@@ -68,5 +68,20 @@ describe('carregarAmbiente', () => {
 
     expect(mensagem).toContain('URL_BANCO: ausente');
     expect(mensagem).toContain('URL_REDIS: ausente');
+  });
+});
+
+describe('Mercado Pago por ambiente', () => {
+  it('só o ambiente local aponta para outro endereço (o Mercado Pago falso)', () => {
+    expect(exigirMercadoPagoReal({ APP_ENV: 'local', URL_MERCADO_PAGO: 'http://127.0.0.1:3999' })).toBe(true);
+    expect(exigirMercadoPagoReal({ APP_ENV: 'producao', URL_MERCADO_PAGO: URL_DA_API_DO_MERCADO_PAGO })).toBe(
+      true,
+    );
+    expect(exigirMercadoPagoReal({ APP_ENV: 'producao', URL_MERCADO_PAGO: 'http://127.0.0.1:3999' })).toBe(
+      false,
+    );
+    expect(exigirMercadoPagoReal({ APP_ENV: 'preview', URL_MERCADO_PAGO: 'https://falso.exemplo.com' })).toBe(
+      false,
+    );
   });
 });

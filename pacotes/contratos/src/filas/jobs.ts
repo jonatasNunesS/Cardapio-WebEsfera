@@ -20,6 +20,13 @@ export const JOBS = {
   'processar-midia': { fila: 'midia', esquema: vindoDoEvento('MidiaEnviada') },
   'descartar-midia': { fila: 'midia', esquema: vindoDoEvento('MidiaDescartada') },
   'apagar-original-midia': { fila: 'midia', esquema: z.strictObject({ ...envelope, midiaId: z.uuid() }) },
+  'processar-evento-pagamento': {
+    fila: 'pagamentos',
+    esquema: z.strictObject({ ...envelope, eventoId: z.uuid() }),
+  },
+  'conciliar-assinatura': { fila: 'pagamentos', esquema: z.strictObject({ ...envelope }) },
+  'conciliar-cobrancas': { fila: 'rotinas', esquema: z.strictObject({ ...envelope }) },
+  'aplicar-inadimplencia': { fila: 'rotinas', esquema: z.strictObject({ ...envelope }) },
 } as const satisfies Record<string, { fila: NomeDaFila; esquema: z.ZodType }>;
 
 export type NomeDoJob = keyof typeof JOBS;

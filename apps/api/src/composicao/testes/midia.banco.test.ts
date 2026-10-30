@@ -9,7 +9,11 @@ import {
   type RespostaMidiasDoPrato,
   type RespostaPedidoDeEnvio,
 } from '@cardapio/contratos';
-import { consultarComUrl, VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE } from '@cardapio/infraestrutura/testes';
+import {
+  consultarComUrl,
+  VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE,
+  VARIAVEIS_DO_MERCADO_PAGO_DE_TESTE,
+} from '@cardapio/infraestrutura/testes';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, inject, it } from 'vitest';
 import { esquemaAmbienteApi } from '../../ambiente.ts';
@@ -41,6 +45,7 @@ describe('mídia pela API', () => {
         CHAVE_CIFRA_TOTP: Buffer.alloc(32, 7).toString('base64'),
         CHAVE_SESSAO_MESA: 'mesa-teste-mesa-teste-mesa-teste-mesa',
         ...VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE,
+        ...VARIAVEIS_DO_MERCADO_PAGO_DE_TESTE,
       }),
     );
     await servidor.ready();

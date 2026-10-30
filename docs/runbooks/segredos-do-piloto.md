@@ -10,6 +10,8 @@ entra no repositório nem no `.env.exemplo` com valor real. Os valores do
 | `CHAVE_CIFRA_TOTP`                             | API                   | 32 bytes em base64. Trocar exige migrar os segredos TOTP. [Runbook do admin](admin.md)                             |
 | Senhas dos papéis do banco                     | API, worker, migração | Três senhas fortes, uma por papel. [Runbook do banco](banco.md)                                                    |
 | `CHAVE_ARMAZENAMENTO`, `SEGREDO_ARMAZENAMENTO` | API, worker           | Token de API do R2 com acesso só aos dois buckets. [Runbook de mídia](midia.md)                                    |
+| `MP_ACCESS_TOKEN`                              | API, worker           | Access token da aplicação no Mercado Pago, um por ambiente. [Runbook de pagamentos](pagamentos.md)                 |
+| `MP_WEBHOOK_SECRET`                            | API                   | Assinatura secreta das notificações, do painel do Mercado Pago. [Runbook de pagamentos](pagamentos.md)             |
 | `SENTRY_DSN_BACKEND`, `SENTRY_DSN_FRONTEND`    | API, worker, apps     | Do projeto no Sentry. `SENTRY_AUTH_TOKEN` fica só nos segredos do CI. [Runbook do Sentry](sentry-alertas.md)       |
 
 Gerar uma chave aleatória:

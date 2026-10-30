@@ -52,6 +52,19 @@ describe('cliente da API', () => {
     expect(chamadas.map((chamada) => chamada.endereco)).toEqual(['/csrf', '/sessao', '/csrf', '/sessao']);
   });
 
+  it('cabeçalhos extras, como a chave de idempotência, seguem junto e sobrevivem à renovação do CSRF', async () => {
+    const { chamadas, buscar } = servidorFalso([
+      () => Response.json({ codigo: 'HTTP_CSRF_INVALIDO' }, { status: 403 }),
+      () => Response.json({ linkDePagamento: 'https://www.mercadopago.com.br/x' }, { status: 201 }),
+    ]);
+    await criarClienteDaApi('/csrf', buscar).pedir('POST', '/plano', {}, { 'idempotency-key': 'k1' });
+
+    expect(chamadas.filter((chamada) => chamada.endereco === '/plano').map((c) => c.opcoes.headers)).toEqual([
+      { 'idempotency-key': 'k1', 'x-csrf-token': 't1', 'content-type': 'application/json' },
+      { 'idempotency-key': 'k1', 'x-csrf-token': 't3', 'content-type': 'application/json' },
+    ]);
+  });
+
   it('erro vira o Problem Details da API', async () => {
     const problema = {
       status: 401,

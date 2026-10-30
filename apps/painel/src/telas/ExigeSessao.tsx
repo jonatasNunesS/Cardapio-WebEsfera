@@ -57,6 +57,7 @@ export function ComRestaurante({
           <Link to="/cardapio">Cardápio</Link>
           <Link to="/mesas">Mesas e QR Codes</Link>
           <Link to="/personalizacao">Personalização</Link>
+          <Link to="/plano">Plano e cobrança</Link>
         </nav>
         <BotaoSair />
       </header>

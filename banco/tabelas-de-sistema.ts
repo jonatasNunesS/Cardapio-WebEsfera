@@ -16,4 +16,10 @@ export const TABELAS_DE_SISTEMA: readonly TabelaDeSistema[] = [
     motivo:
       'A rotina de expiração lista as sessões vencidas de todos os restaurantes; o fechamento é feito por restaurante, com comRestaurante().',
   },
+  {
+    tabela: 'eventos_pagamento',
+    permissoes: ['SELECT', 'UPDATE (em_processamento_em, processado_em, tentativas, ultimo_erro_codigo)'],
+    motivo:
+      'O aviso do Mercado Pago chega sem restaurante; o worker lê o evento e marca o processamento. A gravação é só pela função app.registrar_evento_pagamento.',
+  },
 ];

@@ -3,6 +3,8 @@ import csrf from '@fastify/csrf-protection';
 import rateLimit, { type RateLimitPluginOptions } from '@fastify/rate-limit';
 import { CABECALHO_CSRF } from '@cardapio/contratos';
 import type {
+  DependenciasDaAssinatura,
+  DependenciasDoAviso,
   DependenciasDaMidia,
   DependenciasDaSessaoDeMesa,
   DependenciasDasMesas,
@@ -14,6 +16,8 @@ import type { FastifyInstance } from 'fastify';
 import { COOKIES, OPCOES_DE_COOKIE } from '../http/cookies.ts';
 import { apenasNoHost } from './sessao.ts';
 import { registrarRotasDoAdmin } from '../rotas/admin.ts';
+import { registrarAvisoDePagamento } from '../rotas/aviso-de-pagamento.ts';
+import { registrarCobrancaNoPainel } from '../rotas/cobranca-painel.ts';
 import { registrarCardapioNoPainel } from '../rotas/cardapio-painel.ts';
 import { registrarCardapioPublico } from '../rotas/cardapio-publico.ts';
 import { registrarMesaPublica } from '../rotas/mesa-publica.ts';
@@ -31,6 +35,12 @@ export interface OpcoesDeIdentidade {
   readonly painelDeFilas?: Pick<OpcoesDoPainelDeFilas, 'adaptadores' | 'aoFalhar'>;
   readonly cardapio?: OpcoesDoCardapio;
   readonly mesas?: OpcoesDasMesas;
+  readonly cobranca?: OpcoesDaCobranca;
+}
+
+export interface OpcoesDaCobranca {
+  readonly assinatura: DependenciasDaAssinatura;
+  readonly aviso: DependenciasDoAviso;
 }
 
 export interface OpcoesDasMesas {
@@ -77,6 +87,19 @@ function registrarMesas(escopo: FastifyInstance, opcoes: OpcoesDeIdentidade, mes
   registrarMesaPublica(escopo, mesas.sessao, mesas.hostPublico);
 }
 
+function registrarCobranca(
+  escopo: FastifyInstance,
+  opcoes: OpcoesDeIdentidade,
+  cobranca: OpcoesDaCobranca,
+): void {
+  void escopo.register((painel, _opcoes, pronto) => {
+    painel.addHook('onRequest', apenasNoHost(opcoes.hosts.painel));
+    registrarCobrancaNoPainel(painel, opcoes.dependencias, cobranca.assinatura);
+    pronto();
+  });
+  registrarAvisoDePagamento(escopo, cobranca.aviso, opcoes.hosts.painel);
+}
+
 export function registrarIdentidade(servidor: FastifyInstance, opcoes: OpcoesDeIdentidade): void {
   void servidor.register(async (escopo) => {
     escopo.decorateRequest('sessaoValida', null);
@@ -105,6 +128,9 @@ export function registrarIdentidade(servidor: FastifyInstance, opcoes: OpcoesDeI
     }
     if (opcoes.mesas !== undefined) {
       registrarMesas(escopo, opcoes, opcoes.mesas);
+    }
+    if (opcoes.cobranca !== undefined) {
+      registrarCobranca(escopo, opcoes, opcoes.cobranca);
     }
     if (opcoes.painelDeFilas !== undefined) {
       registrarPainelDeFilas(escopo, {

@@ -20,6 +20,7 @@ import {
   consultarComUrl,
   criarAmostras,
   VARIAVEIS_DO_ARMAZENAMENTO_DE_TESTE as VARIAVEIS,
+  VARIAVEIS_DO_MERCADO_PAGO_DE_TESTE,
   type Amostras,
 } from '@cardapio/infraestrutura/testes';
 import { randomUUID } from 'node:crypto';
@@ -70,6 +71,7 @@ describe('mídia no worker (Postgres, Garage e FFmpeg reais)', { timeout: 120_00
       URL_BANCO_WORKER: inject('bancoDeTeste').urlWorker,
       URL_REDIS: 'redis://127.0.0.1:6379/15',
       ...VARIAVEIS,
+      ...VARIAVEIS_DO_MERCADO_PAGO_DE_TESTE,
     });
     banco = criarBanco({
       runtime: { url: ambiente.URL_BANCO_WORKER, nomeAplicacao: 'teste-worker-midia' },
