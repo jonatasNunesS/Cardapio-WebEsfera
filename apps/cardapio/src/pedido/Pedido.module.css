@@ -1,0 +1,69 @@
+.lista {
+  display: grid;
+  gap: var(--espaco-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linha {
+  display: grid;
+  gap: var(--espaco-2);
+  padding-block-end: var(--espaco-4);
+  border-block-end: var(--borda-fina) solid var(--cor-borda);
+}
+
+.topo {
+  display: flex;
+  gap: var(--espaco-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nome {
+  margin: 0;
+  font-weight: var(--peso-medio);
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 var(--espaco-3);
+  font-weight: var(--peso-forte);
+}
+
+.nota {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-2);
+}
+
+.status {
+  display: grid;
+  gap: var(--espaco-4);
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-7);
+}
+
+.titulo {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-5);
+}
+
+.passos {
+  display: grid;
+  gap: var(--espaco-3);
+  margin: 0;
+  padding-inline-start: var(--espaco-5);
+}
+
+.atual {
+  font-weight: var(--peso-forte);
+}
+
+.acoes {
+  display: grid;
+  gap: var(--espaco-3);
+}

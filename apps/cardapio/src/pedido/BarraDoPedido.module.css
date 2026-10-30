@@ -1,0 +1,18 @@
+.barra {
+  position: fixed;
+  inset-block-end: var(--espaco-4);
+  inset-inline: var(--espaco-4);
+  display: flex;
+  gap: var(--espaco-2);
+  align-items: center;
+  justify-content: center;
+  max-width: 36rem;
+  min-height: 48px;
+  margin: 0 auto;
+  border-radius: var(--raio-2);
+  background: var(--cor-marca);
+  color: var(--cor-sobre-marca);
+  font-weight: var(--peso-forte);
+  text-decoration: none;
+  box-shadow: var(--sombra);
+}

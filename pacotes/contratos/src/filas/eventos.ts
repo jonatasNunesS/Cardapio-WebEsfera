@@ -17,6 +17,18 @@ export const EVENTOS = {
     versao: z.literal(1),
     midiaId: z.uuid(),
   }),
+  PedidoCriado: z.strictObject({
+    versao: z.literal(1),
+    pedidoId: z.uuid(),
+    numero: z.number().int().positive(),
+    mesaId: z.uuid(),
+  }),
+  PedidoCancelado: z.strictObject({
+    versao: z.literal(1),
+    pedidoId: z.uuid(),
+    numero: z.number().int().positive(),
+    mesaId: z.uuid(),
+  }),
   AssinaturaAlterada: z.strictObject({
     versao: z.literal(1),
     assinaturaId: z.uuid(),

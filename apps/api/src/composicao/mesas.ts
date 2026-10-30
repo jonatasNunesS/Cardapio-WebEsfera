@@ -8,6 +8,8 @@ import {
   criarSessoesDeMesa,
   geradorDeCodigoDeMesa,
   criarRepositorioDeAssinaturas,
+  criarRepositorioDePedidos,
+  geradorDeSegredos,
   type AcessoAoBanco,
   type criarRedis,
 } from '@cardapio/infraestrutura';
@@ -44,6 +46,11 @@ export function comporMesas(
       relogio: { agora: () => new Date() },
     },
     admin: { leitura: criarLeituraDeMesasDoAdmin(banco), urlDoCardapio },
+    pedidos: {
+      pedidos: criarRepositorioDePedidos(banco),
+      resumidor: geradorDeSegredos,
+      relogio: { agora: () => new Date() },
+    },
     hostPublico: ambiente.DOMINIO_CARDAPIO,
     chaveDaSessaoDeMesa: ambiente.CHAVE_SESSAO_MESA,
   };

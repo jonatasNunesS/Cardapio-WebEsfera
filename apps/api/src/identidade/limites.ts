@@ -10,4 +10,6 @@ export const LIMITES = {
   cartoesDeQr: { max: 10, timeWindow: '1 minute' },
   avisoDePagamento: { max: 120, timeWindow: '1 minute' },
   escolherPlano: { max: 10, timeWindow: '1 minute' },
+  criarPedido: { max: 30, timeWindow: '1 minute' },
+  consultarPedido: { max: 120, timeWindow: '1 minute' },
 } as const;

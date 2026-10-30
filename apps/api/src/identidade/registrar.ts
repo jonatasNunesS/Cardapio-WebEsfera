@@ -3,6 +3,7 @@ import csrf from '@fastify/csrf-protection';
 import rateLimit, { type RateLimitPluginOptions } from '@fastify/rate-limit';
 import { CABECALHO_CSRF } from '@cardapio/contratos';
 import type {
+  DependenciasDosPedidos,
   DependenciasDaAssinatura,
   DependenciasDoAviso,
   DependenciasDaMidia,
@@ -21,6 +22,7 @@ import { registrarCobrancaNoPainel } from '../rotas/cobranca-painel.ts';
 import { registrarCardapioNoPainel } from '../rotas/cardapio-painel.ts';
 import { registrarCardapioPublico } from '../rotas/cardapio-publico.ts';
 import { registrarMesaPublica } from '../rotas/mesa-publica.ts';
+import { registrarPedidosDaMesa } from '../rotas/pedidos-mesa.ts';
 import { registrarMesasNoAdmin } from '../rotas/mesas-admin.ts';
 import { registrarMesasNoPainel } from '../rotas/mesas-painel.ts';
 import { registrarMidiaNoPainel } from '../rotas/midia-painel.ts';
@@ -49,6 +51,7 @@ export interface OpcoesDasMesas {
   readonly admin: DependenciasDoAdminDeMesas;
   readonly hostPublico: string;
   readonly chaveDaSessaoDeMesa: string;
+  readonly pedidos?: DependenciasDosPedidos;
 }
 
 export interface OpcoesDoCardapio {
@@ -85,6 +88,9 @@ function registrarMesas(escopo: FastifyInstance, opcoes: OpcoesDeIdentidade, mes
     pronto();
   });
   registrarMesaPublica(escopo, mesas.sessao, mesas.hostPublico);
+  if (mesas.pedidos !== undefined) {
+    registrarPedidosDaMesa(escopo, mesas.pedidos, mesas.hostPublico);
+  }
 }
 
 function registrarCobranca(

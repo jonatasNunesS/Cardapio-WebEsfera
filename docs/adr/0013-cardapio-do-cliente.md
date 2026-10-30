@@ -91,6 +91,8 @@ numa função pura testada (`regras.ts`):
 
 ### Desempenho
 
+- Atualizado no M11 (ADR 0015): o SDK passa a baixar na primeira interação ou
+  com a página ociosa, fora da primeira carga.
 - O SDK do Sentry é baixado por `import()` só depois que o roteador termina o
   primeiro carregamento (o cardápio ou a tela de estado na tela) e a página
   pinta. Antes disso, erros entram numa fila e são enviados quando o SDK

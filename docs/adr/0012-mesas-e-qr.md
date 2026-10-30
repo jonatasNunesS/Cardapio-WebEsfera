@@ -72,6 +72,8 @@ código antigo não vai para histórico nenhum.
   `__Host-sessao_painel`, e o cookie de mesa nem chega ao host do painel. Há
   teste com o cookie copiado para o host do painel.
 - Trocar `CHAVE_SESSAO_MESA` invalida os cookies de mesa já emitidos.
+- Desde o M11 (ADR 0015), o valor assinado é `restauranteId:sessaoId`, para
+  o pedido abrir `comRestaurante()` sem função privilegiada nova.
 
 ### Limite de mesas pelo plano
 

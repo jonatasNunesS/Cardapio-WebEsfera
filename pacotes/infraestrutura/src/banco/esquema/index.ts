@@ -15,3 +15,4 @@ export { historicoNumerosMesa, mesas, sessoesMesa } from './mesas.ts';
 export { horarios, personalizacoes, type TextosDaPersonalizacao } from './personalizacao.ts';
 export { planos } from './planos.ts';
 export { historicoSlugs, restaurantes } from './restaurantes.ts';
+export { contadoresPedido, itensPedido, pedidos } from './pedidos.ts';

@@ -148,3 +148,16 @@ export async function semearRestaurante(
     painel,
   };
 }
+
+export async function esgotarPrato(painel: ClienteDoPainel, nome: string): Promise<void> {
+  const cardapio = (await painel.exigir('GET', '/api/v1/cardapio')) as {
+    categorias: { pratos: { id: string; nome: string; versao: number }[] }[];
+  };
+  const prato = cardapio.categorias
+    .flatMap((categoria) => categoria.pratos)
+    .find((item) => item.nome === nome);
+  await painel.exigir('PATCH', `/api/v1/cardapio/pratos/${prato?.id ?? ''}/situacao`, {
+    versao: prato?.versao,
+    disponivel: false,
+  });
+}

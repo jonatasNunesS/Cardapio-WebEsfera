@@ -6,6 +6,7 @@ import type { MesaPronta } from '../dados/contexto.ts';
 import { lembranca } from '../dados/rota-da-mesa.ts';
 import { configuracao, sentry } from '../observabilidade.ts';
 import { aquecerCache } from '../offline/aquecer.ts';
+import { BarraDoPedido } from '../pedido/BarraDoPedido.tsx';
 import { Abertura } from './Abertura.tsx';
 import estilos from './Mesa.module.css';
 import { TelaNeutra } from './TelaNeutra.tsx';
@@ -135,6 +136,7 @@ function MesaAberta({ carregada, codigo }: { readonly carregada: Pronta; readonl
         </div>
       )}
       <Outlet context={contexto} />
+      <BarraDoPedido contexto={contexto} />
     </ProvedorDeVideos>
   );
 }
