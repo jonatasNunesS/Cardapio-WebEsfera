@@ -7,6 +7,9 @@ import {
   caixaSaida,
   categorias,
   cobrancas,
+  contadoresPedido,
+  itensPedido,
+  pedidos,
   historicoNumerosMesa,
   historicoSlugs,
   horarios,
@@ -70,6 +73,27 @@ async function criarAssinatura(transacao: Transacao, restauranteId: string): Pro
     mpAssinaturaId: `fabrica-${sufixoUnico()}`,
     situacao: 'cancelada',
     initPoint: 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_id=fabrica',
+  });
+  return id;
+}
+
+async function criarPedido(transacao: Transacao, restauranteId: string): Promise<string> {
+  const mesaId = await criarMesa(transacao, restauranteId);
+  const sessaoMesaId = uuidv7();
+  await transacao
+    .insert(sessoesMesa)
+    .values({ id: sessaoMesaId, restauranteId, mesaId, expiraEm: new Date(Date.now() + 4 * 3600_000) });
+  const id = uuidv7();
+  proximoNumero += 1;
+  await transacao.insert(pedidos).values({
+    id,
+    restauranteId,
+    sessaoMesaId,
+    mesaId,
+    numero: proximoNumero,
+    totalCentavos: 1000,
+    chaveIdempotencia: uuidv7(),
+    hashConteudo: '0'.repeat(64),
   });
   return id;
 }
@@ -227,6 +251,43 @@ export const FABRICAS: readonly Fabrica[] = [
         valorCentavos: 9900,
         situacao: 'agendada',
         venceEm: new Date(),
+      });
+    },
+  },
+  {
+    tabela: 'contadores_pedido',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      await transacao
+        .insert(contadoresPedido)
+        .values({ restauranteId, ultimoNumero: 1 })
+        .onConflictDoUpdate({ target: contadoresPedido.restauranteId, set: { ultimoNumero: 2 } });
+    },
+  },
+  {
+    tabela: 'pedidos',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      await criarPedido(transacao, restauranteId);
+    },
+  },
+  {
+    tabela: 'itens_pedido',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      const pedidoId = await criarPedido(transacao, restauranteId);
+      const pratoId = await criarPrato(
+        transacao,
+        restauranteId,
+        await criarCategoria(transacao, restauranteId),
+      );
+      await transacao.insert(itensPedido).values({
+        restauranteId,
+        pedidoId,
+        pratoId,
+        nomeNoMomento: 'Prato de fábrica',
+        precoNoMomentoCentavos: 1000,
+        quantidade: 1,
       });
     },
   },
