@@ -7,3 +7,4 @@ export * from './personalizacao/index.ts';
 export * from './restaurantes/index.ts';
 export * from './filas/index.ts';
 export * from './midia/index.ts';
+export * from './cobranca/index.ts';
