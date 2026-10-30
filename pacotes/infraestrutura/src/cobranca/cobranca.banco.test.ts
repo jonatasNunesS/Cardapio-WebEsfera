@@ -240,6 +240,11 @@ describe('assinatura e cobrança no Postgres com o Mercado Pago falso', () => {
     expect(await situacao(id)).toBe('inadimplente');
     const codigo = mesa.tipo === 'ok' ? mesa.mesa.codigo : '';
     expect((await criarRepositorioMesas(api).resolverMesa(slug, 1, codigo)).situacao).toBe('valida');
+    const [cardapio] = await consultarComoAdmin<{ situacao: string }>(
+      'SELECT situacao FROM app.resolver_cardapio($1)',
+      [slug],
+    );
+    expect(cardapio?.situacao).toBe('valido');
 
     await falso.autorizar(mpId);
     const cobranca = await falso.cobrar(mpId, 'approved');

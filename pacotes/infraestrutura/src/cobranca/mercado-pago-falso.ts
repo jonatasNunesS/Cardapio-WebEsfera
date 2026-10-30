@@ -1,4 +1,4 @@
-import { randomBytes, randomUUID } from 'node:crypto';
+import { randomBytes, randomInt, randomUUID } from 'node:crypto';
 import { createServer, request, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { assinarAviso } from './verificador-de-avisos.ts';
 
@@ -103,7 +103,7 @@ export function criarMercadoPagoFalso(opcoes: OpcoesDoMercadoPagoFalso): Mercado
   const idempotencia = new Map<string, string>();
   const avisosEnviados: { topico: string; id: string; status: number }[] = [];
   let fora = false;
-  let proximaCobranca = 7_000_001;
+  let proximaCobranca = randomInt(1_000_000_000, 9_000_000_000);
 
   async function avisar(topico: string, id: string): Promise<void> {
     avisosEnviados.push({ topico, id, status: await enviarAviso(opcoes, topico, id) });
@@ -234,7 +234,7 @@ export function criarMercadoPagoFalso(opcoes: OpcoesDoMercadoPagoFalso): Mercado
         status: pagamento === 'approved' ? 'processed' : 'recycling',
         transaction_amount: assinatura?.auto_recurring.transaction_amount ?? 0,
         debit_date: vencimento.toISOString(),
-        payment: { id: id + 1_000_000, status: pagamento },
+        payment: { id: id + 1_000_000_000, status: pagamento },
       });
       await avisar(TOPICOS.cobranca, String(id));
       return String(id);

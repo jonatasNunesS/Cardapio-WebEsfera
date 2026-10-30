@@ -80,7 +80,7 @@ describe('adaptador HTTP do Mercado Pago', () => {
       id: paga,
       assinaturaId: criada.id,
       situacao: 'paga',
-      pagamentoId: String(Number(paga) + 1_000_000),
+      pagamentoId: String(Number(paga) + 1_000_000_000),
       valorCentavos: 9900,
       venceEm: new Date('2026-11-01T15:00:00Z'),
     });
