@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { limparBreadcrumb, limparEvento, limparSpan, mascararTexto } from './limpeza.ts';
+import { limparBreadcrumb, limparEvento, limparSpan, limparValor, mascararTexto, OCULTO } from './limpeza.ts';
 
 const RESTAURANTE_ID = '0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b';
 
@@ -125,6 +125,26 @@ describe('campos de identidade (M04)', () => {
 
     expect(limpo.message).toBe('Falhou: otpauth://[oculto]');
     expect(limpo.extra.link).toBe('https://painel.exemplo.com.br/redefinir-senha#[oculto]');
+  });
+});
+
+describe('campos do Mercado Pago (M10)', () => {
+  it('oculta token de acesso, segredo do webhook, x-signature e e-mail do pagador', () => {
+    const limpo = limparValor({
+      MP_ACCESS_TOKEN: 'APP_USR-123',
+      MP_WEBHOOK_SECRET: 'abc',
+      'x-signature': 'ts=1,v1=abc',
+      payer_email: 'dono@exemplo.com.br',
+      external_reference: '0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b',
+    });
+
+    expect(limpo).toEqual({
+      MP_ACCESS_TOKEN: OCULTO,
+      MP_WEBHOOK_SECRET: OCULTO,
+      'x-signature': OCULTO,
+      payer_email: OCULTO,
+      external_reference: '0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b',
+    });
   });
 });
 

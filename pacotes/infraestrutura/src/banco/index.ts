@@ -21,3 +21,9 @@ export { criarRepositorioDeMidias } from './midia/repositorio-de-midias.ts';
 export { criarRepositorioDeMesas } from './mesas/repositorio-de-mesas.ts';
 export { criarSessoesDeMesa } from './mesas/sessoes-de-mesa.ts';
 export { criarLeituraDeMesasDoAdmin } from './mesas/leitura-do-admin.ts';
+export { criarRepositorioDeAssinaturas } from './cobranca/repositorio-de-assinaturas.ts';
+export {
+  criarEventosDePagamento,
+  criarRegistroDeAvisos,
+  criarRestaurantesParaCobranca,
+} from './cobranca/eventos-de-pagamento.ts';

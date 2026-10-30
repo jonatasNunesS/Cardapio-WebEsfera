@@ -27,6 +27,20 @@ export const camposDoArmazenamento = {
   URL_PUBLICA_MIDIA: z.url(),
 };
 
+export const URL_DA_API_DO_MERCADO_PAGO = 'https://api.mercadopago.com';
+
+export const camposDoMercadoPago = {
+  URL_MERCADO_PAGO: z.url().default(URL_DA_API_DO_MERCADO_PAGO),
+  MP_ACCESS_TOKEN: z.string().min(1),
+};
+
+export function exigirMercadoPagoReal(ambiente: {
+  readonly APP_ENV: string;
+  readonly URL_MERCADO_PAGO: string;
+}): boolean {
+  return ambiente.APP_ENV === 'local' || ambiente.URL_MERCADO_PAGO === URL_DA_API_DO_MERCADO_PAGO;
+}
+
 function listarProblemas(issues: readonly z.core.$ZodIssue[], fonte: FonteAmbiente): ProblemaAmbiente[] {
   const variaveis = [...new Set(issues.map((issue) => issue.path.map(String).join('.')))];
   return variaveis.map((variavel) => ({

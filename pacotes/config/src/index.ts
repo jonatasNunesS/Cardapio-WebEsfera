@@ -1,6 +1,9 @@
 export {
   carregarAmbiente,
   camposDoArmazenamento,
+  camposDoMercadoPago,
+  exigirMercadoPagoReal,
+  URL_DA_API_DO_MERCADO_PAGO,
   esquemaAmbienteBase,
   formatarProblemasAmbiente,
   validarAmbiente,
