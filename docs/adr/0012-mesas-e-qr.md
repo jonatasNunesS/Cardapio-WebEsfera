@@ -80,6 +80,8 @@ código antigo não vai para histórico nenhum.
 - Enquanto não há assinatura, o adaptador devolve `LIMITE_MESAS_TESTE = 30`,
   o teto do plano Pro. O M10 troca o adaptador pela leitura de `assinaturas` e
   `planos.limite_mesas`, sem mexer no caso de uso nem nos testes.
+- Feito no M10 (ADR 0014): a porta usa `ObterLimiteDeMesas`. Com assinatura
+  autorizada, vale o limite do plano; em teste ou pendente, 30.
 - A contagem trava a linha do restaurante, para duas criações simultâneas não
   passarem do limite.
 
