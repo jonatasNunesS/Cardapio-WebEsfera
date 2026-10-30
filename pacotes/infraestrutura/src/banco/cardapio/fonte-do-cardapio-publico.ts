@@ -39,7 +39,7 @@ const CONSULTA_DO_CARDAPIO = sql`
     (SELECT json_build_object(
         'corMarca', p.cor_marca, 'corSobreMarca', p.cor_sobre_marca, 'corMarcaTexto', p.cor_marca_texto,
         'logoUrl', p.logo_url, 'capaUrl', p.capa_url, 'frase', p.frase,
-        'linkAvaliacaoGoogle', p.link_avaliacao_google, 'textos', p.textos)
+        'linkAvaliacaoGoogle', p.link_avaliacao_google, 'linkInstagram', p.link_instagram, 'textos', p.textos)
        FROM personalizacoes p) AS personalizacao,
     (SELECT coalesce(json_agg(json_build_object(
         'diaSemana', h.dia_semana, 'abre', to_char(h.abre, 'HH24:MI'), 'fecha', to_char(h.fecha, 'HH24:MI'))

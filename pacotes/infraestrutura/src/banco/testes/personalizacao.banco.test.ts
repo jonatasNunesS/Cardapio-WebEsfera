@@ -12,6 +12,7 @@ const PERSONALIZACAO = {
   capaUrl: null,
   frase: 'Horta e brasa',
   linkAvaliacaoGoogle: 'https://g.page/r/x/review',
+  linkInstagram: null,
   textos: { boasVindas: 'Olá', aoChamarGarcom: 'Já vamos', restauranteFechado: 'Fechado' },
 };
 

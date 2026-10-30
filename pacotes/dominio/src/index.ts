@@ -7,3 +7,4 @@ export * from './midia/index.ts';
 export * from './mesas/index.ts';
 export * from './cobranca/index.ts';
 export * from './pedidos/index.ts';
+export * from './atendimento/index.ts';

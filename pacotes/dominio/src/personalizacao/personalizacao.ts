@@ -3,6 +3,7 @@ import { contarCaracteres } from '../compartilhado/texto.ts';
 import { criarErroDeNegocio, type ErroDeNegocio } from '../compartilhado/erro-de-negocio.ts';
 import { Resultado } from '../compartilhado/resultado.ts';
 import { criarCorDaMarca, type CorDaMarca } from './cor-da-marca.ts';
+import { ehLinkDoInstagram } from './link-instagram.ts';
 import { ehLinkDoGoogle } from './link-google.ts';
 
 export const LIMITES_DE_TEXTO = {
@@ -26,6 +27,7 @@ export interface DadosDaPersonalizacao {
   readonly capaUrl: string | null;
   readonly frase: string;
   readonly linkAvaliacaoGoogle: string | null;
+  readonly linkInstagram?: string | null | undefined;
   readonly textos: TextosDoCardapio;
 }
 
@@ -35,6 +37,7 @@ export interface Personalizacao {
   readonly capaUrl: string | null;
   readonly frase: string;
   readonly linkAvaliacaoGoogle: string | null;
+  readonly linkInstagram: string | null;
   readonly textos: TextosDoCardapio;
 }
 
@@ -96,12 +99,23 @@ export function criarPersonalizacao(dados: DadosDaPersonalizacao): Resultado<Per
       ),
     );
   }
+  const instagram = dados.linkInstagram?.trim() ?? '';
+  if (instagram !== '' && !ehLinkDoInstagram(instagram)) {
+    return Resultado.falha(
+      criarErroDeNegocio(
+        CODIGOS.PERSONALIZACAO_PUBLICAR_LINK_INVALIDO,
+        'Use o endereço do perfil, como https://instagram.com/seurestaurante.',
+        { campo: 'linkInstagram' },
+      ),
+    );
+  }
   return Resultado.ok({
     cor: cor.valor,
     logoUrl: vazioParaNulo(dados.logoUrl),
     capaUrl: vazioParaNulo(dados.capaUrl),
     frase: dados.frase.trim(),
     linkAvaliacaoGoogle: link === '' ? null : link,
+    linkInstagram: instagram === '' ? null : instagram,
     textos: {
       boasVindas: dados.textos.boasVindas.trim(),
       aoChamarGarcom: dados.textos.aoChamarGarcom.trim(),

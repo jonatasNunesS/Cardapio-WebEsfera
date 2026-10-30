@@ -8,6 +8,7 @@ export interface PersonalizacaoPublicada {
   readonly capaUrl: string | null;
   readonly frase: string;
   readonly linkAvaliacaoGoogle: string | null;
+  readonly linkInstagram: string | null;
   readonly textos: TextosDoCardapio;
 }
 

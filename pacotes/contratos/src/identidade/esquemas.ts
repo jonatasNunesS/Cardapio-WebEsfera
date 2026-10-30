@@ -39,6 +39,7 @@ export const esquemaPublicarPersonalizacao = z.strictObject({
   capaUrl: urlOpcional,
   frase: texto(1000),
   linkAvaliacaoGoogle: urlOpcional,
+  linkInstagram: urlOpcional.default(null),
   textos: z.strictObject({
     boasVindas: texto(1000),
     aoChamarGarcom: texto(1000),

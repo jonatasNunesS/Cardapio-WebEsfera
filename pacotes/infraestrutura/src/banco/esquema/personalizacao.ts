@@ -20,6 +20,7 @@ export const personalizacoes = pgTable(
     capaUrl: text('capa_url'),
     frase: text('frase').notNull().default(''),
     linkAvaliacaoGoogle: text('link_avaliacao_google'),
+    linkInstagram: text('link_instagram'),
     textos: jsonb('textos')
       .$type<TextosDaPersonalizacao>()
       .notNull()

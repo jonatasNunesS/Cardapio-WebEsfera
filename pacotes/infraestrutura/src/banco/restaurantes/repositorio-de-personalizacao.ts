@@ -22,6 +22,7 @@ export function criarRepositorioDePersonalizacao(banco: AcessoAoBanco): Reposito
           capaUrl: linha.capaUrl,
           frase: linha.frase,
           linkAvaliacaoGoogle: linha.linkAvaliacaoGoogle,
+          linkInstagram: linha.linkInstagram,
           textos: linha.textos,
           versao: linha.versao,
         };

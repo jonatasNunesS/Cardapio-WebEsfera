@@ -31,6 +31,7 @@ function paraFormulario(guardada: RespostaPersonalizacao): CorpoPublicarPersonal
     capaUrl: guardada.capaUrl,
     frase: guardada.frase,
     linkAvaliacaoGoogle: guardada.linkAvaliacaoGoogle,
+    linkInstagram: guardada.linkInstagram,
     textos: guardada.textos,
   };
 }
@@ -94,7 +95,8 @@ function Formulario({ inicial }: { inicial: RespostaPersonalizacao }) {
     setDados((atuais) => ({ ...atuais, [campo]: evento.target.value }));
   };
   const mudarOpcional =
-    (campo: 'logoUrl' | 'capaUrl' | 'linkAvaliacaoGoogle') => (evento: { target: { value: string } }) => {
+    (campo: 'logoUrl' | 'capaUrl' | 'linkAvaliacaoGoogle' | 'linkInstagram') =>
+    (evento: { target: { value: string } }) => {
       setDados((atuais) => ({ ...atuais, [campo]: evento.target.value === '' ? null : evento.target.value }));
     };
   const mudarTexto = (campo: keyof Textos) => (evento: { target: { value: string } }) => {
@@ -175,7 +177,7 @@ function Formulario({ inicial }: { inicial: RespostaPersonalizacao }) {
         />
       </fieldset>
       <fieldset className={estilos.grupo}>
-        <legend className={estilos.legenda}>Avaliação no Google</legend>
+        <legend className={estilos.legenda}>Avaliação e redes</legend>
         <CampoTexto
           id={envio.idDoCampo('linkAvaliacaoGoogle')}
           rotulo="Link para avaliar no Google"
@@ -184,6 +186,15 @@ function Formulario({ inicial }: { inicial: RespostaPersonalizacao }) {
           value={dados.linkAvaliacaoGoogle ?? ''}
           onChange={mudarOpcional('linkAvaliacaoGoogle')}
           erro={envio.erroDe('linkAvaliacaoGoogle')}
+        />
+        <CampoTexto
+          id={envio.idDoCampo('linkInstagram')}
+          rotulo="Instagram do restaurante (opcional)"
+          type="url"
+          dica="Endereço do perfil, como https://instagram.com/seurestaurante. Aparece no agradecimento ao fim da visita."
+          value={dados.linkInstagram ?? ''}
+          onChange={mudarOpcional('linkInstagram')}
+          erro={envio.erroDe('linkInstagram')}
         />
       </fieldset>
       <Botao type="submit" carregando={envio.enviando}>
