@@ -27,3 +27,4 @@ export {
   criarRegistroDeAvisos,
   criarRestaurantesParaCobranca,
 } from './cobranca/eventos-de-pagamento.ts';
+export { criarRepositorioDePedidos } from './pedidos/repositorio-de-pedidos.ts';
