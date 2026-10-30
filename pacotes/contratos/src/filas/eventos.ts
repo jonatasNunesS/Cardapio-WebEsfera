@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 const SITUACOES_DO_RESTAURANTE = ['teste', 'ativo', 'carencia', 'inadimplente', 'cancelado'] as const;
+const SITUACOES_DO_PEDIDO = ['enviado', 'em_preparo', 'pronto', 'entregue', 'cancelado'] as const;
+const SITUACOES_DO_CHAMADO = ['aguardando', 'em_atendimento', 'concluido', 'cancelado'] as const;
 
 export const EVENTOS = {
   SessaoMesaExpirada: z.strictObject({
@@ -39,6 +41,29 @@ export const EVENTOS = {
     versao: z.literal(1),
     chamadoId: z.uuid(),
     tipo: z.enum(['garcom', 'conta']),
+    mesaId: z.uuid(),
+  }),
+  PedidoSituacaoAlterada: z.strictObject({
+    versao: z.literal(1),
+    pedidoId: z.uuid(),
+    numero: z.number().int().positive(),
+    mesaId: z.uuid(),
+    sessaoMesaId: z.uuid(),
+    de: z.enum(SITUACOES_DO_PEDIDO),
+    para: z.enum(SITUACOES_DO_PEDIDO),
+  }),
+  ChamadoSituacaoAlterada: z.strictObject({
+    versao: z.literal(1),
+    chamadoId: z.uuid(),
+    tipo: z.enum(['garcom', 'conta']),
+    mesaId: z.uuid(),
+    sessaoMesaId: z.uuid(),
+    de: z.enum(SITUACOES_DO_CHAMADO),
+    para: z.enum(SITUACOES_DO_CHAMADO),
+  }),
+  SessaoMesaEncerrada: z.strictObject({
+    versao: z.literal(1),
+    sessaoMesaId: z.uuid(),
     mesaId: z.uuid(),
   }),
   AssinaturaAlterada: z.strictObject({
