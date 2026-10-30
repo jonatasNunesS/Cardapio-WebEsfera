@@ -42,14 +42,14 @@ function validarCabecalho(arquivo: string, sql: string, semTransacao: boolean): 
   }
 }
 
-function lerMigracao(pasta: string, arquivo: string, posicao: number): Migracao {
+function lerMigracao(pasta: string, arquivo: string, posicao: number, primeiro: number): Migracao {
   const partes = PADRAO_ARQUIVO.exec(arquivo);
   if (partes === null) {
     throw falhaDeMigracao('Nome fora do padrão 0001_nome.sql', arquivo);
   }
   const numero = Number(partes[1]);
-  if (numero !== posicao + 1) {
-    throw falhaDeMigracao(`Numeração fora de sequência: esperado ${String(posicao + 1)}`, arquivo);
+  if (numero !== posicao + primeiro) {
+    throw falhaDeMigracao(`Numeração fora de sequência: esperado ${String(posicao + primeiro)}`, arquivo);
   }
   const sql = readFileSync(path.join(pasta, arquivo), 'utf8');
   const semTransacao = sql.trimStart().startsWith(MARCA_SEM_TRANSACAO);
@@ -63,9 +63,9 @@ function lerMigracao(pasta: string, arquivo: string, posicao: number): Migracao 
   };
 }
 
-export function lerMigracoes(pasta: string): Migracao[] {
+export function lerMigracoes(pasta: string, primeiro = 1): Migracao[] {
   return readdirSync(pasta)
     .filter((arquivo) => arquivo.endsWith('.sql'))
     .sort()
-    .map((arquivo, posicao) => lerMigracao(pasta, arquivo, posicao));
+    .map((arquivo, posicao) => lerMigracao(pasta, arquivo, posicao, primeiro));
 }

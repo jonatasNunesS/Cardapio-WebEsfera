@@ -3,9 +3,15 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { CODIGOS } from '@cardapio/aplicacao';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { migrarPorUrl } from '../migracoes/migrador.ts';
+import { migrarPorUrl, TRILHA_INTERMEDIARIA } from '../migracoes/migrador.ts';
 import pg from 'pg';
-import { apagarBanco, criarBancoVazio, PASTA_MIGRACOES, urlAdminDeTeste } from './preparar-banco-de-teste.ts';
+import {
+  apagarBanco,
+  criarBancoVazio,
+  PASTA_MIGRACOES,
+  PASTA_MIGRACOES_INTERMEDIARIO,
+  urlAdminDeTeste,
+} from './preparar-banco-de-teste.ts';
 
 async function consultarComoAdminEm(urlDoBanco: string, texto: string): Promise<{ total: number }[]> {
   const url = new URL(urlAdminDeTeste());
@@ -125,5 +131,59 @@ describe('16b. migrações concorrentes', () => {
       'SELECT count(*)::int AS total FROM migracoes.aplicadas',
     );
     expect(controle?.total).toBe(VERSIONADAS.length + 1);
+  });
+});
+
+// INTERMEDIARIO: trilha 0900 à parte da main: docs/adr/0017-intermediario-essencial.md
+const INTERMEDIARIAS = readdirSync(PASTA_MIGRACOES_INTERMEDIARIO)
+  .filter((arquivo) => arquivo.endsWith('.sql'))
+  .sort()
+  .map((arquivo) => arquivo.replace(/\.sql$/, ''));
+
+describe('16c. trilha do intermediário', () => {
+  const nomeIntermediario = `cardapio_migracoes_intermediario_${String(Date.now())}`;
+  let urlIntermediario = '';
+  let pastaDaMain = '';
+
+  beforeAll(async () => {
+    const url = new URL(await criarBancoVazio(urlAdminDeTeste(), nomeIntermediario));
+    url.username = 'cardapio_migracao';
+    url.password = process.env.SENHA_BANCO_MIGRACAO ?? 'migracao_local';
+    urlIntermediario = url.toString();
+    pastaDaMain = mkdtempSync(path.join(tmpdir(), 'migracoes-main-'));
+    cpSync(PASTA_MIGRACOES, pastaDaMain, { recursive: true });
+  });
+
+  afterAll(async () => {
+    rmSync(pastaDaMain, { recursive: true, force: true });
+    await apagarBanco(urlAdminDeTeste(), nomeIntermediario);
+  });
+
+  it('aplica a trilha 0900 depois da principal, sem misturar o controle', async () => {
+    await migrarPorUrl(urlIntermediario, PASTA_MIGRACOES);
+    const intermediaria = await migrarPorUrl(urlIntermediario, PASTA_MIGRACOES_INTERMEDIARIO, TRILHA_INTERMEDIARIA);
+
+    expect(INTERMEDIARIAS[0]).toMatch(/^0900_intermediario_/);
+    expect(intermediaria).toEqual({ aplicadas: INTERMEDIARIAS, jaAplicadas: 0 });
+  });
+
+  it('a main continua migrando sobre o banco do intermediário', async () => {
+    writeFileSync(
+      path.join(pastaDaMain, `${PROXIMA}_futura_da_main.sql`),
+      [
+        "SET LOCAL lock_timeout = '5s';",
+        "SET LOCAL statement_timeout = '60s';",
+        'ALTER TABLE public.pedidos ADD COLUMN coluna_futura_da_main text;',
+        "UPDATE public.pedidos SET situacao = situacao WHERE false;",
+      ].join('\n'),
+    );
+
+    await expect(migrarPorUrl(urlIntermediario, pastaDaMain)).resolves.toEqual({
+      aplicadas: [`${PROXIMA}_futura_da_main`],
+      jaAplicadas: VERSIONADAS.length,
+    });
+    await expect(
+      migrarPorUrl(urlIntermediario, PASTA_MIGRACOES_INTERMEDIARIO, TRILHA_INTERMEDIARIA),
+    ).resolves.toEqual({ aplicadas: [], jaAplicadas: INTERMEDIARIAS.length });
   });
 });

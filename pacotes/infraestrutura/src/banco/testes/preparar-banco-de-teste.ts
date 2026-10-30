@@ -1,10 +1,11 @@
 import { readFileSync } from 'node:fs';
 import pg from 'pg';
 import type { TestProject } from 'vitest/node';
-import { migrarPorUrl } from '../migracoes/migrador.ts';
+import { migrarPorUrl, TRILHA_INTERMEDIARIA } from '../migracoes/migrador.ts';
 
 const RAIZ = new URL('../../../../../', import.meta.url);
 export const PASTA_MIGRACOES = new URL('banco/migracoes/', RAIZ).pathname;
+export const PASTA_MIGRACOES_INTERMEDIARIO = new URL('banco/migracoes-intermediario/', RAIZ).pathname;
 const PAPEIS_SQL = readFileSync(new URL('banco/papeis.sql', RAIZ), 'utf8');
 
 export interface BancoDeTeste {
@@ -97,6 +98,7 @@ export default async function preparar(projeto: TestProject): Promise<() => Prom
   const urlDoBanco = await criarBancoVazio(urlAdmin, nome);
   const urlMigracao = urlCom(urlAdmin, 'cardapio_migracao', SENHAS.cardapio_migracao, nome);
   await migrarPorUrl(urlMigracao, PASTA_MIGRACOES);
+  await migrarPorUrl(urlMigracao, PASTA_MIGRACOES_INTERMEDIARIO, TRILHA_INTERMEDIARIA);
   projeto.provide('bancoDeTeste', {
     nome,
     urlAdmin: urlDoBanco,
