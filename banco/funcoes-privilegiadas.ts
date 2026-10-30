@@ -174,4 +174,20 @@ export const FUNCOES_PRIVILEGIADAS: readonly FuncaoPrivilegiada[] = [
       'Admin lê as mesas e os links de um restaurante, só leitura; confere o admin ativo com segundo fator e grava a consulta na auditoria.',
     adr: 'docs/adr/0012-mesas-e-qr.md',
   },
+  {
+    nome: 'app.registrar_evento_pagamento',
+    argumentos: 'p_x_request_id text, p_topico text, p_recurso_id text',
+    papel: 'app_runtime',
+    motivo:
+      'O webhook do Mercado Pago grava o aviso antes de existir restaurante no contexto; repetido pelo x-request-id, devolve o mesmo evento. Devolve só o id e se já foi processado.',
+    adr: 'docs/adr/0014-assinaturas-e-cobranca.md',
+  },
+  {
+    nome: 'app.listar_restaurantes_para_cobranca',
+    argumentos: 'p_apos uuid, p_limite integer',
+    papel: 'app_sistema',
+    motivo:
+      'As rotinas diárias de conciliação e inadimplência percorrem os restaurantes não cancelados; devolve só ids, em páginas. A leitura de cada um é com comRestaurante().',
+    adr: 'docs/adr/0014-assinaturas-e-cobranca.md',
+  },
 ];
