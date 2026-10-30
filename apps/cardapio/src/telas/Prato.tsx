@@ -1,7 +1,10 @@
-import { formatarReais, Icone, VideoPrato } from '@cardapio/ui';
+import { Botao, formatarReais, Icone, VideoPrato } from '@cardapio/ui';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useCaminho, useMesaPronta } from '../dados/contexto.ts';
 import { imagemDo, videoDo } from '../dados/pratos.ts';
+import { adicionar, novaChave } from '../pedido/carrinho.ts';
+import { carrinhoDa } from '../pedido/usar-carrinho.ts';
 import estilos from './Prato.module.css';
 
 function Voltar() {
@@ -11,6 +14,27 @@ function Voltar() {
       <Icone nome="voltar" tamanho={16} />
       Voltar ao cardápio
     </Link>
+  );
+}
+
+function Adicionar({ pratoId, nome }: { readonly pratoId: string; readonly nome: string }) {
+  const { mesa } = useMesaPronta();
+  const [adicionados, setAdicionados] = useState(0);
+  return (
+    <>
+      <Botao
+        larguraTotal
+        onClick={() => {
+          carrinhoDa(mesa.slug, mesa.numero).mudar((estado) => adicionar(estado, pratoId, novaChave()));
+          setAdicionados((atual) => atual + 1);
+        }}
+      >
+        Adicionar ao pedido
+      </Botao>
+      <p className={estilos.descricao} role="status">
+        {adicionados > 0 && `${nome} no pedido (${String(adicionados)}).`}
+      </p>
+    </>
   );
 }
 
@@ -59,6 +83,7 @@ export function Prato() {
         <p className={estilos.esgotado}>Esgotado hoje</p>
       )}
       {prato.descricao !== '' && <p className={estilos.descricao}>{prato.descricao}</p>}
+      {prato.disponivel && <Adicionar pratoId={prato.id} nome={prato.nome} />}
     </main>
   );
 }

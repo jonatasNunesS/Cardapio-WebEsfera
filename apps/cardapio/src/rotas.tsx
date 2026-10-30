@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router';
+import { carregarTelasDoPedido } from './pedido/sob-demanda.ts';
 import { carregarRotaDaMesa, revalidarMesa } from './dados/rota-da-mesa.ts';
 import { Busca } from './telas/Busca.tsx';
 import { Cardapio } from './telas/Cardapio.tsx';
@@ -20,6 +21,14 @@ export function criarRotas() {
         { index: true, Component: Cardapio },
         { path: 'prato/:pratoId', Component: Prato },
         { path: 'busca', Component: Busca },
+        {
+          path: 'carrinho',
+          lazy: async () => ({ Component: (await carregarTelasDoPedido()).TelaDoCarrinho }),
+        },
+        {
+          path: 'pedido/:pedidoId',
+          lazy: async () => ({ Component: (await carregarTelasDoPedido()).TelaDoPedido }),
+        },
       ],
     },
     { path: '*', element: <TelaNeutra motivo="qr-invalido" />, ErrorBoundary: ErroDaRota },
