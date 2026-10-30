@@ -1,0 +1,20 @@
+.secao {
+  display: grid;
+  gap: var(--espaco-4);
+  margin-block-end: var(--espaco-6);
+}
+
+.subtitulo {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-4);
+}
+
+.formulario {
+  display: grid;
+  gap: var(--espaco-4);
+  padding: var(--espaco-5);
+  border: var(--borda-fina) solid var(--cor-borda);
+  border-radius: var(--raio-2);
+  background: var(--cor-superficie);
+}

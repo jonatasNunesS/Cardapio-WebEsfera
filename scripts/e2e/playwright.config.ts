@@ -1,6 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
-export const PORTAS = { api: 3100, painel: 5173, admin: 5174, cardapio: 5175 } as const;
+export const PORTAS = { api: 3100, painel: 5173, admin: 5174, cardapio: 5175, mercadoPago: 3999 } as const;
+export const URL_DO_MERCADO_PAGO_FALSO = `http://127.0.0.1:${String(PORTAS.mercadoPago)}`;
 export const URL_DO_PAINEL = `http://painel.localhost:${String(PORTAS.painel)}`;
 export const URL_DO_ADMIN = `http://admin.localhost:${String(PORTAS.admin)}`;
 export const URL_DO_CARDAPIO = `http://cardapio.localhost:${String(PORTAS.cardapio)}`;
@@ -20,6 +21,12 @@ const ARMAZENAMENTO = {
   URL_PUBLICA_MIDIA: 'http://midia-publica.web.localhost:3902',
 };
 
+const MERCADO_PAGO = {
+  URL_MERCADO_PAGO: URL_DO_MERCADO_PAGO_FALSO,
+  MP_ACCESS_TOKEN: 'TEST-e2e-token-do-mercado-pago-falso',
+  MP_WEBHOOK_SECRET: 'segredo-e2e-do-webhook-falso',
+};
+
 const AMBIENTE_DO_WORKER = {
   NODE_ENV: 'development',
   APP_ENV: 'local',
@@ -27,6 +34,7 @@ const AMBIENTE_DO_WORKER = {
   URL_REDIS: URL_DO_REDIS_E2E,
   SENTRY_DSN_BACKEND: '',
   ...ARMAZENAMENTO,
+  ...MERCADO_PAGO,
 };
 
 const AMBIENTE_DA_API = {
@@ -43,6 +51,7 @@ const AMBIENTE_DA_API = {
   CHAVE_CIFRA_TOTP: 'ZTJlLWNoYXZlLWRlLXRlc3RlLTMyLWJ5dGVzLW9rISE=',
   CHAVE_SESSAO_MESA: 'mesa-e2e-mesa-e2e-mesa-e2e-mesa-e2e',
   SENTRY_DSN_BACKEND: '',
+  ...MERCADO_PAGO,
 };
 
 const AMBIENTE_DO_VITE = { URL_API_LOCAL: `http://127.0.0.1:${String(PORTAS.api)}` };
@@ -70,6 +79,19 @@ export default defineConfig({
     ...(caminhoDoChromium === undefined ? {} : { launchOptions: { executablePath: caminhoDoChromium } }),
   },
   webServer: [
+    {
+      command: 'node scripts/mercado-pago-falso.ts',
+      cwd: '../..',
+      env: {
+        ...MERCADO_PAGO,
+        PORTA_MERCADO_PAGO_FALSO: String(PORTAS.mercadoPago),
+        URL_AVISO_FALSO: `http://127.0.0.1:${String(PORTAS.api)}/api/v1/webhooks/mercado-pago`,
+        HOST_AVISO_FALSO: 'painel.localhost',
+      },
+      wait: { stdout: /mercado pago falso pronto/ },
+      stdout: 'pipe',
+      reuseExistingServer: false,
+    },
     {
       command: 'pnpm --filter @cardapio/api iniciar',
       cwd: '../..',
