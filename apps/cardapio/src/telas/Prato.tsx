@@ -5,6 +5,9 @@ import { useCaminho, useMesaPronta } from '../dados/contexto.ts';
 import { imagemDo, videoDo } from '../dados/pratos.ts';
 import { adicionar, novaChave } from '../pedido/carrinho.ts';
 import { carrinhoDa } from '../pedido/usar-carrinho.ts';
+import { carregarTelasDoPedido } from '../pedido/sob-demanda.ts';
+import { aquecerCache } from '../offline/aquecer.ts';
+import { configuracao, sentry } from '../observabilidade.ts';
 import estilos from './Prato.module.css';
 
 function Voltar() {
@@ -18,7 +21,7 @@ function Voltar() {
 }
 
 function Adicionar({ pratoId, nome }: { readonly pratoId: string; readonly nome: string }) {
-  const { mesa } = useMesaPronta();
+  const { mesa, cardapio } = useMesaPronta();
   const [adicionados, setAdicionados] = useState(0);
   return (
     <>
@@ -27,6 +30,16 @@ function Adicionar({ pratoId, nome }: { readonly pratoId: string; readonly nome:
         onClick={() => {
           carrinhoDa(mesa.slug, mesa.numero).mudar((estado) => adicionar(estado, pratoId, novaChave()));
           setAdicionados((atual) => atual + 1);
+          if (adicionados === 0) {
+            carregarTelasDoPedido()
+              .then(() => aquecerCache(cardapio, configuracao.release))
+              .then(
+                () => undefined,
+                (erro: unknown) => {
+                  sentry.reportar(erro, { etapa: 'aquecer-carrinho' });
+                },
+              );
+          }
         }}
       >
         Adicionar ao pedido

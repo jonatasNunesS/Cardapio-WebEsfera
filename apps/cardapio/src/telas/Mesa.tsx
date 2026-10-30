@@ -7,7 +7,6 @@ import { lembranca } from '../dados/rota-da-mesa.ts';
 import { configuracao, sentry } from '../observabilidade.ts';
 import { aquecerCache } from '../offline/aquecer.ts';
 import { BarraDoPedido } from '../pedido/BarraDoPedido.tsx';
-import { carregarTelasDoPedido } from '../pedido/sob-demanda.ts';
 import { Abertura } from './Abertura.tsx';
 import estilos from './Mesa.module.css';
 import { TelaNeutra } from './TelaNeutra.tsx';
@@ -104,14 +103,12 @@ function MesaAberta({ carregada, codigo }: { readonly carregada: Pronta; readonl
   useLinksDoApp();
   useEffect(() => {
     if (!carregada.offline) {
-      carregarTelasDoPedido()
-        .then(() => aquecerCache(cardapio, configuracao.release))
-        .then(
-          () => undefined,
-          (erro: unknown) => {
-            reportar(erro, { etapa: 'aquecer-cache' });
-          },
-        );
+      aquecerCache(cardapio, configuracao.release).then(
+        () => undefined,
+        (erro: unknown) => {
+          reportar(erro, { etapa: 'aquecer-cache' });
+        },
+      );
     }
   }, [cardapio, carregada.offline]);
 

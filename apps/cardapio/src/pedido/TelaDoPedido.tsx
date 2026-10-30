@@ -49,7 +49,12 @@ function usePedido(id: string) {
       clearTimeout(proxima);
     };
   }, [id, versao]);
-  return { pedido, recarregar: () => { setVersao((atual) => atual + 1); } };
+  return {
+    pedido,
+    recarregar: () => {
+      setVersao((atual) => atual + 1);
+    },
+  };
 }
 
 export function TelaDoPedido() {
