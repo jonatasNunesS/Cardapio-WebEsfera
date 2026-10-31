@@ -28,6 +28,7 @@ class PedidosEmMemoria implements RepositorioDePedidos {
   readonly guardados = new Map<string, PedidoGuardado & { chave: string; hash: string }>();
   estado: EstadoParaPedido = {
     situacaoDoRestaurante: 'ativo',
+    suspenso: false,
     fusoHorario: 'America/Sao_Paulo',
     horarios: [],
     pratos: new Map<string, PratoParaPedido>([
@@ -156,6 +157,7 @@ describe('CriarPedido', () => {
     ['esgotado', {}, CODIGOS.PEDIDO_CRIAR_ITEM_INDISPONIVEL],
     ['inadimplente', { situacaoDoRestaurante: 'inadimplente' }, CODIGOS.PEDIDO_CRIAR_RESTAURANTE_SUSPENSO],
     ['cancelado', { situacaoDoRestaurante: 'cancelado' }, CODIGOS.PEDIDO_CRIAR_RESTAURANTE_SUSPENSO],
+    ['suspenso pelo admin', { suspenso: true }, CODIGOS.PEDIDO_CRIAR_RESTAURANTE_SUSPENSO],
     [
       'fechado',
       { horarios: [{ diaSemana: 1, abre: '11:00', fecha: '15:00' }] },

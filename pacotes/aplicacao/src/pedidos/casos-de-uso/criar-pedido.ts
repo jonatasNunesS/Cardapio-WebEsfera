@@ -4,7 +4,7 @@ import {
   criarErroDeNegocio,
   momentoLocal,
   montarPedido,
-  podeReceberPedido,
+  podeReceberPedidos,
   Resultado,
   situacaoDoHorario,
   validarCarrinho,
@@ -30,7 +30,7 @@ const recusa = (codigo: string, mensagem: string) => Resultado.falha(criarErroDe
 
 function decidir(linhas: readonly LinhaDoCarrinho[], agora: Date) {
   return (estado: EstadoParaPedido): Resultado<PedidoMontado, ErroDeNegocio> => {
-    if (!podeReceberPedido(estado.situacaoDoRestaurante)) {
+    if (!podeReceberPedidos({ situacao: estado.situacaoDoRestaurante, suspenso: estado.suspenso })) {
       return recusa(
         CODIGOS.PEDIDO_CRIAR_RESTAURANTE_SUSPENSO,
         'Este restaurante não está recebendo pedidos pelo QR Code agora. Chame um atendente.',
