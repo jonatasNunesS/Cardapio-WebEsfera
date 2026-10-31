@@ -8,3 +8,4 @@ export * from './midia/esquemas.ts';
 export * from './mesas/esquemas.ts';
 export * from './cobranca/esquemas.ts';
 export * from './pedidos/esquemas.ts';
+export * from './equipe/esquemas.ts';
