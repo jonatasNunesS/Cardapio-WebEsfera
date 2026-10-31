@@ -146,7 +146,7 @@ describe('criar restaurante com dono', () => {
       },
     });
     expect(plataforma.criados[0]?.dono.email).toBe('dono@brasa.com.br');
-    expect(plataforma.criados[0]?.convite.expiraEm.getTime() - INICIO.getTime()).toBe(72 * 3600_000);
+    expect((plataforma.criados[0]?.convite.expiraEm.getTime() ?? 0) - INICIO.getTime()).toBe(72 * 3600_000);
     expect(plataforma.criados[0]?.convite.hashToken).toMatch(/^resumo\(/);
     expect(enviador.enviados).toHaveLength(1);
   });

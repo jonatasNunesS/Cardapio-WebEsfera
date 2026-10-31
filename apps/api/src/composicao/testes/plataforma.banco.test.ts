@@ -116,6 +116,36 @@ describe('admin mínimo pela API', () => {
     expect(entrada.statusCode).toBeLessThan(300);
   });
 
+  it('dono pendente: hash Argon2 com os parâmetros reais e login igual ao de senha errada', async () => {
+    const admin = await adminLogado();
+    const { email } = await criarPeloAdmin(admin);
+    const { dono } = await abrirClienteNaMesa(servidor, 'Dono com senha');
+    const [pendente, real] = await comoAdmin<{ hash_senha: string }>(
+      `SELECT hash_senha FROM usuarios WHERE email = $1
+       UNION ALL SELECT u.hash_senha FROM usuarios u JOIN vinculos v ON v.usuario_id = u.id
+        JOIN restaurantes r ON r.id = v.restaurante_id WHERE r.slug = $2`,
+      [email, dono.slug],
+    );
+    const parametros = (hash: string | undefined) => hash?.split('$').slice(0, 4).join('$');
+    expect(parametros(pendente?.hash_senha)).toBe(parametros(real?.hash_senha));
+    expect(parametros(pendente?.hash_senha)).toBe('$argon2id$v=19$m=19456,t=2,p=1');
+
+    const tentar = async (alvo: string) => {
+      const navegador = new Navegador(servidor, HOST_DO_PAINEL, ipUnico());
+      await navegador.prepararCsrf();
+      const resposta = await navegador.pedir('POST', ROTAS_DO_PAINEL.sessao, {
+        email: alvo,
+        senha: 'qualquer-senha-longa',
+      });
+      const corpo = resposta.json<Record<string, unknown>>();
+      return { status: resposta.statusCode, codigo: corpo.codigo, detalhe: corpo.detail, title: corpo.title };
+    };
+    const comPendente = await tentar(email);
+    const comSenhaErrada = await tentar(`dono-inexistente-${uuidv7()}@brasa.com.br`);
+    expect(comPendente).toEqual(comSenhaErrada);
+    expect(JSON.stringify(comPendente)).not.toMatch(/convite|pendente/i);
+  });
+
   it('suspender e reativar exigem motivo; suspenso recusa pedido e o cardápio continua no ar', async () => {
     const admin = await adminLogado();
     const mesa = await abrirClienteNaMesa(servidor, 'Brasa suspensa');

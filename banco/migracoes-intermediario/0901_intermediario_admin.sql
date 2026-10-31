@@ -192,7 +192,8 @@ AS $$
    WHERE app.admin_valido(p_administrador_id) GROUP BY chave
   UNION ALL
   SELECT 'pedidos_24h', count(*)::integer FROM public.pedidos p
-   WHERE app.admin_valido(p_administrador_id) AND p.criado_em > p_agora - interval '24 hours'
+   WHERE p.criado_em > p_agora - interval '24 hours'
+  HAVING app.admin_valido(p_administrador_id)
 $$;
 
 REVOKE ALL ON FUNCTION app.admin_indicadores(uuid, timestamptz) FROM PUBLIC;
@@ -229,13 +230,13 @@ GRANT EXECUTE ON FUNCTION app.aceitar_convite(text, text, timestamptz) TO app_ru
 ALTER FUNCTION app.aceitar_convite(text, text, timestamptz) OWNER TO funcoes_privilegiadas;
 
 CREATE FUNCTION app.admin_dono_do_restaurante(p_administrador_id uuid)
-RETURNS TABLE (usuario_id uuid, nome text, email text)
+RETURNS TABLE (nome text, email text)
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
 SET search_path = pg_catalog, pg_temp
 AS $$
-  SELECT u.id, u.nome, u.email
+  SELECT u.nome, u.email
     FROM public.vinculos v JOIN public.usuarios u ON u.id = v.usuario_id
    WHERE v.restaurante_id = app.restaurante_atual() AND v.papel = 'dono'
      AND app.admin_valido(p_administrador_id)

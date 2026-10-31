@@ -150,13 +150,18 @@ export function criarRepositorioDaPlataforma(banco: AcessoAoBanco): RepositorioD
     },
     gerarConvite: (acesso, restauranteId, convite, agora) =>
       banco.comRestaurante(restauranteId, async (transacao) => {
-        const { rows } = await transacao.execute<{ id: string; nome: string; email: string }>(sql`
-          SELECT usuario_id AS id, nome, email FROM app.admin_dono_do_restaurante(${acesso.administradorId})`);
-        const [dono] = rows;
-        if (dono === undefined) {
+        const contato = await transacao.execute<{ nome: string; email: string }>(
+          sql`SELECT nome, email FROM app.admin_dono_do_restaurante(${acesso.administradorId})`,
+        );
+        const vinculo = await transacao.execute<{ usuario_id: string }>(
+          sql`SELECT usuario_id FROM vinculos WHERE papel = 'dono' ORDER BY criado_em LIMIT 1`,
+        );
+        const [dono] = contato.rows;
+        const [doDono] = vinculo.rows;
+        if (dono === undefined || doDono === undefined) {
           return null;
         }
-        await inserirConvite(transacao, acesso, dono.id, convite, agora);
+        await inserirConvite(transacao, acesso, doDono.usuario_id, convite, agora);
         return { nome: dono.nome, email: dono.email };
       }),
     suspender: (acesso, restauranteId, motivo, agora) =>
