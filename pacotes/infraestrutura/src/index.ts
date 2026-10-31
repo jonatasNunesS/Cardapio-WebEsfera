@@ -8,3 +8,4 @@ export * from './midia/index.ts';
 export * from './mesas/index.ts';
 export * from './cobranca/index.ts';
 export { criarAssinanteRedis } from './tempo-real/assinante-redis.ts';
+export { enviadorConviteManual } from './plataforma/enviador-convite-manual.ts';

@@ -30,3 +30,4 @@ export {
 export { criarRepositorioDePedidos } from './pedidos/repositorio-de-pedidos.ts';
 export { criarRepositorioDeAtendimento } from './atendimento/repositorio-de-atendimento.ts';
 export { criarRepositorioDaEquipe } from './equipe/repositorio-da-equipe.ts';
+export { criarRepositorioDaPlataforma } from './plataforma/repositorio-da-plataforma.ts';

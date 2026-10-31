@@ -227,3 +227,22 @@ $$;
 REVOKE ALL ON FUNCTION app.aceitar_convite(text, text, timestamptz) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION app.aceitar_convite(text, text, timestamptz) TO app_runtime;
 ALTER FUNCTION app.aceitar_convite(text, text, timestamptz) OWNER TO funcoes_privilegiadas;
+
+CREATE FUNCTION app.admin_dono_do_restaurante(p_administrador_id uuid)
+RETURNS TABLE (usuario_id uuid, nome text, email text)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, pg_temp
+AS $$
+  SELECT u.id, u.nome, u.email
+    FROM public.vinculos v JOIN public.usuarios u ON u.id = v.usuario_id
+   WHERE v.restaurante_id = app.restaurante_atual() AND v.papel = 'dono'
+     AND app.admin_valido(p_administrador_id)
+   ORDER BY v.criado_em
+   LIMIT 1
+$$;
+
+REVOKE ALL ON FUNCTION app.admin_dono_do_restaurante(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app.admin_dono_do_restaurante(uuid) TO app_runtime;
+ALTER FUNCTION app.admin_dono_do_restaurante(uuid) OWNER TO funcoes_privilegiadas;

@@ -239,4 +239,12 @@ export const FUNCOES_PRIVILEGIADAS: readonly FuncaoPrivilegiada[] = [
       'O convidado ainda não tem sessão nem restaurante no contexto; consome o convite pelo hash, uma vez, e grava a senha do dono.',
     adr: 'docs/adr/0017-intermediario-essencial.md',
   },
+  {
+    nome: 'app.admin_dono_do_restaurante',
+    argumentos: 'p_administrador_id uuid',
+    papel: 'app_runtime',
+    motivo:
+      'Para reenviar o convite, o admin precisa do nome e do e-mail do dono do restaurante do contexto; usuarios não tem restaurante_id.',
+    adr: 'docs/adr/0017-intermediario-essencial.md',
+  },
 ];
