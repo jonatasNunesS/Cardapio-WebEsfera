@@ -1,4 +1,9 @@
-import { proximaSituacaoDoPedido, Resultado, type ErroDeNegocio, type SituacaoDoPedido } from '@cardapio/dominio';
+import {
+  proximaSituacaoDoPedido,
+  Resultado,
+  type ErroDeNegocio,
+  type SituacaoDoPedido,
+} from '@cardapio/dominio';
 import type { AcessoAoRestaurante } from '../../compartilhado/acesso.ts';
 import type { DependenciasDaEquipe } from '../dependencias.ts';
 import { paraResultado, semPermissaoNaFila, transicaoInvalida } from '../desfechos.ts';

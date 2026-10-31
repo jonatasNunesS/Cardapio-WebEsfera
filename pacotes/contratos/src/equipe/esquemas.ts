@@ -33,7 +33,11 @@ export interface PedidoNaFilaApi {
   readonly sessaoMesaId: string;
   readonly totalCentavos: number;
   readonly criadoEm: string;
-  readonly itens: readonly { readonly nome: string; readonly quantidade: number; readonly observacao: string }[];
+  readonly itens: readonly {
+    readonly nome: string;
+    readonly quantidade: number;
+    readonly observacao: string;
+  }[];
 }
 
 export interface ChamadoNaFilaApi {

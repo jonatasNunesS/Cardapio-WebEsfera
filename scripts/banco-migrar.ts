@@ -4,7 +4,12 @@ import type { RelatorioDeMigracao } from '../pacotes/infraestrutura/src/index.ts
 
 export const PASTA_MIGRACOES = path.resolve(import.meta.dirname, '..', 'banco', 'migracoes');
 // INTERMEDIARIO: trilha de migrações à parte: docs/adr/0017-intermediario-essencial.md
-export const PASTA_MIGRACOES_INTERMEDIARIO = path.resolve(import.meta.dirname, '..', 'banco', 'migracoes-intermediario');
+export const PASTA_MIGRACOES_INTERMEDIARIO = path.resolve(
+  import.meta.dirname,
+  '..',
+  'banco',
+  'migracoes-intermediario',
+);
 
 export function urlDeMigracao(ambiente: NodeJS.ProcessEnv): string {
   const url = ambiente.URL_BANCO_MIGRACAO;

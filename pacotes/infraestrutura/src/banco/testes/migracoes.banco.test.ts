@@ -161,7 +161,11 @@ describe('16c. trilha do intermediário', () => {
 
   it('aplica a trilha 0900 depois da principal, sem misturar o controle', async () => {
     await migrarPorUrl(urlIntermediario, PASTA_MIGRACOES);
-    const intermediaria = await migrarPorUrl(urlIntermediario, PASTA_MIGRACOES_INTERMEDIARIO, TRILHA_INTERMEDIARIA);
+    const intermediaria = await migrarPorUrl(
+      urlIntermediario,
+      PASTA_MIGRACOES_INTERMEDIARIO,
+      TRILHA_INTERMEDIARIA,
+    );
 
     expect(INTERMEDIARIAS[0]).toMatch(/^0900_intermediario_/);
     expect(intermediaria).toEqual({ aplicadas: INTERMEDIARIAS, jaAplicadas: 0 });
@@ -174,7 +178,7 @@ describe('16c. trilha do intermediário', () => {
         "SET LOCAL lock_timeout = '5s';",
         "SET LOCAL statement_timeout = '60s';",
         'ALTER TABLE public.pedidos ADD COLUMN coluna_futura_da_main text;',
-        "UPDATE public.pedidos SET situacao = situacao WHERE false;",
+        'UPDATE public.pedidos SET situacao = situacao WHERE false;',
       ].join('\n'),
     );
 

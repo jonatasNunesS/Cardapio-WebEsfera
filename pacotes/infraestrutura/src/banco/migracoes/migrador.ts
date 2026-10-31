@@ -19,7 +19,10 @@ export interface TrilhaDeMigracao {
 export const TRILHA_PRINCIPAL: TrilhaDeMigracao = { tabela: 'aplicadas', primeiroNumero: 1 };
 
 // INTERMEDIARIO: trilha separada para o 0900, invisível ao migrador da main: docs/adr/0017-intermediario-essencial.md
-export const TRILHA_INTERMEDIARIA: TrilhaDeMigracao = { tabela: 'aplicadas_intermediario', primeiroNumero: 900 };
+export const TRILHA_INTERMEDIARIA: TrilhaDeMigracao = {
+  tabela: 'aplicadas_intermediario',
+  primeiroNumero: 900,
+};
 
 interface LinhaAplicada {
   readonly numero: number;
@@ -78,7 +81,11 @@ function falhaAoAplicar(migracao: Migracao, causa: unknown): ErroAplicacao {
   );
 }
 
-async function aplicarEmTransacao(cliente: ClientBase, migracao: Migracao, trilha: TrilhaDeMigracao): Promise<void> {
+async function aplicarEmTransacao(
+  cliente: ClientBase,
+  migracao: Migracao,
+  trilha: TrilhaDeMigracao,
+): Promise<void> {
   await cliente.query('BEGIN');
   try {
     await cliente.query(migracao.sql);
@@ -90,7 +97,11 @@ async function aplicarEmTransacao(cliente: ClientBase, migracao: Migracao, trilh
   }
 }
 
-async function aplicarSemTransacao(cliente: ClientBase, migracao: Migracao, trilha: TrilhaDeMigracao): Promise<void> {
+async function aplicarSemTransacao(
+  cliente: ClientBase,
+  migracao: Migracao,
+  trilha: TrilhaDeMigracao,
+): Promise<void> {
   for (const passo of migracao.sql.split(MARCA_PASSO)) {
     await cliente.query(passo);
   }
