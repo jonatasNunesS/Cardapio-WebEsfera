@@ -38,6 +38,44 @@ O migrador da main não vê essa trilha. `pnpm banco:migrar` roda a trilha
 principal e depois a intermediária. O teste 16c prova que uma migração futura
 da main roda sobre o banco já migrado pelo intermediário.
 
+### Como a trilha intermediária entra na trilha da main
+
+Quando o módulo completo correspondente (M13 a M17) chegar à main, a trilha
+intermediária é absorvida em quatro passos, sem perder o banco do piloto.
+
+1. **Migração equivalente e idempotente na main.** O módulo completo traz, na
+   trilha principal e com o próximo número contíguo, uma migração que produz o
+   mesmo resultado de cada `09NN` que ele substitui. Ela é escrita para não
+   falhar onde o `09NN` já rodou:
+   - `ADD COLUMN IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS` e
+     `CREATE TABLE IF NOT EXISTS`;
+   - `CREATE OR REPLACE FUNCTION`;
+   - políticas e restrições nomeadas dentro de um bloco `DO` que consulta
+     `pg_policies` e `pg_constraint` antes de criar;
+   - `GRANT`, que já é idempotente.
+
+   Num banco novo ela cria tudo; no banco do piloto ela não muda nada. Os
+   nomes de colunas, índices, restrições e políticas do `09NN` são definitivos
+   justamente para isso.
+
+2. **Prova por catálogo.** Um teste de integração migra dois bancos: um só pela
+   trilha principal nova, outro pela trilha principal antiga, depois a
+   intermediária, depois a principal nova. Os dois catálogos têm de sair
+   iguais: colunas, tipos, CHECKs, índices, políticas, `GRANT`s e funções.
+3. **Fim da trilha.** No mesmo PR saem a pasta `banco/migracoes-intermediario/`,
+   a segunda chamada em `scripts/banco-migrar.ts`, o teste 16c e os
+   `// INTERMEDIARIO:` da trilha. Sem essa chamada, o migrador nunca mais lê
+   `migracoes.aplicadas_intermediario`, e as linhas antigas sem arquivo deixam
+   de importar.
+4. **Limpeza do controle.** Uma migração seguinte da main confere que toda
+   linha de `migracoes.aplicadas_intermediario` corresponde a um `09NN`
+   incorporado e só então apaga a tabela. Se encontrar um nome desconhecido,
+   falha e para a implantação.
+
+Enquanto a incorporação não acontece, vale uma regra: nenhuma migração da
+main altera o que um `09NN` criou. O teste 16c garante que a main continua
+migrando sobre o banco do intermediário.
+
 `0900_intermediario_fila.sql` é aditiva:
 
 - coluna `pedidos.motivo_cancelamento` (de 3 a 200 caracteres), com
