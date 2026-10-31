@@ -4,6 +4,7 @@ import {
   podeReceberPedidos,
   situacaoExibida,
   validarMotivoDoAdmin,
+  validarSlugDoAdmin,
 } from './acesso-do-restaurante.ts';
 
 describe('acesso do restaurante', () => {
@@ -34,5 +35,11 @@ describe('acesso do restaurante', () => {
     expect(validarMotivoDoAdmin('  falta de  pagamento ')).toEqual({ ok: true, valor: 'falta de pagamento' });
     expect(validarMotivoDoAdmin('ok').ok).toBe(false);
     expect(validarMotivoDoAdmin('x'.repeat(501)).ok).toBe(false);
+  });
+
+  it('o slug do admin segue o formato e evita palavras reservadas', () => {
+    expect(validarSlugDoAdmin(' Brasa-Centro ')).toEqual({ ok: true, valor: 'brasa-centro' });
+    expect(validarSlugDoAdmin('admin').ok).toBe(false);
+    expect(validarSlugDoAdmin('com espaco').ok).toBe(false);
   });
 });
