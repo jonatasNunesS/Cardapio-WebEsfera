@@ -259,14 +259,14 @@ describe('filas BullMQ com Redis e Postgres reais', () => {
 
     const rotinas = await filas.filas.get('rotinas')?.getJobSchedulers();
     const caixa = await filas.filas.get('caixa-saida')?.getJobSchedulers();
-    expect(rotinas?.map((agendamento) => [agendamento.key, agendamento.every])).toEqual([
+    const porChave = (lista: readonly { key: string; every?: number | null }[] | undefined) =>
+      (lista ?? []).map((agendamento) => [agendamento.key, agendamento.every]).sort();
+    expect(porChave(rotinas)).toEqual([
       ['aplicar-inadimplencia', 86_400_000],
       ['conciliar-cobrancas', 86_400_000],
       [JOB, 300_000],
     ]);
-    expect(caixa?.map((agendamento) => [agendamento.key, agendamento.every])).toEqual([
-      ['publicar-caixa-saida', 1000],
-    ]);
+    expect(porChave(caixa)).toEqual([['publicar-caixa-saida', 1000]]);
   });
 });
 
