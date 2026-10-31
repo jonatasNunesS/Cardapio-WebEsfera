@@ -1,0 +1,48 @@
+.pagina {
+  box-sizing: border-box;
+  width: min(100%, 64rem);
+  margin-inline: auto;
+  padding: var(--espaco-6) var(--espaco-4);
+}
+
+.secao {
+  display: grid;
+  gap: var(--espaco-3);
+  margin-block: var(--espaco-5);
+}
+
+.formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  align-items: flex-end;
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--espaco-3);
+  margin: 0;
+}
+
+.indicadores > div {
+  padding: var(--espaco-3);
+  border-radius: var(--raio-1);
+  background: var(--cor-superficie-suave);
+}
+
+.indicadores dt {
+  color: var(--cor-texto-secundario);
+}
+
+.indicadores dd {
+  margin: 0;
+  font-size: var(--tamanho-5);
+  font-weight: var(--peso-medio);
+}
+
+.link {
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  overflow-wrap: anywhere;
+}

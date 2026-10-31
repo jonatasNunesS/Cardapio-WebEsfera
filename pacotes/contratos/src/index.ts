@@ -9,3 +9,4 @@ export * from './mesas/esquemas.ts';
 export * from './cobranca/esquemas.ts';
 export * from './pedidos/esquemas.ts';
 export * from './equipe/esquemas.ts';
+export * from './plataforma/esquemas.ts';

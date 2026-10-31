@@ -25,6 +25,8 @@ export interface PedidoGuardado {
 
 export interface EstadoParaPedido {
   readonly situacaoDoRestaurante: SituacaoDoRestaurante;
+  // INTERMEDIARIO: suspensão do admin mínimo: docs/adr/0017-intermediario-essencial.md
+  readonly suspenso: boolean;
   readonly fusoHorario: string;
   readonly horarios: readonly Horario[];
   readonly pratos: ReadonlyMap<string, PratoParaPedido>;

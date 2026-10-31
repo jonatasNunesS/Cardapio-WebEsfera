@@ -9,6 +9,8 @@ import {
   categorias,
   cobrancas,
   contadoresPedido,
+  convites,
+  suspensoesRestaurante,
   itensPedido,
   pedidos,
   historicoNumerosMesa,
@@ -23,7 +25,7 @@ import {
   vinculos,
 } from '../../esquema/index.ts';
 import { gerarCodigoDeMesa } from '../../mesas/codigo-de-mesa.ts';
-import { sufixoUnico } from '../apoio.ts';
+import { consultarComoAdmin, sufixoUnico } from '../apoio.ts';
 
 export interface Fabrica {
   readonly tabela: string;
@@ -33,6 +35,17 @@ export interface Fabrica {
 
 let proximoNumero = 1;
 const HASH_DE_FABRICA = '$argon2id$v=19$m=19456,t=2,p=1$ZmFicmljYQ$ZmFicmljYQ';
+
+let administradorDeFabrica: Promise<string> | null = null;
+
+function administradorDaFabrica(): Promise<string> {
+  administradorDeFabrica ??= consultarComoAdmin<{ id: string }>(
+    `INSERT INTO administradores (nome, email, hash_senha, papel, segredo_totp_cifrado)
+     VALUES ('Fábrica', $1, $2, 'suporte', 'cifrado') RETURNING id`,
+    [`admin-fabrica-${sufixoUnico()}@exemplo.com.br`, HASH_DE_FABRICA],
+  ).then((linhas) => linhas[0]?.id ?? '');
+  return administradorDeFabrica;
+}
 
 export async function criarUsuarioDeFabrica(transacao: Transacao): Promise<string> {
   const email = `fabrica-${sufixoUnico()}@exemplo.com.br`;
@@ -304,6 +317,28 @@ export const FABRICAS: readonly Fabrica[] = [
       await transacao
         .insert(chamados)
         .values({ restauranteId, sessaoMesaId, mesaId, tipo: 'garcom', chaveIdempotencia: uuidv7() });
+    },
+  },
+  {
+    tabela: 'suspensoes_restaurante',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      await transacao
+        .insert(suspensoesRestaurante)
+        .values({ restauranteId, motivo: 'Fábrica', suspensaPor: await administradorDaFabrica() });
+    },
+  },
+  {
+    tabela: 'convites',
+    colunaDoRestaurante: 'restaurante_id',
+    async criar(transacao, restauranteId) {
+      await transacao.insert(convites).values({
+        restauranteId,
+        usuarioId: await criarUsuarioDeFabrica(transacao),
+        hashToken: uuidv7().replaceAll('-', '').padEnd(64, '0'),
+        criadoPor: await administradorDaFabrica(),
+        expiraEm: new Date(Date.now() + 3600_000),
+      });
     },
   },
 ];

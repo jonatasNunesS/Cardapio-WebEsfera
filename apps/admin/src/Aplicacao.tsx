@@ -6,12 +6,16 @@ import { Entrar } from './telas/Entrar.tsx';
 import { Inicio } from './telas/Inicio.tsx';
 import { PrimeiroAcesso } from './telas/PrimeiroAcesso.tsx';
 import { SegundoFator } from './telas/SegundoFator.tsx';
+import { TelaDoRestaurante } from './plataforma/TelaDoRestaurante.tsx';
+import { TelaRestaurantes } from './plataforma/TelaRestaurantes.tsx';
 
 function criarRotas() {
   return createBrowserRouter([
     { path: '/', Component: Inicio },
     { path: '/entrar', Component: Entrar },
     { path: '/mesas', Component: MesasDoRestaurante },
+    { path: '/restaurantes', Component: TelaRestaurantes },
+    { path: '/restaurantes/:slug', Component: TelaDoRestaurante },
     { path: '/segundo-fator', Component: SegundoFator },
     { path: '/primeiro-acesso', Component: PrimeiroAcesso },
   ]);

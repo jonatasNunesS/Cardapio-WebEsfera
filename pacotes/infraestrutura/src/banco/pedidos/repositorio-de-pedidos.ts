@@ -66,10 +66,12 @@ async function mesaDaSessaoValida(transacao: Transacao, sessao: SessaoDoCliente,
 async function lerEstado(transacao: Transacao, pratoIds: readonly string[]): Promise<EstadoParaPedido> {
   const { rows } = await transacao.execute<{
     situacao: SituacaoDoRestaurante;
+    suspenso: boolean;
     fuso_horario: string;
     horarios: Horario[];
   }>(sql`
     SELECT r.situacao, r.fuso_horario,
+      EXISTS (SELECT 1 FROM suspensoes_restaurante s WHERE s.reativada_em IS NULL) AS suspenso,
       (SELECT coalesce(json_agg(json_build_object('diaSemana', h.dia_semana,
          'abre', to_char(h.abre, 'HH24:MI'), 'fecha', to_char(h.fecha, 'HH24:MI'))), '[]'::json)
        FROM horarios h) AS horarios
@@ -85,6 +87,7 @@ async function lerEstado(transacao: Transacao, pratoIds: readonly string[]): Pro
   const [restaurante] = rows;
   return {
     situacaoDoRestaurante: restaurante?.situacao ?? 'cancelado',
+    suspenso: restaurante?.suspenso ?? false,
     fusoHorario: restaurante?.fuso_horario ?? 'America/Sao_Paulo',
     horarios: restaurante?.horarios ?? [],
     pratos: new Map<string, PratoParaPedido>(
