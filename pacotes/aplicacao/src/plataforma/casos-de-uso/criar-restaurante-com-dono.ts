@@ -41,7 +41,7 @@ function validarEmailDoDono(texto: string): Resultado<string, ErroDeNegocio> {
   return ehEmailValido(texto)
     ? Resultado.ok(normalizarEmail(texto))
     : Resultado.falha(
-        criarErroDeNegocio(CODIGOS.PLATAFORMA_CRIAR_EMAIL_OCUPADO, 'Informe um e-mail válido.', {
+        criarErroDeNegocio(CODIGOS.PLATAFORMA_CRIAR_EMAIL_INVALIDO, 'Informe um e-mail válido.', {
           campo: 'emailDoDono',
         }),
       );

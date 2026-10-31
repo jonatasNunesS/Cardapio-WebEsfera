@@ -153,7 +153,7 @@ describe('criar restaurante com dono', () => {
 
   it.each([
     [{ ...ENTRADA, slug: 'admin' }, CODIGOS.PLATAFORMA_CRIAR_SLUG_INVALIDO],
-    [{ ...ENTRADA, emailDoDono: 'sem-arroba' }, CODIGOS.PLATAFORMA_CRIAR_EMAIL_OCUPADO],
+    [{ ...ENTRADA, emailDoDono: 'sem-arroba' }, CODIGOS.PLATAFORMA_CRIAR_EMAIL_INVALIDO],
     [{ ...ENTRADA, nome: '  ' }, CODIGOS.RESTAURANTE_CRIAR_NOME_INVALIDO],
   ])('recusa entrada inválida sem gravar', async (entrada, codigo) => {
     expect(await criarRestauranteComDono(dependencias, ADMIN, entrada)).toMatchObject({

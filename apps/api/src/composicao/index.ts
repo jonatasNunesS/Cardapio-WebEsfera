@@ -36,7 +36,8 @@ export function comporApi(ambiente: AmbienteApi, opcoes: OpcoesDaComposicao = {}
   const painelDeFilas = comporPainelDeFilas(ambiente.URL_REDIS, relatorDeErrosSentry);
   const armazenamento = armazenamentoDoAmbiente(ambiente);
   const cobranca = comporCobranca(ambiente, banco, redis, relatorDeErrosSentry);
-  const intermediario = comporIntermediario(ambiente, banco, relatorDeErrosSentry);
+  const identidade = comporIdentidade(ambiente, banco, logger);
+  const intermediario = comporIntermediario(ambiente, banco, identidade, relatorDeErrosSentry);
   const servidor = construirServidor({
     logger,
     ambiente: ambiente.APP_ENV,
@@ -46,7 +47,7 @@ export function comporApi(ambiente: AmbienteApi, opcoes: OpcoesDaComposicao = {}
       ? {}
       : { proxiesConfiaveis: ambiente.PROXIES_CONFIAVEIS }),
     identidade: {
-      dependencias: comporIdentidade(ambiente, banco, logger),
+      dependencias: identidade,
       hosts: { painel: ambiente.DOMINIO_PAINEL, admin: ambiente.DOMINIO_ADMIN },
       armazenamentoDeLimites: redis,
       painelDeFilas: painelDeFilas.opcoes,

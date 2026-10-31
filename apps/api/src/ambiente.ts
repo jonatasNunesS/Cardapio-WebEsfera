@@ -18,6 +18,7 @@ export const esquemaAmbienteApi = esquemaAmbienteBase
     CHAVE_CIFRA_TOTP: z.base64().length(44),
     CHAVE_SESSAO_MESA: z.string().min(32),
     PROXIES_CONFIAVEIS: z.string().optional(),
+    URL_SENTRY_DO_ADMIN: z.url().optional(),
     ...camposDoArmazenamento,
     ...camposDoMercadoPago,
     MP_WEBHOOK_SECRET: z.string().min(16),
