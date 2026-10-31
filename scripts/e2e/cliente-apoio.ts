@@ -28,6 +28,10 @@ class ClienteDoPainel {
   private readonly cookies = new Map<string, string>();
   private csrf = '';
 
+  get cookiesDaSessao(): ReadonlyMap<string, string> {
+    return this.cookies;
+  }
+
   pedir(metodo: string, caminho: string, corpo?: unknown): Promise<Resposta> {
     return new Promise((resolver, rejeitar) => {
       const dados = corpo === undefined ? undefined : JSON.stringify(corpo);
