@@ -13,6 +13,7 @@ import { comporCobranca } from './cobranca.ts';
 import { comporPainelDeFilas } from './filas.ts';
 import { comporIdentidade } from './identidade.ts';
 import { comporMesas } from './mesas.ts';
+import { comporIntermediario } from './intermediario.ts';
 import { comporMidia } from './midia.ts';
 
 export interface OpcoesDaComposicao {
@@ -35,6 +36,7 @@ export function comporApi(ambiente: AmbienteApi, opcoes: OpcoesDaComposicao = {}
   const painelDeFilas = comporPainelDeFilas(ambiente.URL_REDIS, relatorDeErrosSentry);
   const armazenamento = armazenamentoDoAmbiente(ambiente);
   const cobranca = comporCobranca(ambiente, banco, redis, relatorDeErrosSentry);
+  const intermediario = comporIntermediario(ambiente, banco, relatorDeErrosSentry);
   const servidor = construirServidor({
     logger,
     ambiente: ambiente.APP_ENV,
@@ -55,12 +57,14 @@ export function comporApi(ambiente: AmbienteApi, opcoes: OpcoesDaComposicao = {}
       },
       mesas: comporMesas(ambiente, banco, redis, relatorDeErrosSentry),
       cobranca: cobranca.opcoes,
+      intermediario,
     },
   });
   servidor.addHook('onClose', async () => {
     redis.disconnect();
     armazenamento.encerrar();
     await cobranca.encerrar();
+    await intermediario.assinante.encerrar();
     await painelDeFilas.encerrar();
     await banco.encerrar();
   });
