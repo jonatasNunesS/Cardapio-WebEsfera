@@ -17,3 +17,4 @@ export { planos } from './planos.ts';
 export { historicoSlugs, restaurantes } from './restaurantes.ts';
 export { contadoresPedido, itensPedido, pedidos } from './pedidos.ts';
 export { chamados } from './chamados.ts';
+export { convites, suspensoesRestaurante } from './intermediario.ts';

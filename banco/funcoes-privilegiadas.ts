@@ -190,4 +190,53 @@ export const FUNCOES_PRIVILEGIADAS: readonly FuncaoPrivilegiada[] = [
       'As rotinas diárias de conciliação e inadimplência percorrem os restaurantes não cancelados; devolve só ids, em páginas. A leitura de cada um é com comRestaurante().',
     adr: 'docs/adr/0014-assinaturas-e-cobranca.md',
   },
+  {
+    nome: 'app.admin_valido',
+    argumentos: 'p_administrador_id uuid',
+    papel: 'app_runtime',
+    motivo:
+      'Confere no banco que o admin está ativo e com segundo fator antes de qualquer leitura ou escrita do admin; devolve só um booleano.',
+    adr: 'docs/adr/0017-intermediario-essencial.md',
+  },
+  {
+    nome: 'app.admin_listar_restaurantes',
+    argumentos: 'p_administrador_id uuid',
+    papel: 'app_runtime',
+    motivo:
+      'A lista do admin atravessa restaurantes; devolve id, nome, slug, situação, fim do teste e se há suspensão aberta, e nada se o admin não for válido.',
+    adr: 'docs/adr/0017-intermediario-essencial.md',
+  },
+  {
+    nome: 'app.admin_resolver_restaurante',
+    argumentos: 'p_administrador_id uuid, p_slug text',
+    papel: 'app_runtime',
+    motivo:
+      'Traduz o slug da URL do admin no id do restaurante, só para admin válido; o resto da operação roda com comRestaurante().',
+    adr: 'docs/adr/0017-intermediario-essencial.md',
+  },
+  {
+    nome: 'app.admin_criar_restaurante',
+    argumentos:
+      'p_administrador_id uuid, p_nome text, p_slug text, p_teste_termina_em timestamptz, p_dono_nome text, p_dono_email text, p_hash_senha_inutil text',
+    papel: 'app_runtime',
+    motivo:
+      'Cria a conta do dono (usuarios não tem restaurante_id), o restaurante do contexto, o slug e o vínculo, com auditoria, numa transação só.',
+    adr: 'docs/adr/0017-intermediario-essencial.md',
+  },
+  {
+    nome: 'app.admin_indicadores',
+    argumentos: 'p_administrador_id uuid, p_agora timestamptz',
+    papel: 'app_runtime',
+    motivo:
+      'Contagens agregadas para a visão geral do admin: restaurantes por situação e pedidos nas últimas 24 h, sem nenhum dado de linha.',
+    adr: 'docs/adr/0017-intermediario-essencial.md',
+  },
+  {
+    nome: 'app.aceitar_convite',
+    argumentos: 'p_hash_token text, p_hash_senha text, p_agora timestamptz',
+    papel: 'app_runtime',
+    motivo:
+      'O convidado ainda não tem sessão nem restaurante no contexto; consome o convite pelo hash, uma vez, e grava a senha do dono.',
+    adr: 'docs/adr/0017-intermediario-essencial.md',
+  },
 ];
