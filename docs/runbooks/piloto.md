@@ -1,8 +1,83 @@
 # Runbook: piloto
 
 Decisões e motivos no [ADR 0017](../adr/0017-intermediario-essencial.md). Aqui
-ficam os passos. As seções do admin mínimo entram com a parte B do
-intermediário.
+ficam os passos.
+
+Todo passo do admin exige a sessão de admin com segundo fator
+(`https://<DOMINIO_ADMIN>/entrar`). O primeiro acesso de um admin está em
+[admin.md](admin.md).
+
+## Entrada de um restaurante no piloto
+
+1. No admin, abra **Restaurantes** e preencha **Novo restaurante**:
+   - nome;
+   - endereço (slug: só letras minúsculas, números e hífens);
+   - e-mail do dono.
+2. Clique em **Criar e gerar convite**. O restaurante nasce em `teste`, com
+   10 dias, e aparece na lista.
+3. Copie o link do convite que aparece na tela. Ele **não aparece de novo**,
+   vale por **72 horas** e funciona **uma vez só**.
+4. Mande o link ao dono por um canal direto (WhatsApp ou e-mail pessoal). Não
+   cole o link em grupo nem em chamado.
+5. O dono abre o link, cria a senha e entra pelo painel com o e-mail e essa
+   senha.
+
+### Quando o convite falha
+
+- **"Este convite expirou, já foi usado ou foi trocado por um novo"**: abra o
+  restaurante no admin e clique em **Gerar novo convite**. O anterior deixa de
+  valer na hora.
+- **E-mail já tem conta**: o admin recusa a criação. Use outro e-mail, ou peça
+  ao dono que crie o restaurante pelo próprio painel.
+- **Endereço em uso**: escolha outro slug. Slugs antigos também ficam
+  reservados.
+
+## Suspender e reativar
+
+Suspenso, o restaurante continua com o cardápio no ar. Chamar o garçom e pedir
+a conta continuam funcionando; só os **pedidos novos** são recusados, com a
+mensagem para chamar um atendente. É a mesma regra da inadimplência.
+
+1. Abra o restaurante no admin.
+2. Escreva o motivo (de 3 a 500 caracteres). Ele fica na auditoria.
+3. Clique em **Suspender restaurante**. A situação passa a **Suspenso**.
+4. Para voltar, escreva o motivo da reativação e clique em **Reativar
+   restaurante**.
+
+Suspensão e reativação ficam no histórico (`suspensoes_restaurante`) e na
+`auditoria`, com o admin que fez.
+
+## Cobrança e visão geral
+
+- **Cobrança**, na página do restaurante, é só leitura: a assinatura e as
+  últimas 24 cobranças. Mudanças de assinatura seguem o
+  [runbook de pagamentos](pagamentos.md).
+- **Visão geral**, na lista, mostra os restaurantes por situação e os pedidos
+  das últimas 24 h. O link do Sentry aparece quando a variável
+  `URL_SENTRY_DO_ADMIN` da API está definida.
+
+## Auditoria
+
+Para conferir quem fez o quê num restaurante (como `cardapio`, pelo
+`psql` de operação):
+
+```sql
+SELECT criado_em, autor_tipo, autor_id, acao, motivo
+  FROM auditoria
+ WHERE restaurante_id = (SELECT id FROM restaurantes WHERE slug = '<slug>')
+ ORDER BY criado_em DESC
+ LIMIT 50;
+```
+
+Ações registradas:
+
+- `restaurante.criar`;
+- `convite.gerar`;
+- `convite.aceitar`;
+- `restaurante.suspender`;
+- `restaurante.reativar`;
+- da fila: `pedido.avancar`, `pedido.cancelar`, `chamado.assumir`,
+  `chamado.concluir` e `sessao_mesa.encerrar`.
 
 ## Proxy na frente da API: tempo real (SSE)
 
