@@ -21,6 +21,19 @@ function contextoDaTarefa(nome: string, dados: DadosDaTarefa, job: JobEmExecucao
   return typeof dados.restauranteId === 'string' ? { ...base, restauranteId: dados.restauranteId } : base;
 }
 
+const nadaPublicado = (resultado: unknown) =>
+  typeof resultado === 'object' &&
+  resultado !== null &&
+  'publicados' in resultado &&
+  'falhas' in resultado &&
+  resultado.publicados === 0 &&
+  resultado.falhas === 0;
+
+// Tarefas que rodam a cada segundo só escrevem em info quando fazem algo: docs/adr/0009-filas-e-outbox.md
+const OCIOSA_EM_DEBUG: Readonly<Record<string, (resultado: unknown) => boolean>> = {
+  'caixa-saida.publicar-caixa-saida': nadaPublicado,
+};
+
 function reportarFalhaDefinitiva(erro: unknown, nome: string, job: JobEmExecucao | undefined): void {
   const contexto = contextoAtual();
   if (job === undefined || contexto === undefined) {
@@ -45,10 +58,16 @@ export async function executarTarefa<T>(
   return executarComContexto(contextoDaTarefa(nome, dados, opcoes.job), async () => {
     const logger = obterLoggerPadrao();
     const inicio = performance.now();
-    logger.info({ tarefa: nome }, 'tarefa iniciada');
+    const ociosa = OCIOSA_EM_DEBUG[nome];
+    (ociosa === undefined ? logger.info : logger.debug).call(logger, { tarefa: nome }, 'tarefa iniciada');
     try {
       const resultado = await executar(dados);
-      logger.info({ tarefa: nome, duracaoMs: Math.round(performance.now() - inicio) }, 'tarefa concluída');
+      const nivel = ociosa?.(resultado) === true ? logger.debug : logger.info;
+      nivel.call(
+        logger,
+        { tarefa: nome, duracaoMs: Math.round(performance.now() - inicio) },
+        'tarefa concluída',
+      );
       return resultado;
     } catch (erro) {
       if (!deveReportar(opcoes.reportarFalha, erro)) {

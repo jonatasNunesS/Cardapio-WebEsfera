@@ -12,6 +12,8 @@ export { criarRepositorioDeHorarios } from './restaurantes/repositorio-de-horari
 export { criarRepositorioDePersonalizacao } from './restaurantes/repositorio-de-personalizacao.ts';
 export { criarRepositorioDeRestaurantes } from './restaurantes/repositorio-de-restaurantes.ts';
 export { criarAdministradorPorUrl } from './admin/criar-administrador.ts';
+export { gravarAdminLocalPorUrl } from './admin/admin-local.ts';
+export type { AdminLocal } from './admin/admin-local.ts';
 export type { NovoAdministrador, PapelDeAdministrador } from './admin/criar-administrador.ts';
 export { criarCaixaDeSaida, TENTATIVAS_MAXIMAS_DA_CAIXA_DE_SAIDA } from './filas/caixa-de-saida.ts';
 export { criarSessoesMesaVencidas } from './filas/sessoes-mesa-vencidas.ts';

@@ -37,7 +37,7 @@ export interface MercadoPagoFalso {
     readonly id: string;
     readonly status: number;
   }[];
-  ouvir(porta?: number): Promise<string>;
+  ouvir(porta?: number, host?: string): Promise<string>;
   autorizar(assinaturaId: string): Promise<void>;
   cobrar(assinaturaId: string, pagamento: 'approved' | 'rejected', vencimento?: Date): Promise<string>;
   definirFora(fora: boolean): void;
@@ -246,9 +246,9 @@ export function criarMercadoPagoFalso(opcoes: OpcoesDoMercadoPagoFalso): Mercado
     assinaturas,
     cobrancas,
     avisosEnviados,
-    ouvir(porta = 0) {
+    ouvir(porta = 0, host = '127.0.0.1') {
       return new Promise((resolver) => {
-        servidor.listen(porta, '127.0.0.1', () => {
+        servidor.listen(porta, host, () => {
           const endereco = servidor.address();
           resolver(
             `http://127.0.0.1:${String(typeof endereco === 'object' && endereco !== null ? endereco.port : porta)}`,
