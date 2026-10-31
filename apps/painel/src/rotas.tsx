@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router';
+import { TelaFila } from './fila/TelaFila.tsx';
 import { Cardapio } from './telas/Cardapio.tsx';
 import { CriarConta } from './telas/CriarConta.tsx';
 import { CriarRestaurante } from './telas/CriarRestaurante.tsx';
@@ -33,6 +34,10 @@ export function criarRotas() {
     {
       path: '/cardapio/pratos/:id',
       element: <ComRestaurante>{() => <EditarPrato />}</ComRestaurante>,
+    },
+    {
+      path: '/fila',
+      element: <ComRestaurante>{() => <TelaFila />}</ComRestaurante>,
     },
     {
       path: '/mesas',
