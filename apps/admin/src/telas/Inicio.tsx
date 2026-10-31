@@ -24,6 +24,7 @@ export function Inicio() {
   };
   return (
     <PaginaDeAcesso marca={MARCA} titulo="Sessão ativa" descricao="Você entrou com senha e segundo fator.">
+      <Link to="/restaurantes">Restaurantes</Link>
       <Link to="/mesas">Mesas de um restaurante</Link>
       <Botao variante="secundario" onClick={sair}>
         Sair

@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router';
+import { TelaDoConvite } from './convite/TelaDoConvite.tsx';
 import { TelaFila } from './fila/TelaFila.tsx';
 import { Cardapio } from './telas/Cardapio.tsx';
 import { CriarConta } from './telas/CriarConta.tsx';
@@ -19,6 +20,7 @@ export function criarRotas() {
     { path: '/criar-conta', Component: CriarConta },
     { path: '/esqueci-a-senha', Component: EsqueciASenha },
     { path: '/redefinir-senha', Component: RedefinirSenha },
+    { path: '/convite', Component: TelaDoConvite },
     {
       path: '/criar-restaurante',
       element: (
