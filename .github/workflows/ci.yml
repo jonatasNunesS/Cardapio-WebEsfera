@@ -4,7 +4,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
   push:
-    branches: [main]
+    # INTERMEDIARIO: a branch do intermediário também roda CI no push: docs/adr/0017-intermediario-essencial.md
+    branches: [main, intermediario/essencial]
 
 permissions:
   contents: read

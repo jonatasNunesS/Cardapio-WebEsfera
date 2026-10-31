@@ -220,6 +220,7 @@ mostra o link.
 | `pacotes/infraestrutura/src/banco/esquema/intermediario.ts`        | Drizzle de `suspensoes_restaurante` e `convites`   | Fica no módulo completo                                                       | Nada a desligar: as tabelas são definitivas                              |
 | `pacotes/aplicacao/src/pedidos/portas/repositorio-de-pedidos.ts`   | Campo `suspenso` no estado do pedido               | Fica: é a entrada de `podeReceberPedidos`                                     | Nada a desligar                                                          |
 | `pacotes/infraestrutura/src/plataforma/enviador-convite-manual.ts` | Convite sem e-mail: o link volta ao admin uma vez  | Adaptador de e-mail da porta `EnviadorConvite`                                | Trocar o adaptador na composição                                         |
+| `.github/workflows/ci.yml`                                         | Push em `intermediario/essencial` também roda o CI | Some com a branch                                                             | Tirar a branch da lista `push.branches`                                  |
 
 Para desligar a parte B, retire `plataforma` de `comporIntermediario`: as rotas
 do admin e do convite somem, e `podeReceberPedidos` continua valendo, porque
