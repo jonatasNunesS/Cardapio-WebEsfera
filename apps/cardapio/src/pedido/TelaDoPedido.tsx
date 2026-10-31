@@ -1,12 +1,11 @@
 import type { RespostaPedido, SituacaoDoPedidoNaApi } from '@cardapio/contratos/publico';
 import { Aviso, Botao, formatarReais, LinkBotao } from '@cardapio/ui';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useCaminho } from '../dados/contexto.ts';
+import { useAvisosDaMesa } from './ao-vivo.ts';
 import { cancelarPedido, consultarPedido, type ProblemaDoPedido } from './envio.ts';
 import estilos from './Pedido.module.css';
-
-const INTERVALO_DA_CONSULTA_MS = 15_000;
 
 const PASSOS: readonly { readonly situacao: SituacaoDoPedidoNaApi; readonly texto: string }[] = [
   { situacao: 'enviado', texto: 'Enviado para a equipe' },
@@ -41,12 +40,8 @@ function usePedido(id: string) {
         setPedido(lido);
       }
     });
-    const proxima = setTimeout(() => {
-      setVersao((atual) => atual + 1);
-    }, INTERVALO_DA_CONSULTA_MS);
     return () => {
       ativo = false;
-      clearTimeout(proxima);
     };
   }, [id, versao]);
   return {
@@ -61,6 +56,13 @@ export function TelaDoPedido() {
   const { pedidoId = '' } = useParams();
   const caminho = useCaminho();
   const { pedido, recarregar } = usePedido(pedidoId);
+  const navegar = useNavigate();
+  useAvisosDaMesa({
+    aoMudar: recarregar,
+    aoEncerrar: () => {
+      void navegar(caminho('/obrigado'));
+    },
+  });
   const [erro, setErro] = useState<string | null>(null);
   if (pedido === undefined) {
     return (

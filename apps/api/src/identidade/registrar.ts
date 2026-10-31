@@ -30,6 +30,7 @@ import { registrarMesasNoPainel } from '../rotas/mesas-painel.ts';
 import { registrarMidiaNoPainel } from '../rotas/midia-painel.ts';
 import { registrarPainelDeFilas, type OpcoesDoPainelDeFilas } from '../rotas/filas.ts';
 import { registrarRotasDoPainel } from '../rotas/painel.ts';
+import { registrarIntermediario, type OpcoesDoIntermediario } from '../intermediario/registrar.ts';
 import type { DependenciasDeIdentidade, HostsDosApps } from './dependencias.ts';
 
 export interface OpcoesDeIdentidade {
@@ -40,6 +41,8 @@ export interface OpcoesDeIdentidade {
   readonly cardapio?: OpcoesDoCardapio;
   readonly mesas?: OpcoesDasMesas;
   readonly cobranca?: OpcoesDaCobranca;
+  // INTERMEDIARIO: fila e tempo real: docs/adr/0017-intermediario-essencial.md
+  readonly intermediario?: OpcoesDoIntermediario;
 }
 
 export interface OpcoesDaCobranca {
@@ -143,6 +146,9 @@ export function registrarIdentidade(servidor: FastifyInstance, opcoes: OpcoesDeI
     }
     if (opcoes.cobranca !== undefined) {
       registrarCobranca(escopo, opcoes, opcoes.cobranca);
+    }
+    if (opcoes.intermediario !== undefined) {
+      registrarIntermediario(escopo, opcoes.dependencias, opcoes.hosts, opcoes.intermediario);
     }
     if (opcoes.painelDeFilas !== undefined) {
       registrarPainelDeFilas(escopo, {

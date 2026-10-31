@@ -92,3 +92,4 @@ export interface RespostaConta {
 export interface RespostaSessaoDaMesa {
   readonly situacao: 'aberta' | 'encerrada' | 'expirada';
 }
+export * from './tempo-real/publico.ts';

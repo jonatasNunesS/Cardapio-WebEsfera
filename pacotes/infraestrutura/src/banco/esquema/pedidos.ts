@@ -20,6 +20,8 @@ export const pedidos = pgTable(
     totalCentavos: integer('total_centavos').notNull(),
     chaveIdempotencia: uuid('chave_idempotencia').notNull(),
     hashConteudo: text('hash_conteudo').notNull(),
+    // INTERMEDIARIO: coluna da migração 0900: docs/adr/0017-intermediario-essencial.md
+    motivoCancelamento: text('motivo_cancelamento'),
     criadoEm: momento('criado_em').notNull().defaultNow(),
     atualizadoEm: momento('atualizado_em').notNull().defaultNow(),
   },

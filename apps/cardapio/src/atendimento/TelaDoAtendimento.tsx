@@ -1,12 +1,12 @@
 import { gerarUuidV7, type RespostaChamado, type TipoDeChamadoNaApi } from '@cardapio/contratos/publico';
 import { Aviso, Botao, LinkBotao } from '@cardapio/ui';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useCaminho, useMesaPronta } from '../dados/contexto.ts';
+import { useAvisosDaMesa } from '../pedido/ao-vivo.ts';
 import { abrirChamado, cancelarChamado, lerChamado } from './api.ts';
 import estilos from './Atendimento.module.css';
 import { guardarChamado, lerChamadosGuardados } from './chamados-guardados.ts';
-
-const INTERVALO_DA_CONSULTA_MS = 15_000;
 
 const TEXTOS: Readonly<Record<TipoDeChamadoNaApi, Readonly<Record<RespostaChamado['situacao'], string>>>> = {
   garcom: {
@@ -38,12 +38,8 @@ function useChamado(id: string | null) {
         setChamado(lido.dados);
       }
     });
-    const proxima = setTimeout(() => {
-      setVersao((atual) => atual + 1);
-    }, INTERVALO_DA_CONSULTA_MS);
     return () => {
       ativo = false;
-      clearTimeout(proxima);
     };
   }, [id, versao]);
   return {
@@ -56,6 +52,14 @@ function useChamado(id: string | null) {
 
 function Acompanhamento({ id, aoMudar }: { readonly id: string; readonly aoMudar: () => void }) {
   const { chamado, recarregar } = useChamado(id);
+  const caminho = useCaminho();
+  const navegar = useNavigate();
+  useAvisosDaMesa({
+    aoMudar: recarregar,
+    aoEncerrar: () => {
+      void navegar(caminho('/obrigado'));
+    },
+  });
   const [erro, setErro] = useState<string | null>(null);
   if (chamado === null) {
     return <p aria-busy="true">Carregando o chamado...</p>;

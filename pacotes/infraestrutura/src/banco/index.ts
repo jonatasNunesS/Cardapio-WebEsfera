@@ -2,8 +2,8 @@ export { criarBanco } from './banco.ts';
 export type { AcessoAoBanco, Operacao, OpcoesDoBanco, Transacao } from './banco.ts';
 export { gerarCodigoDeMesa } from './mesas/codigo-de-mesa.ts';
 export { criarRepositorioMesas } from './mesas/repositorio-mesas.ts';
-export { migrar, migrarPorUrl } from './migracoes/migrador.ts';
-export type { RelatorioDeMigracao } from './migracoes/migrador.ts';
+export { migrar, migrarPorUrl, TRILHA_INTERMEDIARIA, TRILHA_PRINCIPAL } from './migracoes/migrador.ts';
+export type { RelatorioDeMigracao, TrilhaDeMigracao } from './migracoes/migrador.ts';
 export { criarRegistroDeTentativas } from './identidade/registro-de-tentativas.ts';
 export { criarRepositorioDeAdmins } from './identidade/repositorio-de-admins.ts';
 export { criarRepositorioDeContas } from './identidade/repositorio-de-contas.ts';
@@ -29,3 +29,4 @@ export {
 } from './cobranca/eventos-de-pagamento.ts';
 export { criarRepositorioDePedidos } from './pedidos/repositorio-de-pedidos.ts';
 export { criarRepositorioDeAtendimento } from './atendimento/repositorio-de-atendimento.ts';
+export { criarRepositorioDaEquipe } from './equipe/repositorio-da-equipe.ts';

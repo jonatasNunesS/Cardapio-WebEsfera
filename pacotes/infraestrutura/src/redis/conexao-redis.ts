@@ -6,6 +6,7 @@ export interface OpcoesDoRedis {
   readonly connectTimeout?: number;
   readonly enableOfflineQueue?: boolean;
   readonly maxRetriesPerRequest?: number | null;
+  readonly autoResubscribe?: boolean;
 }
 
 export function criarRedis(url: string, relator: RelatorDeErros, opcoes: OpcoesDoRedis = {}): Redis {
