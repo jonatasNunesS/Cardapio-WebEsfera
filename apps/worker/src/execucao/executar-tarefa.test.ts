@@ -6,7 +6,7 @@ import {
   iniciarSentryNode,
 } from '@cardapio/observabilidade/node';
 import { criarTransporteFalso, DSN_DE_TESTE } from '@cardapio/observabilidade/teste';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { executarTarefa } from './executar-tarefa.ts';
 
 const transporte = criarTransporteFalso();
@@ -96,5 +96,51 @@ describe('executarTarefa', () => {
     await aguardarEnvio(1000);
 
     expect(transporte.eventos).toHaveLength(1);
+  });
+});
+
+describe('nível do log das tarefas', () => {
+  const linhas: { level: number; msg: string }[] = [];
+  const NIVEL_INFO = 30;
+  const tarefasEmInfo = () => linhas.filter((linha) => linha.level >= NIVEL_INFO).map((linha) => linha.msg);
+
+  beforeEach(() => {
+    linhas.length = 0;
+    definirLoggerPadrao(
+      criarLogger({
+        app: 'worker',
+        nivel: 'debug',
+        destino: {
+          write: (texto: string) => linhas.push(JSON.parse(texto) as { level: number; msg: string }),
+        },
+      }),
+    );
+  });
+
+  afterEach(() => {
+    definirLoggerPadrao(criarLogger({ app: 'worker', nivel: 'silent' }));
+  });
+
+  it('o publicador da outbox sem nada para publicar não escreve nada em info', async () => {
+    await executarTarefa('caixa-saida.publicar-caixa-saida', {}, () =>
+      Promise.resolve({ publicados: 0, falhas: 0 }),
+    );
+
+    expect(tarefasEmInfo()).toEqual([]);
+    expect(linhas.map((linha) => linha.msg)).toEqual(['tarefa iniciada', 'tarefa concluída']);
+  });
+
+  it('o publicador com eventos publicados registra a conclusão em info', async () => {
+    await executarTarefa('caixa-saida.publicar-caixa-saida', {}, () =>
+      Promise.resolve({ publicados: 3, falhas: 0 }),
+    );
+
+    expect(tarefasEmInfo()).toEqual(['tarefa concluída']);
+  });
+
+  it('as outras tarefas continuam em info', async () => {
+    await executarTarefa('rotinas.limpar', {}, () => Promise.resolve(7));
+
+    expect(tarefasEmInfo()).toEqual(['tarefa iniciada', 'tarefa concluída']);
   });
 });

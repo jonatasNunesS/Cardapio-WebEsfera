@@ -10,7 +10,7 @@ const falso = criarMercadoPagoFalso({
       : { url: process.env.URL_AVISO_FALSO, host: process.env.HOST_AVISO_FALSO ?? 'painel.localhost' },
 });
 
-const endereco = await falso.ouvir(porta);
+const endereco = await falso.ouvir(porta, process.env.HOST_MERCADO_PAGO_FALSO ?? '127.0.0.1');
 process.stdout.write(`mercado pago falso pronto em ${endereco}\n`);
 
 process.on('SIGTERM', () => {

@@ -17,6 +17,8 @@ const esquemaAmbienteBuild = z.object({
   SENTRY_ORG: z.preprocess(vazioComoAusente, z.string().optional()),
   SENTRY_PROJETO_FRONTEND: z.preprocess(vazioComoAusente, z.string().optional()),
   URL_API_LOCAL: z.preprocess(vazioComoAusente, z.url().default('http://127.0.0.1:3000')),
+  HTTPS_LOCAL_CERTIFICADO: z.preprocess(vazioComoAusente, z.string().optional()),
+  HTTPS_LOCAL_CHAVE: z.preprocess(vazioComoAusente, z.string().optional()),
 });
 
 const esquemaPacote = z.object({ version: z.string() });
@@ -47,6 +49,20 @@ export interface OpcoesDoServidorLocal {
   readonly porta: number;
 }
 
+// Com certificado local (mkcert), o servidor de desenvolvimento abre para a rede em HTTPS, para testar no celular.
+export function httpsDaRedeLocal(
+  ambiente: Pick<AmbienteBuild, 'APP_ENV' | 'HTTPS_LOCAL_CERTIFICADO' | 'HTTPS_LOCAL_CHAVE'>,
+) {
+  const { HTTPS_LOCAL_CERTIFICADO: certificado, HTTPS_LOCAL_CHAVE: chave } = ambiente;
+  if (certificado === undefined && chave === undefined) {
+    return {};
+  }
+  if (ambiente.APP_ENV !== 'local' || certificado === undefined || chave === undefined) {
+    throw new Error('HTTPS_LOCAL_CERTIFICADO e HTTPS_LOCAL_CHAVE vão juntos, e só com APP_ENV=local.');
+  }
+  return { host: '0.0.0.0', https: { cert: readFileSync(certificado), key: readFileSync(chave) } };
+}
+
 // Cada app chama /api no próprio host; o proxy mantém o Host para a API conferir o app: docs/adr/0003-dominios-e-ambientes.md
 function servidorLocal(ambiente: AmbienteBuild, opcoes: OpcoesDoServidorLocal) {
   return {
@@ -54,6 +70,7 @@ function servidorLocal(ambiente: AmbienteBuild, opcoes: OpcoesDoServidorLocal) {
     port: opcoes.porta,
     strictPort: true,
     proxy: { '/api': { target: ambiente.URL_API_LOCAL, changeOrigin: false } },
+    ...httpsDaRedeLocal(ambiente),
   };
 }
 

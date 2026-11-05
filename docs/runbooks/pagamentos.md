@@ -45,6 +45,9 @@ num ambiente de homologação:
 Desenvolvimento local, sem rede: `pnpm mp:falso` sobe o Mercado Pago falso em
 `127.0.0.1:3999`. Ponha no `.env` `URL_MERCADO_PAGO=http://127.0.0.1:3999` e,
 para o falso mandar avisos, `URL_AVISO_FALSO=http://127.0.0.1:3000/api/v1/webhooks/mercado-pago`.
+Com a API e o worker no Docker, use `URL_MERCADO_PAGO=http://host.docker.internal:3999` e
+suba o falso com `HOST_MERCADO_PAGO_FALSO=0.0.0.0 pnpm mp:falso` (ver
+[teste-local.md](teste-local.md)).
 Para simular o Mercado Pago:
 
 ```sh
